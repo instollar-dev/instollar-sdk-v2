@@ -16,21 +16,29 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   suffix?: ReactNode;
 }
 
+/**
+ * Hex fallbacks keep contrast even if CSS variables fail to resolve in the host app.
+ * Primary = dark green fill + lime label; secondary = lime fill + dark green label.
+ */
 const solidVariantClasses: Record<Exclude<ButtonVariant, 'ghost'>, string> = {
-  primary: 'bg-primary text-secondary shadow-sm hover:opacity-90 [&_svg]:text-secondary',
-  secondary: 'bg-secondary text-primary hover:opacity-90 [&_svg]:text-primary',
-  destructive: 'bg-destructive text-white hover:opacity-90 [&_svg]:text-white',
-  danger: 'bg-destructive text-white hover:opacity-90 [&_svg]:text-white',
+  primary:
+    'bg-[var(--color-primary,#012b15)] text-[var(--color-secondary,#effe3e)] shadow-sm hover:opacity-90 [&_svg]:text-[var(--color-secondary,#effe3e)]',
+  secondary:
+    'bg-[var(--color-secondary,#effe3e)] text-[var(--color-primary,#012b15)] hover:opacity-90 [&_svg]:text-[var(--color-primary,#012b15)]',
+  destructive: 'bg-[var(--color-destructive,#b42318)] text-white hover:opacity-90 [&_svg]:text-white',
+  danger: 'bg-[var(--color-destructive,#b42318)] text-white hover:opacity-90 [&_svg]:text-white',
 };
 
 const ghostBaseClass =
-  'bg-transparent border hover:bg-primary/5 hover:cursor-pointer disabled:hover:cursor-not-allowed dark:hover:bg-white/6';
+  'bg-transparent border hover:bg-[color-mix(in_srgb,var(--color-primary,#012b15)_5%,transparent)] hover:cursor-pointer disabled:hover:cursor-not-allowed';
 
 const ghostToneClasses: Record<ButtonTone, string> = {
-  default: 'text-foreground border-border dark:text-white/72 dark:border-white/14 [&_svg]:text-current',
+  default:
+    'text-[var(--color-fg,var(--color-primary,#012b15))] border-[var(--color-border,#d6ddd9)] [&_svg]:text-current',
   destructive:
-    'text-destructive border-destructive/40 hover:bg-destructive/10 [&_svg]:text-destructive',
-  danger: 'text-destructive border-destructive/40 hover:bg-destructive/10 [&_svg]:text-destructive',
+    'text-[var(--color-destructive,#b42318)] border-[color-mix(in_srgb,var(--color-destructive,#b42318)_40%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-destructive,#b42318)_10%,transparent)] [&_svg]:text-[var(--color-destructive,#b42318)]',
+  danger:
+    'text-[var(--color-destructive,#b42318)] border-[color-mix(in_srgb,var(--color-destructive,#b42318)_40%,transparent)] hover:bg-[color-mix(in_srgb,var(--color-destructive,#b42318)_10%,transparent)] [&_svg]:text-[var(--color-destructive,#b42318)]',
 };
 
 function getVariantClasses(variant: ButtonVariant, tone: ButtonTone): string {

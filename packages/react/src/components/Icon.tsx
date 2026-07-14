@@ -11,6 +11,25 @@ const sizeMap: Record<IconSize, number> = {
   xl: 48,
 };
 
+/** Resolved paint values — Iconsax uses the `color` prop (fill/stroke), not CSS `currentColor` alone. */
+export type IconColor =
+  | 'current'
+  | 'primary'
+  | 'secondary'
+  | 'muted'
+  | 'inverse'
+  | 'destructive';
+
+const colorValues: Record<IconColor, string> = {
+  /** Inherit from parent text color (use inside Button / links) */
+  current: 'currentColor',
+  primary: 'var(--color-primary, #012b15)',
+  secondary: 'var(--color-secondary, #effe3e)',
+  muted: 'var(--color-muted, #6b8074)',
+  inverse: '#ffffff',
+  destructive: 'var(--color-destructive, #b42318)',
+};
+
 type IconsaxProps = SVGProps<SVGSVGElement> & {
   size?: string | number;
   color?: string;
@@ -20,23 +39,20 @@ type IconsaxProps = SVGProps<SVGSVGElement> & {
 export interface IconProps {
   icon: ComponentType<IconsaxProps>;
   size?: IconSize;
-  color?: 'primary' | 'secondary' | 'muted' | 'inverse' | 'destructive';
+  /**
+   * Paint color for the SVG.
+   * Default `current` inherits the parent (e.g. Button label).
+   * Prefer this over `primary` on solid brand buttons so icons stay visible.
+   */
+  color?: IconColor;
   variant?: IconsaxProps['variant'];
   className?: string;
 }
 
-const colorClasses = {
-  primary: 'text-primary',
-  secondary: 'text-secondary',
-  muted: 'text-muted',
-  inverse: 'text-white',
-  destructive: 'text-destructive',
-} as const;
-
 export function Icon({
   icon: IconComponent,
   size = 'md',
-  color = 'primary',
+  color = 'current',
   variant = 'Linear',
   className,
   ...props
@@ -45,7 +61,9 @@ export function Icon({
     <IconComponent
       size={sizeMap[size]}
       variant={variant}
-      className={cn(colorClasses[color], className)}
+      color={colorValues[color]}
+      className={cn('inline-block shrink-0', className)}
+      aria-hidden
       {...props}
     />
   );
@@ -53,7 +71,6 @@ export function Icon({
 
 /** Curated Iconsax icons re-exported for convenient app imports. */
 export {
-  // Navigation / chrome
   Home2,
   ArrowLeft2,
   ArrowRight2,
@@ -61,7 +78,6 @@ export {
   ArrowUp2,
   ArrowCircleLeft2,
   ArrowCircleRight2,
-  // People / auth
   User,
   UserAdd,
   Profile2User,
@@ -74,7 +90,6 @@ export {
   EyeSlash,
   ShieldTick,
   SecuritySafe,
-  // Actions
   Add,
   AddCircle,
   Minus,
@@ -92,23 +107,19 @@ export {
   Filter,
   More,
   More2,
-  // Feedback / status
   InfoCircle,
   Warning2,
   Danger,
   Notification,
   NotificationBing,
-  // Time / location
   Calendar,
   Clock,
   Location,
   Gps,
-  // Media / files
   Gallery,
   Image,
   DocumentText,
   Folder2,
-  // Commerce / work
   Bag2,
   Box1,
   Briefcase,
@@ -118,7 +129,6 @@ export {
   Setting4,
   Category,
   Menu,
-  // Theme
   Sun,
   Sun1,
   Moon,

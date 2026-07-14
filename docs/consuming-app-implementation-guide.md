@@ -1,8 +1,32 @@
 # Consuming app implementation guide
 
-How to install and use `@codearemo/instollar-sdk@^0.1.1` in an Instollar React web app.
+How to install and use `@codearemo/instollar-sdk@^0.1.2` in an Instollar React web app.
 
 This SDK is a **design system** (tokens + UI components + precompiled CSS). It does **not** include an API client yet.
+
+---
+
+## SDK version summary (0.1.2)
+
+| Version | What matters for your app |
+|---------|---------------------------|
+| **0.1.2** | **Fix** — button label/icon contrast (lime on green with hex fallbacks). Icon defaults to `color="current"`. **Theme removed** (light-only; no ThemeProvider). |
+| **0.1.1** | Full SafeRent-shaped light UI: searchable/multiple/creatable `Select`, `SegmentedTabs`, `LoadBoundary`, `StatusBadge`, password/number `Input`, `RadioGroup`, Iconsax icons. |
+| **0.1.0** | Initial barebones scaffold. Prefer **0.1.2**. |
+
+**Upgrade:**
+
+```bash
+npm install @codearemo/instollar-sdk@^0.1.2
+# restart Vite/Next after install
+```
+
+### Upgrade checklist (0.1.2)
+
+- [ ] Upgrade to `^0.1.2` and restart the dev server
+- [ ] Remove any `ThemeProvider` / `ThemeToggle` usage
+- [ ] On buttons, use `<Icon icon={…} />` without `color="primary"` (default `current` inherits the label)
+- [ ] Confirm button labels are lime (`#effe3e`) on primary green fill
 
 ---
 
@@ -28,13 +52,13 @@ Keep the token out of git. Use an env var locally and a secret in CI (`NODE_AUTH
 ### 1.2 Install
 
 ```bash
-npm install @codearemo/instollar-sdk@^0.1.1
+npm install @codearemo/instollar-sdk@^0.1.2
 ```
 
 | Part | Meaning |
 |------|---------|
 | `@codearemo/instollar-sdk` | Scoped package name (org + package) |
-| `@^0.1.1` | Version range (optional — pins/semver) |
+| `@^0.1.2` | Semver range — installs latest compatible 0.1.x |
 
 If you see a **404 on `registry.npmjs.org`**, npm is not using GitHub Packages — fix `.npmrc` and retry.
 
@@ -87,51 +111,22 @@ Load **Spline Sans**, **Inter**, and **Open Sans** once.
 
 Or map the same families with Next.js `next/font` to CSS variables `--font-spline`, `--font-inter`, `--font-open-sans`.
 
-### 2.3 Theme (recommended)
+### 2.3 Minimal working page
 
-Wrap the app (or a layout) in `ThemeProvider` so fields/cards resolve light vs dark surfaces automatically:
-
-```tsx
-import { ThemeProvider, ThemeToggle } from '@codearemo/instollar-sdk';
-
-export function Root({ children }: { children: React.ReactNode }) {
-  return (
-    <ThemeProvider defaultTheme="system" persist>
-      <header className="flex justify-end p-4">
-        <ThemeToggle showLabel />
-      </header>
-      {children}
-    </ThemeProvider>
-  );
-}
-```
-
-| Prop | Default | Notes |
-|------|---------|--------|
-| `defaultTheme` | `'system'` | `'light' \| 'dark' \| 'system'` |
-| `theme` | — | Controlled mode |
-| `persist` | `true` | Writes to `localStorage` (`instollar.theme`) |
-| `onThemeChange` | — | Callback when mode changes |
-
-Hooks: `useTheme()` (throws outside provider), `useThemeOptional()` (returns `null` outside).
-
-### 2.4 Minimal working page
+No theme wrapper — the SDK is light-only.
 
 ```tsx
 import '@codearemo/instollar-react/styles.css';
-import { Button, Text, Icon, Home2, ThemeProvider } from '@codearemo/instollar-sdk';
+import { Button, Text, Icon, Home2 } from '@codearemo/instollar-sdk';
 
 export function Example() {
   return (
-    <ThemeProvider defaultTheme="light">
-      <div className="p-6 bg-background text-foreground">
-        <Text variant="spline-bold-h4">Hello</Text>
-        <Text variant="open-regular-p">Body copy with Open Sans.</Text>
-        <Button prefix={<Icon icon={Home2} size="sm" color="secondary" />}>
-          Continue
-        </Button>
-      </div>
-    </ThemeProvider>
+    <div className="p-6 bg-background text-foreground">
+      <Text variant="spline-bold-h4">Hello</Text>
+      <Text variant="open-regular-p">Body copy with Open Sans.</Text>
+      {/* Icon defaults to color="current" — inherits the button label color */}
+      <Button prefix={<Icon icon={Home2} size="sm" />}>Continue</Button>
+    </div>
   );
 }
 ```
@@ -229,24 +224,24 @@ import {
   SegmentedTabs,
   Select,
   Spinner,
+  StatusBadge,
   Switch,
   Text,
   Textarea,
-  ThemeProvider,
-  ThemeToggle,
   Home2,
   User,
   Lock,
   ArrowRight2,
   TickCircle,
   CloseCircle,
+  SearchNormal1,
   cn,
   loadBoundaryPropsFromQuery,
+  selectOptionsPropsFromQuery,
 } from '@codearemo/instollar-sdk';
 ```
 
-Field surfaces (`variant` on Input / Textarea / Select / Checkbox / etc.): `'light' | 'dark'`.  
-Default resolves from `ThemeProvider` when omitted.
+Fields default to the light surface. Optional `variant="dark"` still exists for rare overrides but is not required.
 
 ---
 
@@ -307,13 +302,12 @@ Product-facing typography. Prefer this over hard-coding font classes.
 <Button variant="destructive">Delete</Button>
 <Button variant="danger">Danger</Button>
 <Button loading>Saving…</Button>
-<Button
-  prefix={<Icon icon={Home2} size="sm" color="secondary" />}
-  suffix={<Icon icon={ArrowRight2} size="sm" color="secondary" />}
->
+<Button prefix={<Icon icon={Home2} size="sm" />} suffix={<Icon icon={ArrowRight2} size="sm" />}>
   Home
 </Button>
 ```
+
+Primary buttons use **dark green fill + lime label** (`#012b15` / `#effe3e`) with hex fallbacks so text stays visible even if CSS variables fail to resolve.
 
 `loading` disables the button, sets `aria-busy`, and shows a centered spinner while keeping width.
 
@@ -326,27 +320,45 @@ Thin wrapper over [Iconsax](https://iconsax-react.pages.dev/). Pass an Iconsax c
 | Prop | Type | Default |
 |------|------|---------|
 | `icon` | Iconsax component | required |
-| `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` |
-| `color` | `'primary' \| 'secondary' \| 'muted' \| 'inverse' \| 'destructive'` | `'primary'` |
+| `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` → `{13,16,20,32,48}` |
+| `color` | `'current' \| 'primary' \| 'secondary' \| 'muted' \| 'inverse' \| 'destructive'` | `'current'` |
 | `variant` | `'Linear' \| 'Outline' \| 'Broken' \| 'Bold' \| 'Bulk' \| 'TwoTone'` | `'Linear'` |
 
-**Curated icons** (import from the SDK directly):  
-`Home2`, `ArrowLeft2`, `ArrowRight2`, `ArrowDown2`, `ArrowUp2`, `User`, `UserAdd`, `People`, `Lock`, `Unlock`, `Eye`, `EyeSlash`, `Add`, `AddCircle`, `CloseCircle`, `TickCircle`, `Trash`, `Edit2`, `SearchNormal1`, `Filter`, `InfoCircle`, `Warning2`, `Notification`, `Calendar`, `Location`, `Setting2`, `Sun`, `Moon`, and more (see `packages/react/src/components/Icon.tsx`).
+Iconsax paints via the SVG **`color` prop** (fill/stroke), not CSS `text-*` alone. The wrapper maps semantic names to `var(--color-…, #hex)` or `currentColor`.
+
+**On buttons:** omit `color` (or use `current`) so the icon inherits the label. Do **not** use `color="primary"` on a primary button — same green on green looks invisible.
+
+**Curated icons** (import from `@codearemo/instollar-sdk`):
+
+| Group | Icons |
+|-------|--------|
+| Navigation | `Home2`, `ArrowLeft2`, `ArrowRight2`, `ArrowDown2`, `ArrowUp2`, `ArrowCircleLeft2`, `ArrowCircleRight2`, `Menu` |
+| People / auth | `User`, `UserAdd`, `Profile2User`, `People`, `Login`, `Logout`, `Lock`, `Unlock`, `Eye`, `EyeSlash`, `ShieldTick`, `SecuritySafe` |
+| Actions | `Add`, `AddCircle`, `Minus`, `CloseCircle`, `TickCircle`, `TickSquare`, `Trash`, `Edit2`, `Copy`, `DocumentDownload`, `DocumentUpload`, `Send2`, `Refresh`, `SearchNormal1`, `Filter`, `More`, `More2` |
+| Feedback | `InfoCircle`, `Warning2`, `Danger`, `Notification`, `NotificationBing` |
+| Time / place | `Calendar`, `Clock`, `Location`, `Gps` |
+| Media / files | `Gallery`, `Image`, `DocumentText`, `Folder2` |
+| Work | `Bag2`, `Box1`, `Briefcase`, `Chart`, `Chart21`, `Setting2`, `Setting4`, `Category` |
+| Misc | `Sun`, `Sun1`, `Moon` |
 
 **Full Iconsax catalog** (~993 icons):
 
 ```ts
 import { Activity, Bluetooth, Wifi } from '@codearemo/instollar-sdk/icons';
 // or: from '@codearemo/instollar-react/icons'
-// or: from 'iconsax-react' (same package)
+// or: from 'iconsax-react'
 ```
 
 ```tsx
 import { Button, Icon, Home2, SearchNormal1 } from '@codearemo/instollar-sdk';
 
-<Button prefix={<Icon icon={Home2} size="sm" color="secondary" />}>Home</Button>
+<Button prefix={<Icon icon={Home2} size="sm" />}>Home</Button>
 <Button prefix={<Icon icon={SearchNormal1} size="sm" />}>Search</Button>
+{/* Standalone icons need an explicit paint */}
+<Icon icon={Home2} color="primary" />
 ```
+
+Prefer named imports so bundlers can tree-shake. Avoid `import * as Icons from '…/icons'` in production entry points.
 
 ---
 
@@ -371,10 +383,10 @@ Uses shared `FieldControl` chrome. Supports password show/hide and thousand-sepa
 |------|------|--------|
 | `label` | `string` | Associated `<label>` |
 | `error` | `string` | Error message + `aria-invalid` |
-| `variant` | `'light' \| 'dark'` | Defaults from theme |
+| `variant` | `'light' \| 'dark'` | Defaults to `'light'` |
 | `prefix` / `suffix` | `ReactNode` | Icons / adornments |
 | `type="password"` | — | Built-in eye toggle (merges with `suffix`) |
-| `type="number"` | — | Renders text + `inputMode="decimal"`; display has commas; `onChange` emits **raw** value |
+| `type="number"` | — | Renders text + `inputMode="decimal"`; display has commas; `onChange` emits **raw** value (no commas) |
 | … | input HTML attrs | `disabled`, `placeholder`, `value`, etc. |
 
 ```tsx
@@ -383,9 +395,11 @@ Uses shared `FieldControl` chrome. Supports password show/hide and thousand-sepa
 <Input label="Amount" type="number" placeholder="1,000" />
 <Input
   label="Search"
-  prefix={<Icon icon={Home2} size="sm" color="muted" />}
+  prefix={<Icon icon={SearchNormal1} size="sm" color="muted" />}
 />
 ```
+
+Helpers also exported: `sanitizeNumberInput`, `formatNumberInput`, `numberInputDisplayValue`, `numberInputRawValue`.
 
 ---
 
@@ -407,7 +421,7 @@ Custom peer checkbox (not native browser chrome).
 |------|------|--------|
 | `label` | `ReactNode` | |
 | `description` / `error` | `string` | Helper + alert text |
-| `variant` | `'light' \| 'dark'` | Unchecked surface |
+| `variant` | `'light' \| 'dark'` | Defaults to `'light'` |
 | … | checkbox HTML attrs | `checked`, `defaultChecked`, `onChange`, `disabled` |
 
 ```tsx
@@ -480,8 +494,8 @@ Custom select with portal dropdown (not a native `<select>`).
 | `creatable` | `boolean` | Add value not in list |
 | `optionsLoading` / `optionsError` / `onReloadOptions` | Async options UX | |
 | `compareValue` / `getOptionKey` / `getOptionLabel` | Object-valued options | |
-| `createOptionLabel` / `formatCreateValue` / … | Creatable pipeline | |
-| `label` / `error` / `variant` / `prefix` / `suffix` | Field chrome | |
+| `createOptionLabel` / `formatCreateValue` / `normalizeCreateInput` / `isValidCreateInput` / `onCreateOption` | Creatable pipeline | |
+| `label` / `error` / `variant` / `prefix` / `suffix` / `placeholder` | Field chrome | |
 
 ```tsx
 const [role, setRole] = useState('installer');
@@ -502,6 +516,7 @@ const [skills, setSkills] = useState<string[]>(['wiring']);
   label="Skills"
   multiple
   searchable
+  creatable
   value={skills}
   onValueChange={(v) => setSkills(v as string[])}
   options={[
@@ -511,15 +526,18 @@ const [skills, setSkills] = useState<string[]>(['wiring']);
 />
 ```
 
-Helper for TanStack Query:
+Helper for TanStack Query–shaped objects:
 
 ```ts
 <Select
   options={options}
   {...selectOptionsPropsFromQuery(query)}
-  …
+  value={value}
+  onValueChange={setValue}
 />
 ```
+
+`onValueChange` is typed as `(value: T | T[]) => void` — cast when you know single vs multiple.
 
 ---
 
@@ -567,7 +585,7 @@ Class maps (`alertContainerClasses`, `toastContainerClasses`, `alertIconChipClas
 
 | Prop | Type | Notes |
 |------|------|--------|
-| `variant` | `'light' \| 'dark-glass'` | Defaults from theme |
+| `variant` | `'light'` | Light surface only |
 
 ```tsx
 <Card className="flex flex-col gap-3">
@@ -631,6 +649,8 @@ const [tab, setTab] = useState('overview');
 </SegmentedTabs>
 ```
 
+Wrap in `max-w-full` if the track may overflow on small screens.
+
 ---
 
 ### 4.16 `LoadBoundary`
@@ -659,7 +679,7 @@ Async page shell for loading / error / stale / forbidden states.
 </LoadBoundary>
 ```
 
-Helper for TanStack Query-shaped objects:
+Helper for TanStack Query–shaped objects:
 
 ```ts
 <LoadBoundary {...loadBoundaryPropsFromQuery(query)} onRetry={() => query.refetch()}>
@@ -669,17 +689,7 @@ Helper for TanStack Query-shaped objects:
 
 ---
 
-### 4.17 `ThemeToggle`
-
-Button calling `toggleTheme()`. Iconsax sun/moon. Optional `showLabel`.
-
-```tsx
-<ThemeToggle showLabel />
-```
-
----
-
-### 4.18 `StatusBadge`
+### 4.17 `StatusBadge`
 
 Pure status pill — apps map their own API statuses → `tone` + `label`.
 
@@ -762,7 +772,7 @@ export function ContactForm() {
           label="Topic"
           placeholder="Choose one"
           value={topic}
-          onValueChange={setTopic}
+          onValueChange={(v) => setTopic(v as string)}
           options={[
             { value: 'support', label: 'Support' },
             { value: 'sales', label: 'Sales' },
@@ -783,17 +793,18 @@ export function ContactForm() {
 
 ## 7. Packages reference
 
-| Package | When to import |
-|---------|----------------|
+| Package / path | When to import |
+|----------------|----------------|
 | `@codearemo/instollar-sdk` | **Default** — all components + curated icons |
 | `@codearemo/instollar-sdk/icons` | Full Iconsax catalog (~993 icons) |
+| `@codearemo/instollar-sdk/styles.css` | Umbrella styles entry |
 | `@codearemo/instollar-react` | Same components; also `styles.css` |
 | `@codearemo/instollar-react/icons` | Same full Iconsax catalog |
 | `@codearemo/instollar-tokens` | JS `brand` / `colors`, or raw `tokens.css` / `typography.css` |
 
 Exports from the umbrella match `@codearemo/instollar-react`.
 
-Also exported for advanced composition: `FieldControl`, form class helpers, `useClickOutside`, `useFloatingPosition`, alert/segmented class maps.
+Also exported for advanced composition: `FieldControl`, form class helpers, `useClickOutside`, `useFloatingPosition`, alert / segmented / status-badge class maps, number-input helpers.
 
 ---
 
@@ -803,14 +814,17 @@ Also exported for advanced composition: `FieldControl`, form class helpers, `use
 |---------|-----|
 | `404` on `registry.npmjs.org` | File must be named `.npmrc`; `@codearemo` must point at `https://npm.pkg.github.com` |
 | `401` / `403` from GitHub Packages | Set `NODE_AUTH_TOKEN` with `read:packages`; authorize SSO for `codearemo` if required |
+| Package not found after tag | Confirm Actions → **Publish** for tag `v0.1.2` succeeded |
 | Components unstyled | Import `@codearemo/instollar-react/styles.css` (or SDK `styles.css`) once at app root |
 | Wrong fonts | Load Google Fonts (or `next/font`) for Spline / Inter / Open Sans |
-| Dark fields look wrong without provider | Wrap with `ThemeProvider`, or set `variant="light"` explicitly |
-| Publish not found | Confirm Actions → **Publish** for the release tag succeeded |
+| Invisible icons on primary buttons | Default Icon `color` is `current` (inherits label). Never use `color="primary"` on a primary button |
+| Button label same color as fill | Ensure you import `styles.css`. Latest SDK pins lime/green with hex fallbacks on Button |
+| Large bundle after icons | Prefer curated named imports from `@codearemo/instollar-sdk`; use `/icons` only for icons not in the curated set |
+| Select TypeScript type fuss | Cast `onValueChange` when using single vs `multiple` |
 
 ---
 
-## 9. Out of scope (still)
+## 9. Out of scope (0.1.1)
 
 Not in this release — add later if needed:
 
@@ -824,16 +838,17 @@ Not in this release — add later if needed:
 ## 10. Upgrade
 
 ```bash
-npm install @codearemo/instollar-sdk@^0.1.1
+npm install @codearemo/instollar-sdk@^0.1.2
 ```
 
 After upgrading, restart the Vite/Next dev server so CSS and package resolution refresh.
 
-### Breaking notes since first scaffold
+### Breaking notes (0.1.0 → 0.1.1)
 
 | Change | Migration |
 |--------|-----------|
 | `Select` is no longer a native `<select>` | Use `value` / `defaultValue` / `onValueChange` instead of `onChange`; supports `multiple` / `searchable` / `creatable` |
 | `Badge` variants renamed | Use `kicker` / `eyebrow` / `success` / `destructive` / `neutral` / `secondary` (not `default` / `warning` / `error`) |
 | `Alert` variants expanded | Prefer `error` or `destructive`; add `appearance` / `onDismiss` as needed |
-| Icons | Curated set on main import; full catalog via `@codearemo/instollar-sdk/icons` |
+| Icons | Curated set on main import; full catalog via `@codearemo/instollar-sdk/icons`. Default Icon color is `current` |
+| Theme removed | Delete `ThemeProvider` / `ThemeToggle` usage — light-only SDK |

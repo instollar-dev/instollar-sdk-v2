@@ -5,7 +5,6 @@ import {
   type InputHTMLAttributes,
   type ReactNode,
 } from 'react';
-import { useThemeOptional } from '../theme/ThemeProvider';
 import { cn } from '../utils/cn';
 import type { FieldSurface } from './formVariants';
 import {
@@ -51,8 +50,7 @@ export function RadioGroup({
   className,
   children,
 }: RadioGroupProps) {
-  const theme = useThemeOptional();
-  const resolvedVariant = variant ?? (theme?.resolvedTheme === 'dark' ? 'dark' : 'light');
+  const resolvedVariant = variant ?? 'light';
   const generatedName = useId();
   const name = nameProp ?? generatedName;
   const groupId = useId();
@@ -115,9 +113,7 @@ export function Radio({
   ...props
 }: RadioProps) {
   const ctx = useContext(RadioGroupContext);
-  const theme = useThemeOptional();
-  const resolvedVariant =
-    variant ?? ctx?.variant ?? (theme?.resolvedTheme === 'dark' ? 'dark' : 'light');
+  const resolvedVariant = variant ?? ctx?.variant ?? 'light';
   const inputId = id ?? `${ctx?.name ?? 'radio'}-${value}`;
   const isDisabled = disabled ?? ctx?.disabled;
   const isChecked = checkedProp ?? (ctx?.value !== undefined ? ctx.value === value : undefined);

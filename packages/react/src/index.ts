@@ -114,7 +114,7 @@ export {
   Sun1,
   Moon,
 } from './components/Icon';
-export type { IconProps, IconSize } from './components/Icon';
+export type { IconProps, IconSize, IconColor } from './components/Icon';
 
 
 export { Alert } from './components/Alert';
@@ -155,14 +155,6 @@ export {
 
 export { LoadBoundary, loadBoundaryPropsFromQuery } from './components/LoadBoundary';
 export type { LoadBoundaryProps } from './components/LoadBoundary';
-
-export { ThemeProvider, useTheme, useThemeOptional } from './theme/ThemeProvider';
-export type { ThemeProviderProps } from './theme/ThemeProvider';
-export type { ThemeMode, ResolvedTheme, ThemeContextValue } from './theme/types';
-export { THEME_STORAGE_KEY } from './theme/types';
-
-export { ThemeToggle } from './components/ThemeToggle';
-export type { ThemeToggleProps } from './components/ThemeToggle';
 
 export { useClickOutside } from './hooks/useClickOutside';
 export { useFloatingPosition } from './hooks/useFloatingPosition';

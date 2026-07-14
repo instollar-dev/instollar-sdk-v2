@@ -1,5 +1,4 @@
 import { useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
-import { useThemeOptional } from '../theme/ThemeProvider';
 import { cn } from '../utils/cn';
 import type { FieldSurface } from './formVariants';
 import {
@@ -32,8 +31,7 @@ export function Switch({
   onClick,
   ...props
 }: SwitchProps) {
-  const theme = useThemeOptional();
-  const resolvedVariant = variant ?? (theme?.resolvedTheme === 'dark' ? 'dark' : 'light');
+  const resolvedVariant = variant ?? 'light';
   const switchId =
     id ?? (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
   const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);

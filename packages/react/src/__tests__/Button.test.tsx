@@ -18,7 +18,9 @@ describe('Button', () => {
 
   it('applies secondary variant class', () => {
     render(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole('button', { name: 'Secondary' }).className).toContain('bg-secondary');
+    expect(screen.getByRole('button', { name: 'Secondary' }).className).toContain(
+      'bg-[var(--color-secondary,#effe3e)]',
+    );
   });
 
   it('applies ghost destructive tone', () => {
@@ -27,11 +29,15 @@ describe('Button', () => {
         Delete
       </Button>,
     );
-    expect(screen.getByRole('button', { name: 'Delete' }).className).toContain('text-destructive');
+    expect(screen.getByRole('button', { name: 'Delete' }).className).toContain(
+      'text-[var(--color-destructive,#b42318)]',
+    );
   });
 
   it('aliases danger to destructive solid styling', () => {
     render(<Button variant="danger">Danger</Button>);
-    expect(screen.getByRole('button', { name: 'Danger' }).className).toContain('bg-destructive');
+    expect(screen.getByRole('button', { name: 'Danger' }).className).toContain(
+      'bg-[var(--color-destructive,#b42318)]',
+    );
   });
 });

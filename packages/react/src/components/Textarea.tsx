@@ -1,5 +1,4 @@
 import type { ReactNode, TextareaHTMLAttributes } from 'react';
-import { useThemeOptional } from '../theme/ThemeProvider';
 import { cn } from '../utils/cn';
 import { FieldControl } from './FieldControl';
 import type { FieldSurface } from './formVariants';
@@ -26,8 +25,7 @@ export function Textarea({
   disabled,
   ...props
 }: TextareaProps) {
-  const theme = useThemeOptional();
-  const resolvedVariant = variant ?? (theme?.resolvedTheme === 'dark' ? 'dark' : 'light');
+  const resolvedVariant = variant ?? 'light';
   const textareaId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
   return (

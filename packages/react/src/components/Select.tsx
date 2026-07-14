@@ -11,7 +11,6 @@ import {
 import { createPortal } from 'react-dom';
 import { useClickOutside } from '../hooks/useClickOutside';
 import { useFloatingPosition } from '../hooks/useFloatingPosition';
-import { useThemeOptional } from '../theme/ThemeProvider';
 import { cn } from '../utils/cn';
 import { Button } from './Button';
 import { FieldControl } from './FieldControl';
@@ -167,8 +166,7 @@ export function Select<T = string>({
   className,
   id,
 }: SelectProps<T>) {
-  const theme = useThemeOptional();
-  const resolvedVariant = variant ?? (theme?.resolvedTheme === 'dark' ? 'dark' : 'light');
+  const resolvedVariant = variant ?? 'light';
   const selectId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
   const listboxId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -466,7 +464,7 @@ export function Select<T = string>({
                           'hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
                           selectedOption
                             ? 'bg-primary/14 text-foreground'
-                            : 'text-foreground hover:bg-primary/5 dark:hover:bg-white/6',
+                            : 'text-foreground hover:bg-primary/5',
                           resolvedVariant === 'dark' && 'text-white',
                         )}
                       >
@@ -501,7 +499,7 @@ export function Select<T = string>({
                           <TickCircle
                             size={16}
                             variant="Bold"
-                            className="shrink-0 text-primary dark:text-secondary"
+                            className="shrink-0 text-primary"
                             aria-hidden
                           />
                         )}

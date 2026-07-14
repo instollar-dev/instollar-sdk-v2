@@ -1,6 +1,5 @@
 import { TickCircle } from 'iconsax-react';
 import type { InputHTMLAttributes, ReactNode } from 'react';
-import { useThemeOptional } from '../theme/ThemeProvider';
 import { cn } from '../utils/cn';
 import type { FieldSurface } from './formVariants';
 import {
@@ -26,8 +25,7 @@ export function Checkbox({
   disabled,
   ...props
 }: CheckboxProps) {
-  const theme = useThemeOptional();
-  const resolvedVariant = variant ?? (theme?.resolvedTheme === 'dark' ? 'dark' : 'light');
+  const resolvedVariant = variant ?? 'light';
   const inputId =
     id ?? (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 

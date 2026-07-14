@@ -6,7 +6,6 @@ import {
   type InputHTMLAttributes,
   type ReactNode,
 } from 'react';
-import { useThemeOptional } from '../theme/ThemeProvider';
 import { cn } from '../utils/cn';
 import { FieldControl } from './FieldControl';
 import type { FieldSurface } from './formVariants';
@@ -58,8 +57,7 @@ export function Input({
   onChange,
   ...props
 }: InputProps) {
-  const theme = useThemeOptional();
-  const resolvedVariant = variant ?? (theme?.resolvedTheme === 'dark' ? 'dark' : 'light');
+  const resolvedVariant = variant ?? 'light';
   const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
   const isPassword = type === 'password';
   const isNumber = type === 'number';

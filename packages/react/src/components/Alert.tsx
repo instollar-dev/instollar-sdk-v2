@@ -72,7 +72,7 @@ export function Alert({
         <button
           type="button"
           onClick={onDismiss}
-          className="inline-flex h-fit shrink-0 cursor-pointer self-start rounded-md p-1 text-muted/70 transition-colors hover:cursor-pointer hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10"
+          className="inline-flex h-fit shrink-0 cursor-pointer self-start rounded-md p-1 text-muted/70 transition-colors hover:cursor-pointer hover:bg-black/5 hover:text-foreground"
           aria-label="Dismiss alert"
         >
           <CloseCircle size={14} variant="Linear" aria-hidden />
