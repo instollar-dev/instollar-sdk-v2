@@ -1,7 +1,5 @@
-import { TickCircle } from 'iconsax-react';
 import type { InputHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../utils/cn';
-import { iconPaint } from '../utils/iconPaint';
 import type { FieldSurface } from './formVariants';
 import {
   formFieldDescriptionClass,
@@ -59,8 +57,8 @@ export function Checkbox({
           <span
             className={cn(
               'flex size-4 items-center justify-center rounded border-2 transition-colors duration-150 outline-none',
-              'peer-checked:border-primary peer-checked:bg-primary',
-              '[&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100',
+              'peer-checked:border-primary',
+              '[&>span]:opacity-0 peer-checked:[&>span]:opacity-100',
               'peer-disabled:opacity-50',
               resolvedVariant === 'light'
                 ? 'border-border bg-white'
@@ -68,12 +66,7 @@ export function Checkbox({
               error && 'border-destructive',
             )}
           >
-            <TickCircle
-              size={12}
-              variant="Bold"
-              color={iconPaint.secondary}
-              aria-hidden
-            />
+            <span className="size-2 rounded-sm bg-primary transition-opacity" />
           </span>
         </span>
         {(label || description) && (

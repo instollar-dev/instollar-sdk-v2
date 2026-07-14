@@ -18,13 +18,13 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
 
 /**
  * Hex fallbacks keep contrast even if CSS variables fail to resolve in the host app.
- * Primary = dark green fill + lime label; secondary = lime fill + dark green label.
+ * Primary = dark green fill + white label; secondary = lime fill + dark green label.
  * Inline styles are intentional — Iconsax/`text-*` alone can fail under host CSS resets.
  */
 const solidVariantStyles: Record<Exclude<ButtonVariant, 'ghost'>, CSSProperties> = {
   primary: {
     backgroundColor: 'var(--color-primary, #012b15)',
-    color: 'var(--color-secondary, #effe3e)',
+    color: '#ffffff',
   },
   secondary: {
     backgroundColor: 'var(--color-secondary, #effe3e)',
@@ -41,7 +41,7 @@ const solidVariantStyles: Record<Exclude<ButtonVariant, 'ghost'>, CSSProperties>
 };
 
 const solidVariantClasses: Record<Exclude<ButtonVariant, 'ghost'>, string> = {
-  primary: 'shadow-sm hover:opacity-90 [&_svg]:text-[var(--color-secondary,#effe3e)]',
+  primary: 'shadow-sm hover:opacity-90 [&_svg]:text-white',
   secondary: 'hover:opacity-90 [&_svg]:text-[var(--color-primary,#012b15)]',
   destructive: 'hover:opacity-90 [&_svg]:text-white',
   danger: 'hover:opacity-90 [&_svg]:text-white',
@@ -88,8 +88,8 @@ function getVariantStyle(variant: ButtonVariant, tone: ButtonTone): CSSPropertie
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
-  default: 'px-4 py-2 text-spline-bold-label',
-  sm: 'px-3 py-1.5 text-open-regular-tiny',
+  default: 'px-4 py-2 text-spline-regular-label font-normal',
+  sm: 'px-3 py-1.5 text-open-regular-tiny font-normal',
 };
 
 const spinnerSize: Record<ButtonSize, number> = {

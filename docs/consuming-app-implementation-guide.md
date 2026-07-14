@@ -1,6 +1,6 @@
 # Consuming app implementation guide
 
-How to install and use `@codearemo/instollar-sdk@^0.1.3` in an Instollar React web app.
+How to install and use `@codearemo/instollar-sdk@^0.1.4` in an Instollar React web app.
 
 This SDK is a **light-only design system** (tokens + UI components + precompiled CSS). Components are authored with **Tailwind CSS** and published as a ready-made `styles.css` — consuming apps do **not** need Tailwind configured for the SDK to look correct.
 
@@ -8,29 +8,30 @@ It does **not** include an API client, dark mode, or a theme provider.
 
 ---
 
-## SDK version summary (0.1.3)
+## SDK version summary (0.1.4)
 
 | Version | What matters for your app |
 |---------|---------------------------|
-| **0.1.3** | **Fix** — Iconsax paint for Checkbox / Select chevron / Alert / Input eyes; Button label/fill via inline styles; `@codearemo/instollar-sdk/icons` re-exports full catalog. Consumer guide covers Tailwind + full API. |
+| **0.1.4** | Checkbox matches Radio (primary indicator). Primary Button = white label + lighter weight. |
+| **0.1.3** | Iconsax paint fixes; Button inline fill/label; `sdk/icons` full catalog; Tailwind + full API guide. |
 | **0.1.2** | Primary button contrast (lime on green). Icon defaults to `color="current"`. Theme removed (light-only). |
 | **0.1.1** | Full SafeRent-shaped UI: searchable/multiple/creatable `Select`, `SegmentedTabs`, `LoadBoundary`, `StatusBadge`, password/number `Input`, `RadioGroup`, Iconsax. |
-| **0.1.0** | Initial scaffold. Prefer **0.1.3**. |
+| **0.1.0** | Initial scaffold. Prefer **0.1.4**. |
 
 **Upgrade:**
 
 ```bash
-npm install @codearemo/instollar-sdk@^0.1.3
+npm install @codearemo/instollar-sdk@^0.1.4
 # restart Vite/Next after install
 ```
 
-### Upgrade checklist (0.1.3)
+### Upgrade checklist (0.1.4)
 
 **Install / registry**
 
 - [ ] File is named `.npmrc` (not `.nmprc`); `@codearemo` → `https://npm.pkg.github.com`
 - [ ] `NODE_AUTH_TOKEN` has `read:packages`
-- [ ] Install `@codearemo/instollar-sdk@^0.1.3` and restart the dev server
+- [ ] Install `@codearemo/instollar-sdk@^0.1.4` and restart the dev server
 
 **One-time setup**
 
@@ -42,8 +43,8 @@ npm install @codearemo/instollar-sdk@^0.1.3
 
 - [ ] Icons: import curated names from `@codearemo/instollar-sdk`, or full set from `@codearemo/instollar-sdk/icons` — no extra install required (see [§1.4](#14-icons--do-you-need-an-extra-install), [§4.3](#43-icon--iconsax-icons))
 - [ ] On buttons: `<Icon icon={…} />` with default `current` (do **not** use `color="primary"` on primary buttons)
-- [ ] Confirm Checkbox checkmark, Select chevron, and Alert icons are visible
-- [ ] Confirm primary buttons show **lime** label (`#effe3e`) on **dark green** fill (`#012b15`)
+- [ ] Confirm primary buttons show **white** label on **dark green** fill (`#012b15`)
+- [ ] Confirm Checkbox uses the same primary-dot treatment as Radio (square control)
 - [ ] Prefer portal `Select` APIs (`value` / `onValueChange`); use `LoadBoundary`, `SegmentedTabs`, `StatusBadge` as needed
 
 ---
@@ -70,13 +71,13 @@ Keep the token out of git. Use an env var locally and a secret in CI (`NODE_AUTH
 ### 1.2 Install
 
 ```bash
-npm install @codearemo/instollar-sdk@^0.1.3
+npm install @codearemo/instollar-sdk@^0.1.4
 ```
 
 | Part | Meaning |
 |------|---------|
 | `@codearemo/instollar-sdk` | Scoped package name (org + package) |
-| `@^0.1.3` | Semver range — latest compatible 0.1.x |
+| `@^0.1.4` | Semver range — latest compatible 0.1.x |
 
 If you see a **404 on `registry.npmjs.org`**, npm is not using GitHub Packages — fix `.npmrc` and retry.
 
@@ -174,7 +175,7 @@ export function Example() {
     <div className="p-6 bg-background text-foreground">
       <Text variant="spline-bold-h4">Hello</Text>
       <Text variant="open-regular-p">Body copy with Open Sans.</Text>
-      {/* Icon defaults to color="current" — inherits the lime button label */}
+      {/* Icon defaults to color="current" — inherits the white button label */}
       <Button prefix={<Icon icon={Home2} size="sm" />}>Continue</Button>
     </div>
   );
@@ -217,7 +218,7 @@ Installed via `@codearemo/instollar-tokens` (dependency of the SDK).
 | Token | Value | Typical use |
 |-------|--------|-------------|
 | Primary | `#012b15` | Button fill, links, strong brand |
-| Secondary | `#effe3e` | Primary **button label** / accent |
+| Secondary | `#effe3e` | Accent / secondary button fill |
 | Destructive | `#b42318` | Errors / danger actions |
 
 ### 3.2 CSS variables (`:root`)
@@ -405,7 +406,7 @@ Product-facing typography. Prefer this over hard-coding font classes.
 
 | Variant | Appearance |
 |---------|------------|
-| `primary` | Dark green fill (`#012b15`) + **lime** label (`#effe3e`) |
+| `primary` | Dark green fill (`#012b15`) + **white** label; regular (lighter) weight |
 | `secondary` | Lime fill + dark green label |
 | `ghost` | Transparent + border |
 | `destructive` / `danger` | Red fill + white label |
@@ -424,7 +425,7 @@ Thin wrapper over [Iconsax](https://iconsax-react.pages.dev/). Always pass an Ic
 
 Already covered in [§1.4](#14-icons--do-you-need-an-extra-install). Summary:
 
-1. Install the SDK once: `npm install @codearemo/instollar-sdk@^0.1.3`
+1. Install the SDK once: `npm install @codearemo/instollar-sdk@^0.1.4`
 2. Import curated icons from `@codearemo/instollar-sdk`, **or** any icon from `@codearemo/instollar-sdk/icons`
 3. Optionally `npm install iconsax-react@^0.0.8` if your tooling prefers a direct dependency
 
@@ -616,7 +617,7 @@ Same field API as Input (`label`, `error`, `variant`, `prefix`, `suffix`) minus 
 
 ### 4.7 `Checkbox`
 
-Custom peer checkbox (not native browser chrome).
+Custom peer checkbox (not native browser chrome). Matches **Radio**’s indicator pattern: bordered control + primary-colored inner mark when checked (square outer / square inner; Radio is circular).
 
 | Prop | Type | Notes |
 |------|------|--------|
@@ -1167,20 +1168,20 @@ Exports from the umbrella match `@codearemo/instollar-react`. Transitive deps (`
 |---------|-----|
 | `404` on `registry.npmjs.org` | File must be named `.npmrc`; `@codearemo` must point at `https://npm.pkg.github.com` |
 | `401` / `403` from GitHub Packages | Set `NODE_AUTH_TOKEN` with `read:packages`; authorize SSO for `codearemo` if required |
-| Package not found after tag | Confirm Actions → **Publish** for tag `v0.1.3` succeeded |
+| Package not found after tag | Confirm Actions → **Publish** for tag `v0.1.4` succeeded |
 | Components unstyled | Import `@codearemo/instollar-react/styles.css` (or SDK `styles.css`) once at app root |
 | App Tailwind classes missing on SDK pages | App utilities come from *your* Tailwind build; SDK `styles.css` only includes what the SDK compiled. Keep both pipelines if you need both |
 | Wrong fonts | Load Google Fonts (or `next/font`) for Spline / Inter / Open Sans |
-| Invisible icons on primary buttons | Default Icon `color` is `current` (inherits lime label). Never use `color="primary"` on a primary button |
+| Invisible icons on primary buttons | Default Icon `color` is `current` (inherits white label). Never use `color="primary"` on a primary button |
 | Checkbox / Select chevron / Alert icons missing | Iconsax needs the SVG `color` prop — fixed in SDK internals. If you render Iconsax yourself, pass `color` (or use `<Icon icon={…} />`), not only `className="text-…"` |
-| Button label invisible | Import `styles.css`. On **0.1.3+**, Button pins fill/label via inline styles + hex fallbacks — rebuild/upgrade if still missing |
+| Button label invisible | Import `styles.css`. Primary uses white label on green fill via inline styles — rebuild/upgrade if still missing |
 | Looking for dark mode / ThemeProvider | Removed in 0.1.2 — Instollar apps are light-only |
 | Large bundle after icons | Prefer curated named imports from `@codearemo/instollar-sdk`; use `/icons` only for icons not in the curated set |
 | Select TypeScript type fuss | Cast `onValueChange` when using single vs `multiple` |
 
 ---
 
-## 9. Out of scope (0.1.3)
+## 9. Out of scope (0.1.4)
 
 Not in this release — add later if needed:
 
@@ -1195,7 +1196,7 @@ Not in this release — add later if needed:
 ## 10. Upgrade
 
 ```bash
-npm install @codearemo/instollar-sdk@^0.1.3
+npm install @codearemo/instollar-sdk@^0.1.4
 ```
 
 After upgrading, restart the Vite/Next dev server so CSS and package resolution refresh.
@@ -1210,3 +1211,4 @@ After upgrading, restart the Vite/Next dev server so CSS and package resolution 
 | Icons (0.1.2+) | Default `color="current"`; on buttons omit `color`. Full catalog: `@codearemo/instollar-sdk/icons` |
 | Theme removed (0.1.2) | Delete `ThemeProvider` / `ThemeToggle` — light-only |
 | Button / Iconsax paint (0.1.3) | Checkbox, Select chevron, Alert icons, password eyes paint correctly; Button uses inline fill/label colors. Upgrade from 0.1.2 if those were invisible |
+| Checkbox + primary Button (0.1.4) | Checkbox uses Radio-style primary indicator; primary Button label is white with regular weight |

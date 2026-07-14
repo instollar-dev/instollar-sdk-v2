@@ -23,7 +23,7 @@ In the consuming app, create `.npmrc` (exact name):
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token   # needs read:packages
-npm install @codearemo/instollar-sdk@^0.1.3
+npm install @codearemo/instollar-sdk@^0.1.4
 ```
 
 ```tsx
@@ -44,12 +44,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.1.3` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.1.4` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.1.3
-git push origin v0.1.3
+git tag v0.1.4
+git push origin v0.1.4
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages.
