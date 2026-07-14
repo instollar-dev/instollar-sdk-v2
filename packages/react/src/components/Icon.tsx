@@ -1,5 +1,6 @@
 import type { ComponentType, SVGProps } from 'react';
 import { cn } from '../utils/cn';
+import { iconPaint, type IconPaint } from '../utils/iconPaint';
 
 export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -12,22 +13,15 @@ const sizeMap: Record<IconSize, number> = {
 };
 
 /** Resolved paint values — Iconsax uses the `color` prop (fill/stroke), not CSS `currentColor` alone. */
-export type IconColor =
-  | 'current'
-  | 'primary'
-  | 'secondary'
-  | 'muted'
-  | 'inverse'
-  | 'destructive';
+export type IconColor = Exclude<IconPaint, 'foreground'>;
 
 const colorValues: Record<IconColor, string> = {
-  /** Inherit from parent text color (use inside Button / links) */
-  current: 'currentColor',
-  primary: 'var(--color-primary, #012b15)',
-  secondary: 'var(--color-secondary, #effe3e)',
-  muted: 'var(--color-muted, #6b8074)',
-  inverse: '#ffffff',
-  destructive: 'var(--color-destructive, #b42318)',
+  current: iconPaint.current,
+  primary: iconPaint.primary,
+  secondary: iconPaint.secondary,
+  muted: iconPaint.muted,
+  inverse: iconPaint.inverse,
+  destructive: iconPaint.destructive,
 };
 
 type IconsaxProps = SVGProps<SVGSVGElement> & {

@@ -16,28 +16,28 @@ describe('Button', () => {
     expect(screen.getByLabelText('Loading')).toBeInTheDocument();
   });
 
-  it('applies secondary variant class', () => {
+  it('applies secondary variant inline colors', () => {
     render(<Button variant="secondary">Secondary</Button>);
-    expect(screen.getByRole('button', { name: 'Secondary' }).className).toContain(
-      'bg-[var(--color-secondary,#effe3e)]',
-    );
+    const button = screen.getByRole('button', { name: 'Secondary' });
+    expect(button.style.backgroundColor).toBe('var(--color-secondary, #effe3e)');
+    expect(button.style.color).toBe('var(--color-primary, #012b15)');
   });
 
-  it('applies ghost destructive tone', () => {
+  it('applies ghost destructive tone color', () => {
     render(
       <Button variant="ghost" tone="destructive">
         Delete
       </Button>,
     );
-    expect(screen.getByRole('button', { name: 'Delete' }).className).toContain(
-      'text-[var(--color-destructive,#b42318)]',
+    expect(screen.getByRole('button', { name: 'Delete' }).style.color).toBe(
+      'var(--color-destructive, #b42318)',
     );
   });
 
   it('aliases danger to destructive solid styling', () => {
     render(<Button variant="danger">Danger</Button>);
-    expect(screen.getByRole('button', { name: 'Danger' }).className).toContain(
-      'bg-[var(--color-destructive,#b42318)]',
-    );
+    const button = screen.getByRole('button', { name: 'Danger' });
+    expect(button.style.backgroundColor).toBe('var(--color-destructive, #b42318)');
+    expect(button.style.color).toBe('rgb(255, 255, 255)');
   });
 });

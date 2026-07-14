@@ -6,5 +6,12 @@ export default defineConfig({
   dts: true,
   clean: true,
   splitting: false,
-  external: ['react', 'react-dom', 'iconsax-react', '@codearemo/instollar-react'],
+  external: [
+    'react',
+    'react-dom',
+    'iconsax-react',
+    '@codearemo/instollar-react',
+    '@codearemo/instollar-react/icons',
+  ],
 });
+

@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from 'react';
 import { cn } from '../utils/cn';
+import { iconPaint } from '../utils/iconPaint';
 import { FieldControl } from './FieldControl';
 import type { FieldSurface } from './formVariants';
 import { formFieldErrorClass, formFieldLabelClass } from './formVariants';
@@ -83,9 +84,9 @@ export function Input({
       className="inline-flex cursor-pointer items-center text-muted transition-colors hover:cursor-pointer hover:text-foreground disabled:cursor-not-allowed disabled:hover:cursor-not-allowed disabled:opacity-50"
     >
       {visible ? (
-        <EyeSlash size={16} variant="Linear" aria-hidden />
+        <EyeSlash size={16} variant="Linear" color={iconPaint.muted} aria-hidden />
       ) : (
-        <Eye size={16} variant="Linear" aria-hidden />
+        <Eye size={16} variant="Linear" color={iconPaint.muted} aria-hidden />
       )}
     </button>
   ) : null;

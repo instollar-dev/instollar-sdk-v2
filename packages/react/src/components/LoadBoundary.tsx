@@ -1,6 +1,7 @@
 import { Refresh, Shield, Warning2 } from 'iconsax-react';
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { cn } from '../utils/cn';
+import { iconPaint } from '../utils/iconPaint';
 import { Button } from './Button';
 import { Text } from './Text';
 
@@ -120,7 +121,7 @@ function StaleBanner({
           variant="ghost"
           size="sm"
           className="shrink-0 px-2"
-          prefix={<Refresh size={14} aria-hidden />}
+          prefix={<Refresh size={14} color={iconPaint.current} aria-hidden />}
           onClick={onRetry}
         >
           {refreshLabel}
@@ -183,7 +184,7 @@ export function LoadBoundary({
       <div className={cn('relative w-full', className)} style={{ ...shellStyle, ...style }}>
         <Shell tone="forbidden" style={shellStyle}>
           <div className="flex size-12 items-center justify-center rounded-full bg-foreground/5 text-muted">
-            <Shield size={24} variant="Bold" aria-hidden />
+            <Shield size={24} variant="Bold" color={iconPaint.muted} aria-hidden />
           </div>
           <div className="space-y-1">
             <Text variant="spline-bold-h5">{forbiddenTitle}</Text>
@@ -236,7 +237,7 @@ export function LoadBoundary({
       <div className={cn('relative w-full', className)} style={{ ...shellStyle, ...style }}>
         <Shell tone="error" style={shellStyle}>
           <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-            <Warning2 size={24} variant="Bold" aria-hidden />
+            <Warning2 size={24} variant="Bold" color={iconPaint.destructive} aria-hidden />
           </div>
           <div className="space-y-1">
             <Text variant="spline-bold-h5">{errorTitle}</Text>
@@ -248,7 +249,7 @@ export function LoadBoundary({
             <Button
               type="button"
               variant="ghost"
-              prefix={<Refresh size={16} aria-hidden />}
+              prefix={<Refresh size={16} color={iconPaint.current} aria-hidden />}
               onClick={onRetry}
             >
               {retryLabel}

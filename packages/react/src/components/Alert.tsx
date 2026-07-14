@@ -1,6 +1,7 @@
 import { CloseCircle, InfoCircle, TickCircle, Warning2 } from 'iconsax-react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '../utils/cn';
+import { iconPaint } from '../utils/iconPaint';
 import {
   alertContainerClasses,
   alertIconChipClasses,
@@ -26,6 +27,14 @@ const iconMap = {
   warning: Warning2,
   info: InfoCircle,
 } as const;
+
+const iconColorMap: Record<AlertVariant, string> = {
+  success: iconPaint.primary,
+  error: iconPaint.destructive,
+  destructive: iconPaint.destructive,
+  warning: iconPaint.foreground,
+  info: iconPaint.primary,
+};
 
 export function Alert({
   variant = 'info',
@@ -56,7 +65,7 @@ export function Alert({
           alertIconChipClasses[variant],
         )}
       >
-        <Icon size={13} variant="Bold" aria-hidden />
+        <Icon size={13} variant="Bold" color={iconColorMap[variant]} aria-hidden />
       </span>
       <div className="min-w-0 flex-1 pt-0.5">
         {title ? (
@@ -75,7 +84,7 @@ export function Alert({
           className="inline-flex h-fit shrink-0 cursor-pointer self-start rounded-md p-1 text-muted/70 transition-colors hover:cursor-pointer hover:bg-black/5 hover:text-foreground"
           aria-label="Dismiss alert"
         >
-          <CloseCircle size={14} variant="Linear" aria-hidden />
+          <CloseCircle size={14} variant="Linear" color={iconPaint.muted} aria-hidden />
         </button>
       ) : null}
     </div>

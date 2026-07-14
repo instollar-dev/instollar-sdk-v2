@@ -12,6 +12,7 @@ import { createPortal } from 'react-dom';
 import { useClickOutside } from '../hooks/useClickOutside';
 import { useFloatingPosition } from '../hooks/useFloatingPosition';
 import { cn } from '../utils/cn';
+import { iconPaint } from '../utils/iconPaint';
 import { Button } from './Button';
 import { FieldControl } from './FieldControl';
 import type { FieldSurface } from './formVariants';
@@ -115,7 +116,7 @@ function SelectOptionsError({
         className="flex size-10 items-center justify-center rounded-full bg-(--destructive-muted) text-destructive"
         aria-hidden
       >
-        <Warning2 size={22} variant="TwoTone" />
+        <Warning2 size={22} variant="TwoTone" color={iconPaint.destructive} />
       </span>
       <p className="max-w-[16rem] text-open-regular-p text-foreground">{message}</p>
       {onReload ? (
@@ -123,7 +124,7 @@ function SelectOptionsError({
           type="button"
           variant="ghost"
           size="sm"
-          prefix={<Refresh size={14} aria-hidden />}
+          prefix={<Refresh size={14} color={iconPaint.current} aria-hidden />}
           onClick={onReload}
         >
           {reloadLabel}
@@ -390,7 +391,7 @@ export function Select<T = string>({
               resolvedVariant === 'light' ? 'border-border' : 'border-white/14',
             )}
           >
-            <SearchNormal1 size={16} className="shrink-0 text-muted" aria-hidden />
+            <SearchNormal1 size={16} className="shrink-0" color={iconPaint.muted} aria-hidden />
             <input
               type="search"
               value={search}
@@ -441,7 +442,7 @@ export function Select<T = string>({
                       'text-primary hover:cursor-pointer hover:bg-primary/14',
                     )}
                   >
-                    <Add size={16} className="shrink-0" aria-hidden />
+                    <Add size={16} className="shrink-0" color={iconPaint.primary} aria-hidden />
                     <span className="min-w-0 flex-1 truncate">
                       {createOptionLabel(normalizedCreateInput)}
                     </span>
@@ -480,7 +481,7 @@ export function Select<T = string>({
                             )}
                           >
                             {selectedOption && (
-                              <TickSquare size={12} variant="Bold" className="text-white" />
+                              <TickSquare size={12} variant="Bold" color={iconPaint.inverse} />
                             )}
                           </span>
                         )}
@@ -499,7 +500,8 @@ export function Select<T = string>({
                           <TickCircle
                             size={16}
                             variant="Bold"
-                            className="shrink-0 text-primary"
+                            className="shrink-0"
+                            color={iconPaint.primary}
                             aria-hidden
                           />
                         )}
@@ -540,7 +542,7 @@ export function Select<T = string>({
               variant="ghost"
               size="sm"
               disabled={!showCreateOption}
-              prefix={<Add size={14} aria-hidden />}
+              prefix={<Add size={14} color={iconPaint.current} aria-hidden />}
               onClick={() => addCustomValue(customInput)}
             >
               Add
@@ -597,11 +599,12 @@ export function Select<T = string>({
             {optionsLoading ? (
               <Spinner size={16} className="text-primary" />
             ) : optionsError ? (
-              <Warning2 size={16} className="text-destructive" aria-hidden />
+              <Warning2 size={16} color={iconPaint.destructive} aria-hidden />
             ) : (
               <ArrowDown2
                 size={16}
                 variant="Linear"
+                color={iconPaint.muted}
                 className={cn('shrink-0 transition-transform duration-200', open && 'rotate-180')}
                 aria-hidden
               />
@@ -633,7 +636,7 @@ export function Select<T = string>({
               onClick={onReloadOptions}
               className="inline-flex shrink-0 items-center gap-1 font-semibold text-destructive underline-offset-2 hover:underline"
             >
-              <Refresh size={12} aria-hidden />
+              <Refresh size={12} color={iconPaint.destructive} aria-hidden />
               {reloadLabel}
             </button>
           ) : null}

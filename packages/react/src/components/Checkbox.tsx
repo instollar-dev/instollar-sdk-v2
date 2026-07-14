@@ -1,6 +1,7 @@
 import { TickCircle } from 'iconsax-react';
 import type { InputHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../utils/cn';
+import { iconPaint } from '../utils/iconPaint';
 import type { FieldSurface } from './formVariants';
 import {
   formFieldDescriptionClass,
@@ -67,7 +68,12 @@ export function Checkbox({
               error && 'border-destructive',
             )}
           >
-            <TickCircle size={12} variant="Bold" className="text-secondary" aria-hidden />
+            <TickCircle
+              size={12}
+              variant="Bold"
+              color={iconPaint.secondary}
+              aria-hidden
+            />
           </span>
         </span>
         {(label || description) && (
