@@ -1,0 +1,444 @@
+/* ============================================
+   TYPOGRAPHY STYLE GUIDE - Tailwind Utilities
+   ============================================ */
+
+/* Spline Sans - Bold - Display */
+@utility text-spline-bold-display {
+  font-family: var(--font-spline);
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 80px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Bold - H4 */
+@utility text-spline-bold-h4 {
+  font-family: var(--font-spline);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Bold - H5 */
+@utility text-spline-bold-h5 {
+  font-family: var(--font-spline);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Bold - H6 */
+@utility text-spline-bold-h6 {
+  font-family: var(--font-spline);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Bold - Label */
+@utility text-spline-bold-label {
+  font-family: var(--font-spline);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Bold - P */
+@utility text-spline-bold-p {
+  font-family: var(--font-spline);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Bold - Tiny */
+@utility text-spline-bold-tiny {
+  font-family: var(--font-spline);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 0%;
+  text-align: right;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - Display */
+@utility text-spline-light-display {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 72px;
+  line-height: 80px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - H1 */
+@utility text-spline-light-h1 {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 56px;
+  line-height: 64px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - H2 */
+@utility text-spline-light-h2 {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 48px;
+  line-height: 56px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Regular - H2 */
+@utility text-spline-regular-h2 {
+  font-family: var(--font-spline);
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 56px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - H3 */
+@utility text-spline-light-h3 {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 40px;
+  line-height: 48px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - H4 */
+@utility text-spline-light-h4 {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 30px;
+  line-height: 40px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - H5 */
+@utility text-spline-light-h5 {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - H6 */
+@utility text-spline-light-h6 {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - P */
+@utility text-spline-light-p {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - Label */
+@utility text-spline-light-label {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Regular - P */
+@utility text-spline-regular-p {
+  font-family: var(--font-spline);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Regular - H5 */
+@utility text-spline-regular-h5 {
+  font-family: var(--font-spline);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Regular - H6 */
+@utility text-spline-regular-h6 {
+  font-family: var(--font-spline);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Regular - Label */
+@utility text-spline-regular-label {
+  font-family: var(--font-spline);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Regular - Tiny */
+@utility text-spline-regular-tiny {
+  font-family: var(--font-spline);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Spline Sans - Light - Tiny */
+@utility text-spline-light-tiny {
+  font-family: var(--font-spline);
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - Display */
+@utility text-open-bold-display {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 72px;
+  line-height: 80px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - H1 */
+@utility text-open-bold-h1 {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 56px;
+  line-height: 64px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - H2 */
+@utility text-open-bold-h2 {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 48px;
+  line-height: 56px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - H3 */
+@utility text-open-bold-h3 {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 48px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - H4 */
+@utility text-open-bold-h4 {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - H5 (24px) */
+@utility text-open-bold-h5 {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - H5 (20px) */
+@utility text-open-bold-h5-sm {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - H6 */
+@utility text-open-bold-h6 {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - P */
+@utility text-open-bold-p {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - Label */
+@utility text-open-bold-label {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Bold - Tiny */
+@utility text-open-bold-tiny {
+  font-family: var(--font-open-sans);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - Display */
+@utility text-open-regular-display {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 72px;
+  line-height: 80px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - H1 */
+@utility text-open-regular-h1 {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 56px;
+  line-height: 64px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - H2 */
+@utility text-open-regular-h2 {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 56px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - H3 */
+@utility text-open-regular-h3 {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 48px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - H4 */
+@utility text-open-regular-h4 {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 40px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - H5 */
+@utility text-open-regular-h5 {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - H6 */
+@utility text-open-regular-h6 {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - P */
+@utility text-open-regular-p {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - Label */
+@utility text-open-regular-label {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}
+
+/* Open Sans - Regular - Tiny */
+@utility text-open-regular-tiny {
+  font-family: var(--font-open-sans);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 0%;
+  vertical-align: middle;
+}

@@ -1,0 +1,21 @@
+@import "@codearemo/instollar-tokens/tokens.css";
+@import "@codearemo/instollar-tokens/typography.css";
+@import "tailwindcss";
+
+@theme {
+  --font-family-spline: var(--font-spline);
+  --font-family-inter: var(--font-inter);
+  --font-family-open: var(--font-open-sans);
+
+  --font-spline: var(--font-spline);
+  --font-inter: var(--font-inter);
+  --font-open: var(--font-open-sans);
+
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-fg);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-destructive: var(--color-destructive);
+}

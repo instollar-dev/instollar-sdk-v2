@@ -1,0 +1,46 @@
+{
+  "name": "@codearemo/instollar-sdk",
+  "version": "0.1.0",
+  "description": "Instollar SDK — React UI components and design tokens",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup && pnpm build:assets",
+    "build:assets": "cp ../react/dist/styles.css dist/styles.css",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@codearemo/instollar-react": "workspace:*",
+    "@codearemo/instollar-tokens": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codearemo/instollar-sdk-v2.git"
+  }
+}

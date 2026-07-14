@@ -1,0 +1,4 @@
+@import './theme-base.css';
+
+/* Scan SDK component sources when building styles.css */
+@source "../components/**/*.{tsx,ts}";

@@ -1,0 +1,36 @@
+{
+  "name": "@codearemo/instollar-tokens",
+  "version": "0.1.0",
+  "description": "Instollar design tokens — colors, fonts, typography utilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./tokens.css": "./src/tokens.css",
+    "./typography.css": "./src/typography.css"
+  },
+  "files": ["dist", "src/tokens.css", "src/typography.css"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codearemo/instollar-sdk-v2.git"
+  }
+}

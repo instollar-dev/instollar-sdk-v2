@@ -1,0 +1,22 @@
+/**
+ * Instollar Design System — Design Tokens
+ */
+
+:root {
+  --font-spline: "Spline Sans", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-open-sans: "Open Sans", sans-serif;
+
+  --color-primary: #012b15;
+  --color-secondary: #effe3e;
+
+  --color-bg: #ffffff;
+  --color-fg: var(--color-primary);
+  --color-muted: color-mix(in srgb, var(--color-primary) 55%, white);
+  --color-border: color-mix(in srgb, var(--color-primary) 12%, white);
+  --color-destructive: #b42318;
+
+  font-family: var(--font-spline);
+  line-height: 1.5;
+  font-weight: 400;
+}
