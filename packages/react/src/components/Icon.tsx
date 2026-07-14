@@ -51,4 +51,75 @@ export function Icon({
   );
 }
 
-export { Home2, User, Lock, ArrowRight2, TickCircle, CloseCircle } from 'iconsax-react';
+/** Curated Iconsax icons re-exported for convenient app imports. */
+export {
+  // Navigation / chrome
+  Home2,
+  ArrowLeft2,
+  ArrowRight2,
+  ArrowDown2,
+  ArrowUp2,
+  ArrowCircleLeft2,
+  ArrowCircleRight2,
+  // People / auth
+  User,
+  UserAdd,
+  Profile2User,
+  People,
+  Login,
+  Logout,
+  Lock,
+  Unlock,
+  Eye,
+  EyeSlash,
+  ShieldTick,
+  SecuritySafe,
+  // Actions
+  Add,
+  AddCircle,
+  Minus,
+  CloseCircle,
+  TickCircle,
+  TickSquare,
+  Trash,
+  Edit2,
+  Copy,
+  DocumentDownload,
+  DocumentUpload,
+  Send2,
+  Refresh,
+  SearchNormal1,
+  Filter,
+  More,
+  More2,
+  // Feedback / status
+  InfoCircle,
+  Warning2,
+  Danger,
+  Notification,
+  NotificationBing,
+  // Time / location
+  Calendar,
+  Clock,
+  Location,
+  Gps,
+  // Media / files
+  Gallery,
+  Image,
+  DocumentText,
+  Folder2,
+  // Commerce / work
+  Bag2,
+  Box1,
+  Briefcase,
+  Chart,
+  Chart21,
+  Setting2,
+  Setting4,
+  Category,
+  Menu,
+  // Theme
+  Sun,
+  Sun1,
+  Moon,
+} from 'iconsax-react';

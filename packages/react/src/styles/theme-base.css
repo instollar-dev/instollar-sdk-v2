@@ -19,3 +19,38 @@
   --color-border: var(--color-border);
   --color-destructive: var(--color-destructive);
 }
+
+/* Number inputs — hide native spin buttons (Input uses type=text + inputMode for formatted numbers) */
+.instollar-number-input::-webkit-outer-spin-button,
+.instollar-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.instollar-number-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+@keyframes load-boundary-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

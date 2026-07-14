@@ -2,3 +2,5 @@
 
 /* Scan SDK component sources when building styles.css */
 @source "../components/**/*.{tsx,ts}";
+@source "../theme/**/*.{tsx,ts}";
+@source "../hooks/**/*.{tsx,ts}";

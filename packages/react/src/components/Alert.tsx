@@ -1,40 +1,83 @@
+import { CloseCircle, InfoCircle, TickCircle, Warning2 } from 'iconsax-react';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '../utils/cn';
+import {
+  alertContainerClasses,
+  alertIconChipClasses,
+  toastContainerClasses,
+  type AlertVariant,
+} from './alertVariants';
 
-export type AlertVariant = 'info' | 'success' | 'warning' | 'error';
+export type { AlertVariant };
 
-export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
+export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   variant?: AlertVariant;
-  title?: string;
-  children?: ReactNode;
+  /** `inline` = soft tint (forms). `toast` = opaque card surface (overlays). */
+  appearance?: 'inline' | 'toast';
+  title?: ReactNode;
+  /** Show a dismiss button */
+  onDismiss?: () => void;
 }
 
-const variantClasses: Record<AlertVariant, string> = {
-  info: 'border-primary/20 bg-primary/5 text-foreground',
-  success: 'border-primary/30 bg-primary/10 text-primary',
-  warning: 'border-secondary bg-secondary/30 text-foreground',
-  error: 'border-destructive/30 bg-destructive/10 text-destructive',
-};
+const iconMap = {
+  success: TickCircle,
+  error: Warning2,
+  destructive: Warning2,
+  warning: Warning2,
+  info: InfoCircle,
+} as const;
 
 export function Alert({
   variant = 'info',
+  appearance = 'inline',
   title,
+  onDismiss,
   className,
   children,
   ...props
 }: AlertProps) {
+  const Icon = iconMap[variant];
+  const containerClasses =
+    appearance === 'toast' ? toastContainerClasses[variant] : alertContainerClasses[variant];
+
   return (
     <div
       role="alert"
       className={cn(
-        'rounded-md border px-4 py-3 text-open-regular-p',
-        variantClasses[variant],
+        'flex gap-3 rounded-xl border-l-2 py-3 pl-3.5 pr-3 text-open-regular-p',
+        containerClasses,
         className,
       )}
       {...props}
     >
-      {title ? <p className="mb-1 text-spline-bold-label">{title}</p> : null}
-      {children}
+      <span
+        className={cn(
+          'mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full',
+          alertIconChipClasses[variant],
+        )}
+      >
+        <Icon size={13} variant="Bold" aria-hidden />
+      </span>
+      <div className="min-w-0 flex-1 pt-0.5">
+        {title ? (
+          <p className="mb-0.5 text-spline-bold-label leading-snug text-foreground">{title}</p>
+        ) : null}
+        {children ? (
+          <div className={cn('leading-relaxed', title ? 'text-muted' : 'text-foreground')}>
+            {children}
+          </div>
+        ) : null}
+      </div>
+      {onDismiss ? (
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="inline-flex h-fit shrink-0 cursor-pointer self-start rounded-md p-1 text-muted/70 transition-colors hover:cursor-pointer hover:bg-black/5 hover:text-foreground dark:hover:bg-white/10"
+          aria-label="Dismiss alert"
+        >
+          <CloseCircle size={14} variant="Linear" aria-hidden />
+        </button>
+      ) : null}
     </div>
   );
 }

@@ -1,67 +1,119 @@
-import { useId, useState, type ButtonHTMLAttributes } from 'react';
+import { useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { useThemeOptional } from '../theme/ThemeProvider';
 import { cn } from '../utils/cn';
+import type { FieldSurface } from './formVariants';
+import {
+  formFieldDescriptionClass,
+  formFieldErrorClass,
+  formFieldLabelClass,
+} from './formVariants';
 
 export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
   checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
-  label?: string;
+  label?: ReactNode;
+  description?: string;
+  error?: string;
+  variant?: FieldSurface;
 }
 
 export function Switch({
   checked,
-  defaultChecked = false,
+  defaultChecked,
   onCheckedChange,
   label,
+  description,
+  error,
+  variant,
   className,
-  disabled,
   id,
+  disabled,
+  onClick,
   ...props
 }: SwitchProps) {
-  const generatedId = useId();
-  const switchId = id ?? generatedId;
-  const isControlled = checked !== undefined;
-  const [uncontrolled, setUncontrolled] = useState(defaultChecked);
-  const isOn = isControlled ? checked : uncontrolled;
+  const theme = useThemeOptional();
+  const resolvedVariant = variant ?? (theme?.resolvedTheme === 'dark' ? 'dark' : 'light');
+  const switchId =
+    id ?? (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+  const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
+  const isChecked = checked ?? internalChecked;
 
-  function toggle() {
-    if (disabled) return;
-    const next = !isOn;
-    if (!isControlled) {
-      setUncontrolled(next);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event);
+    if (event.defaultPrevented || disabled) return;
+    const next = !isChecked;
+    if (checked === undefined) {
+      setInternalChecked(next);
     }
     onCheckedChange?.(next);
-  }
+  };
 
   return (
-    <div className="inline-flex items-center gap-2">
-      <button
-        id={switchId}
-        type="button"
-        role="switch"
-        aria-checked={isOn}
-        disabled={disabled}
-        onClick={toggle}
-        className={cn(
-          'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border border-transparent transition-colors',
-          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-          'disabled:cursor-not-allowed disabled:opacity-50',
-          isOn ? 'bg-primary' : 'bg-border',
-          className,
-        )}
-        {...props}
-      >
-        <span
+    <div className={cn('flex flex-col gap-1', className)}>
+      <div className="inline-flex items-start gap-2.5">
+        <button
+          type="button"
+          role="switch"
+          id={switchId}
+          aria-checked={isChecked}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={
+            error && switchId
+              ? `${switchId}-error`
+              : description && switchId
+                ? `${switchId}-desc`
+                : undefined
+          }
+          disabled={disabled}
+          onClick={handleClick}
           className={cn(
-            'pointer-events-none inline-block size-5 translate-x-0.5 rounded-full bg-white shadow transition-transform',
-            isOn && 'translate-x-5',
+            'relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full border-2 transition-colors duration-200 outline-none',
+            'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
+            isChecked
+              ? 'border-primary bg-primary'
+              : resolvedVariant === 'light'
+                ? 'border-border bg-[rgba(1,43,21,0.12)]'
+                : 'border-white/14 bg-primary/35',
+            error && 'border-destructive',
           )}
-        />
-      </button>
-      {label ? (
-        <label htmlFor={switchId} className="cursor-pointer text-open-regular-p text-foreground">
-          {label}
-        </label>
+          {...props}
+        >
+          <span
+            className={cn(
+              'pointer-events-none inline-block size-4 rounded-full bg-white shadow-sm transition-transform duration-200',
+              isChecked ? 'translate-x-4' : 'translate-x-0.5',
+            )}
+          />
+        </button>
+        {(label || description) && (
+          <label
+            htmlFor={switchId}
+            className={cn(
+              'flex min-w-0 flex-col gap-0.5',
+              disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+            )}
+          >
+            {label ? <span className={cn(formFieldLabelClass, 'font-medium')}>{label}</span> : null}
+            {description ? (
+              <span
+                id={switchId ? `${switchId}-desc` : undefined}
+                className={formFieldDescriptionClass}
+              >
+                {description}
+              </span>
+            ) : null}
+          </label>
+        )}
+      </div>
+      {error ? (
+        <p
+          id={switchId ? `${switchId}-error` : undefined}
+          role="alert"
+          className={formFieldErrorClass}
+        >
+          {error}
+        </p>
       ) : null}
     </div>
   );

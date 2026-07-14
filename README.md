@@ -2,6 +2,8 @@
 
 Design-system SDK for Instollar — tokens, React components, and a precompiled `styles.css`.
 
+**Consuming an app?** Start here → [docs/consuming-app-implementation-guide.md](./docs/consuming-app-implementation-guide.md)
+
 ## Packages
 
 | Package | Description |
@@ -10,9 +12,9 @@ Design-system SDK for Instollar — tokens, React components, and a precompiled 
 | `@codearemo/instollar-react` | React components + `styles.css` |
 | `@codearemo/instollar-tokens` | CSS variables + typography utilities |
 
-## Install (GitHub Packages)
+## Quick start
 
-Add to your app `.npmrc`:
+In the consuming app, create `.npmrc` (exact name):
 
 ```ini
 @codearemo:registry=https://npm.pkg.github.com
@@ -20,31 +22,18 @@ Add to your app `.npmrc`:
 ```
 
 ```bash
-npm install @codearemo/instollar-sdk@^0.1.0
+export NODE_AUTH_TOKEN=ghp_your_token   # needs read:packages
+npm install @codearemo/instollar-sdk@^0.1.1
 ```
-
-## Usage
-
-Load Spline Sans / Inter / Open Sans once in the app (Google Fonts or `next/font`), then:
 
 ```tsx
 import '@codearemo/instollar-react/styles.css';
 import { Button, Text, Icon, Home2 } from '@codearemo/instollar-sdk';
-
-export function Example() {
-  return (
-    <div className="p-6 bg-background text-foreground">
-      <Text variant="spline-bold-h4">Hello</Text>
-      <Text variant="open-regular-p">Body copy with Open Sans.</Text>
-      <Button prefix={<Icon icon={Home2} size="sm" color="secondary" />}>
-        Continue
-      </Button>
-    </div>
-  );
-}
 ```
 
-## Local development
+Load Spline Sans / Inter / Open Sans once (CSS `@import` or HTML `<link>`). Full steps, every component, tokens, and troubleshooting are in the [consumer guide](./docs/consuming-app-implementation-guide.md).
+
+## Local development (this repo)
 
 ```bash
 pnpm install
@@ -55,12 +44,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.1.0` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.1.1` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.1
+git push origin v0.1.1
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages.

@@ -20,4 +20,18 @@ describe('Button', () => {
     render(<Button variant="secondary">Secondary</Button>);
     expect(screen.getByRole('button', { name: 'Secondary' }).className).toContain('bg-secondary');
   });
+
+  it('applies ghost destructive tone', () => {
+    render(
+      <Button variant="ghost" tone="destructive">
+        Delete
+      </Button>,
+    );
+    expect(screen.getByRole('button', { name: 'Delete' }).className).toContain('text-destructive');
+  });
+
+  it('aliases danger to destructive solid styling', () => {
+    render(<Button variant="danger">Danger</Button>);
+    expect(screen.getByRole('button', { name: 'Danger' }).className).toContain('bg-destructive');
+  });
 });
