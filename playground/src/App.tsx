@@ -1,116 +1,149 @@
-import { useState } from 'react';
-import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  Checkbox,
-  Chip,
-  Home2,
-  Icon,
-  Input,
-  LoadBoundary,
-  Radio,
-  RadioGroup,
-  SegmentedTab,
-  SegmentedTabs,
-  Select,
-  StatusBadge,
-  Switch,
-  Text,
-  Textarea,
-} from '@codearemo/instollar-sdk';
+import { useEffect, useState } from 'react';
+import { cn } from '@codearemo/instollar-sdk';
+import { nav, resolvePillar, type PillarId } from './nav';
+import { OverviewPanel } from './panels/OverviewPanel';
+import { ApiPanel } from './panels/ApiPanel';
+import { StyleGuidePanel } from './panels/StyleGuidePanel';
+import { SpecialLogicPanel } from './panels/SpecialLogicPanel';
 
 export function App() {
-  const [role, setRole] = useState('installer');
-  const [skills, setSkills] = useState<string[]>(['wiring']);
-  const [tab, setTab] = useState('overview');
+  const [pillar, setPillar] = useState<PillarId>(() =>
+    typeof window === 'undefined' ? 'overview' : resolvePillar(window.location.hash),
+  );
+
+  useEffect(() => {
+    const onHash = () => setPillar(resolvePillar(window.location.hash));
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  function go(id: PillarId) {
+    setPillar(id);
+    window.location.hash = id;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const current = nav.find((n) => n.id === pillar)!;
+  const idx = nav.findIndex((n) => n.id === pillar);
 
   return (
-    <div className="min-h-screen bg-background p-8 text-foreground">
-      <div className="mx-auto flex max-w-2xl flex-col gap-6">
-        <div>
-          <Text variant="spline-bold-h4">Instollar SDK</Text>
-          <Text variant="open-regular-p">Barebones design-system playground.</Text>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <Button prefix={<Icon icon={Home2} size="sm" />}>Continue</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="ghost" tone="destructive">
-            Ghost danger
-          </Button>
-          <Button variant="destructive">Destructive</Button>
-          <Button variant="danger">Danger</Button>
-          <Badge>New</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Chip selected prefix={<Icon icon={Home2} size="xs" />}>
-            Filter
-          </Chip>
-        </div>
-
-        <SegmentedTabs value={tab} onValueChange={setTab} accent="primary">
-          <SegmentedTab value="overview">Overview</SegmentedTab>
-          <SegmentedTab value="jobs" badge={3}>
-            Jobs
-          </SegmentedTab>
-          <SegmentedTab value="settings">Settings</SegmentedTab>
-        </SegmentedTabs>
-
-        <Card className="flex flex-col gap-4">
-          <Input label="Email" placeholder="you@example.com" />
-          <Input label="Password" type="password" placeholder="••••••••" />
-          <Input label="Amount" type="number" placeholder="1,000" />
-          <Textarea label="Notes" placeholder="Optional notes" />
-          <Select
-            label="Role"
-            placeholder="Select a role"
-            searchable
-            value={role}
-            onValueChange={(value) => setRole(value as string)}
-            options={[
-              { value: 'admin', label: 'Admin' },
-              { value: 'installer', label: 'Installer' },
-              { value: 'supervisor', label: 'Supervisor' },
-              { value: 'crew-lead', label: 'Crew lead' },
-            ]}
-          />
-          <Select
-            label="Skills"
-            placeholder="Select skills"
-            multiple
-            searchable
-            value={skills}
-            onValueChange={(value) => setSkills(value as string[])}
-            options={[
-              { value: 'wiring', label: 'Wiring' },
-              { value: 'roofing', label: 'Roofing' },
-              { value: 'inverters', label: 'Inverters' },
-            ]}
-          />
-          <div className="flex flex-wrap gap-2">
-            <StatusBadge tone="success" label="Active" />
-            <StatusBadge tone="destructive" label="Failed" />
-            <StatusBadge tone="neutral" label="Draft" />
+    <div className="min-h-screen">
+      <div className="mx-auto flex min-h-screen max-w-[90rem]">
+        <aside className="sticky top-0 hidden h-screen w-[var(--docs-rail)] shrink-0 flex-col border-r border-border/80 bg-white/70 px-4 py-7 backdrop-blur-md lg:flex">
+          <div className="mb-10 px-2">
+            <p className="font-spline text-[1.35rem] font-bold tracking-tight text-primary">
+              Instollar
+            </p>
+            <p className="mt-1 text-open-regular-tiny text-muted">SDK docs · v0.1.4</p>
           </div>
-          <Checkbox label="I agree to the terms" description="Required to continue" defaultChecked />
-          <RadioGroup label="Plan" defaultValue="pro" description="Pick a billing plan">
-            <Radio value="starter" label="Starter" />
-            <Radio value="pro" label="Pro" description="Most popular" />
-          </RadioGroup>
-          <Switch label="Notifications" description="Email digests" defaultChecked />
-        </Card>
 
-        <Alert variant="success" title="Ready" onDismiss={() => undefined}>
-          Tokens, components, and styles.css are wired up.
-        </Alert>
+          <nav className="flex flex-1 flex-col gap-0.5" aria-label="SDK chapters">
+            {nav.map((item) => {
+              const active = pillar === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => go(item.id)}
+                  className={cn(
+                    'docs-focus-ring group flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors',
+                    active ? 'bg-primary text-white' : 'hover:bg-primary/4',
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'mt-0.5 font-mono text-[11px] tracking-wide',
+                      active ? 'text-white/55' : 'text-muted',
+                    )}
+                  >
+                    {item.number}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-open-regular-label font-medium">{item.label}</span>
+                    {active ? (
+                      <span className="mt-0.5 block text-open-regular-tiny leading-snug text-white/65">
+                        {item.hint}
+                      </span>
+                    ) : null}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
 
-        <LoadBoundary isLoading={false} minHeight={80}>
-          <Text variant="open-regular-p" className="text-muted">
-            LoadBoundary content shell.
-          </Text>
-        </LoadBoundary>
+          <div className="mt-6 border-t border-border/70 px-2 pt-5">
+            <p className="text-open-regular-tiny leading-relaxed text-muted">
+              Style guide groups components by category — use the right rail or jump menu to navigate.
+            </p>
+          </div>
+        </aside>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="sticky top-0 z-20 border-b border-border/80 bg-[#f7f8f6]/90 px-4 pt-4 pb-3 backdrop-blur-md lg:hidden">
+            <div className="mb-3 flex items-baseline justify-between gap-3">
+              <p className="font-spline text-lg font-bold text-primary">Instollar</p>
+              <span className="text-open-regular-tiny text-muted">v0.1.4</span>
+            </div>
+            <div className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
+              {nav.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => go(item.id)}
+                  className={cn(
+                    'docs-focus-ring shrink-0 rounded-full px-3.5 py-1.5 text-open-regular-tiny font-medium transition-colors',
+                    pillar === item.id
+                      ? 'bg-primary text-white'
+                      : 'bg-white text-foreground ring-1 ring-border',
+                  )}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <main className="flex-1 px-4 py-8 sm:px-8 lg:px-12 lg:py-12">
+            <div key={pillar} className="docs-enter mx-auto w-full max-w-(--docs-wide)">
+              <div className="mb-2 hidden items-center gap-2 lg:flex">
+                <span className="font-mono text-open-regular-tiny text-muted">{current.number}</span>
+                <span className="text-open-regular-tiny text-muted/40">/</span>
+                <span className="text-open-regular-tiny text-muted">{current.hint}</span>
+              </div>
+
+              {pillar === 'overview' ? <OverviewPanel onNavigate={go} /> : null}
+              {pillar === 'api' ? <ApiPanel /> : null}
+              {pillar === 'style' ? <StyleGuidePanel /> : null}
+              {pillar === 'logic' ? <SpecialLogicPanel /> : null}
+
+              <footer className="mt-16 flex items-center justify-between gap-4 border-t border-border/80 pt-6 text-open-regular-tiny text-muted">
+                <span>Instollar SDK playground</span>
+                <div className="flex gap-4">
+                  {idx > 0 ? (
+                    <button
+                      type="button"
+                      className="docs-focus-ring font-medium text-primary hover:underline"
+                      onClick={() => go(nav[idx - 1]!.id)}
+                    >
+                      ← {nav[idx - 1]!.label}
+                    </button>
+                  ) : (
+                    <span />
+                  )}
+                  {idx < nav.length - 1 ? (
+                    <button
+                      type="button"
+                      className="docs-focus-ring font-medium text-primary hover:underline"
+                      onClick={() => go(nav[idx + 1]!.id)}
+                    >
+                      {nav[idx + 1]!.label} →
+                    </button>
+                  ) : null}
+                </div>
+              </footer>
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );

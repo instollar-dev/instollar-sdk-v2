@@ -1,0 +1,65 @@
+/**
+ * Playground has its own Tailwind pipeline.
+ * SDK styles.css only includes classes used by package components —
+ * docs layout (grid, sticky rail, arbitrary widths, etc.) must be scanned here.
+ */
+@import "@codearemo/instollar-tokens/tokens.css";
+@import "@codearemo/instollar-tokens/typography.css";
+@import "tailwindcss";
+
+@source "./**/*.{tsx,ts}";
+@source "../../packages/react/src/components/**/*.{tsx,ts}";
+@source "../../packages/react/src/hooks/**/*.{tsx,ts}";
+@source "../../packages/react/src/utils/**/*.{tsx,ts}";
+
+@theme {
+  --font-family-spline: var(--font-spline);
+  --font-family-inter: var(--font-inter);
+  --font-family-open: var(--font-open-sans);
+
+  --font-spline: var(--font-spline);
+  --font-inter: var(--font-inter);
+  --font-open: var(--font-open-sans);
+
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-fg);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-destructive: var(--color-destructive);
+}
+
+/* SDK extras the packaged theme-base ships */
+.instollar-number-input::-webkit-outer-spin-button,
+.instollar-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.instollar-number-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+@keyframes load-boundary-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

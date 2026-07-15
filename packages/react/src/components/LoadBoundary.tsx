@@ -3,6 +3,7 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import { cn } from '../utils/cn';
 import { iconPaint } from '../utils/iconPaint';
 import { Button } from './Button';
+import { Spinner } from './Spinner';
 import { Text } from './Text';
 
 export interface LoadBoundaryProps {
@@ -45,16 +46,6 @@ export interface LoadBoundaryProps {
 function toMinHeightStyle(minHeight?: string | number): CSSProperties | undefined {
   if (minHeight === undefined) return undefined;
   return { minHeight: typeof minHeight === 'number' ? `${minHeight}px` : minHeight };
-}
-
-function BoundaryLoader() {
-  return (
-    <div className="relative flex size-12 items-center justify-center" aria-hidden>
-      <span className="absolute inset-0 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
-      <span className="absolute inset-2 animate-spin rounded-full border-2 border-primary/15 border-b-primary [animation-direction:reverse] [animation-duration:1.4s]" />
-      <span className="size-2 animate-pulse rounded-full bg-primary/80" />
-    </div>
-  );
 }
 
 function Shell({
@@ -215,7 +206,7 @@ export function LoadBoundary({
         aria-busy="true"
       >
         <Shell style={shellStyle}>
-          <BoundaryLoader />
+          <Spinner size={32} className="text-primary" />
           <Text variant="open-regular-p" className="text-muted">
             {loadingMessage}
           </Text>

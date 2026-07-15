@@ -1,5 +1,7 @@
 import type { InputHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../utils/cn';
+import { iconPaint } from '../utils/iconPaint';
+import { CheckmarkIcon } from './CheckmarkIcon';
 import type { FieldSurface } from './formVariants';
 import {
   formFieldDescriptionClass,
@@ -27,6 +29,8 @@ export function Checkbox({
   const resolvedVariant = variant ?? 'light';
   const inputId =
     id ?? (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+  const checkColor =
+    resolvedVariant === 'light' ? iconPaint.inverse : iconPaint.secondary;
 
   return (
     <div className="flex flex-col gap-1">
@@ -57,8 +61,8 @@ export function Checkbox({
           <span
             className={cn(
               'flex size-4 items-center justify-center rounded border-2 transition-colors duration-150 outline-none',
-              'peer-checked:border-primary',
-              '[&>span]:opacity-0 peer-checked:[&>span]:opacity-100',
+              'peer-checked:border-primary peer-checked:bg-primary',
+              '[&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100',
               'peer-disabled:opacity-50',
               resolvedVariant === 'light'
                 ? 'border-border bg-white'
@@ -66,7 +70,7 @@ export function Checkbox({
               error && 'border-destructive',
             )}
           >
-            <span className="size-2 rounded-sm bg-primary transition-opacity" />
+            <CheckmarkIcon color={checkColor} />
           </span>
         </span>
         {(label || description) && (

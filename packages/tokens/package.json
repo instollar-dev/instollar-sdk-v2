@@ -1,6 +1,6 @@
 {
   "name": "@codearemo/instollar-tokens",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "Instollar design tokens — colors, fonts, typography utilities",
   "type": "module",
   "main": "./dist/index.js",
@@ -15,7 +15,11 @@
     "./tokens.css": "./src/tokens.css",
     "./typography.css": "./src/typography.css"
   },
-  "files": ["dist", "src/tokens.css", "src/typography.css"],
+  "files": [
+    "dist",
+    "src/tokens.css",
+    "src/typography.css"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

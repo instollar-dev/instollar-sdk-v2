@@ -1,4 +1,4 @@
-import { Add, ArrowDown2, Refresh, SearchNormal1, TickCircle, TickSquare, Warning2 } from 'iconsax-react';
+import { Add, ArrowDown2, Refresh, SearchNormal1, TickCircle, Warning2 } from 'iconsax-react';
 import {
   useCallback,
   useId,
@@ -14,6 +14,7 @@ import { useFloatingPosition } from '../hooks/useFloatingPosition';
 import { cn } from '../utils/cn';
 import { iconPaint } from '../utils/iconPaint';
 import { Button } from './Button';
+import { CheckmarkIcon } from './CheckmarkIcon';
 import { FieldControl } from './FieldControl';
 import type { FieldSurface } from './formVariants';
 import { formFieldErrorClass, formFieldLabelClass } from './formVariants';
@@ -73,6 +74,9 @@ export interface SelectProps<T = string> {
   searchable?: boolean;
   /** Allow typing a value that is not in `options` — adds it to the list and selects it */
   creatable?: boolean;
+  /** Shows an "Add new" action at the top of the dropdown — use for modal / route create flows */
+  onAddNew?: () => void;
+  addNewLabel?: string;
   createOptionLabel?: (input: string) => string;
   formatCreateValue?: (input: string) => T;
   getOptionLabel?: (value: T) => string;
@@ -149,6 +153,8 @@ export function Select<T = string>({
   multiple = false,
   searchable = false,
   creatable = false,
+  onAddNew,
+  addNewLabel = 'Add new',
   createOptionLabel = defaultCreateOptionLabel,
   formatCreateValue = defaultFormatCreateValue as (input: string) => T,
   getOptionLabel = defaultGetOptionLabel as (value: T) => string,
@@ -230,9 +236,11 @@ export function Select<T = string>({
     isValidCreateInput(normalizedCreateInput) &&
     !findOptionByInput(allOptions, normalizedCreateInput, getOptionLabel);
 
+  const showAddNew = Boolean(onAddNew) && !optionsLoading && !optionsError;
   const showCustomInputFooter = creatable && !searchable && !optionsLoading && !optionsError;
   const dropdownChromeHeight =
     (searchable && !optionsLoading && !optionsError ? 40 : 0) +
+    (showAddNew ? 44 : 0) +
     (showCustomInputFooter ? 44 : 0);
 
   const toggleOpen = useCallback(() => {
@@ -249,6 +257,12 @@ export function Select<T = string>({
     setSearch('');
     setCustomInput('');
   }, []);
+
+  const handleAddNew = useCallback(() => {
+    if (!onAddNew || disabled || optionsLoading || optionsError) return;
+    onAddNew();
+    close();
+  }, [close, disabled, onAddNew, optionsError, optionsLoading]);
 
   useClickOutside([rootRef, portalRef], close, open);
 
@@ -412,6 +426,26 @@ export function Select<T = string>({
           </div>
         )}
 
+        {showAddNew && (
+          <div
+            className={cn(
+              'border-b px-2 py-2',
+              resolvedVariant === 'light' ? 'border-border bg-white' : 'border-white/14 bg-primary',
+            )}
+          >
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start"
+              prefix={<Add size={14} color={iconPaint.current} aria-hidden />}
+              onClick={handleAddNew}
+            >
+              {addNewLabel}
+            </Button>
+          </div>
+        )}
+
         <ul
           id={listboxId}
           role="listbox"
@@ -472,7 +506,7 @@ export function Select<T = string>({
                         {multiple && (
                           <span
                             className={cn(
-                              'flex size-4 shrink-0 items-center justify-center rounded border',
+                              'flex size-4 shrink-0 items-center justify-center rounded border-2 transition-colors duration-150',
                               selectedOption
                                 ? 'border-primary bg-primary'
                                 : resolvedVariant === 'light'
@@ -480,9 +514,15 @@ export function Select<T = string>({
                                   : 'border-white/14 bg-transparent',
                             )}
                           >
-                            {selectedOption && (
-                              <TickSquare size={12} variant="Bold" color={iconPaint.inverse} />
-                            )}
+                            {selectedOption ? (
+                              <CheckmarkIcon
+                                color={
+                                  resolvedVariant === 'light'
+                                    ? iconPaint.inverse
+                                    : iconPaint.secondary
+                                }
+                              />
+                            ) : null}
                           </span>
                         )}
                         {option.prefix ? (

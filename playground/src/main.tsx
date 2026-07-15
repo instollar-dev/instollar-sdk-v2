@@ -1,7 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
-import '@codearemo/instollar-react/styles.css';
+import './styles.css';
+import './docs.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

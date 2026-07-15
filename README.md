@@ -2,7 +2,9 @@
 
 Design-system SDK for Instollar — tokens, React components, and a precompiled `styles.css` (Tailwind compiled at publish time; consuming apps do not need Tailwind configured for SDK UI).
 
-**Consuming an app?** Start here → [docs/consuming-app-implementation-guide.md](./docs/consuming-app-implementation-guide.md)
+**Walkthrough:** `pnpm playground` — Overview · API · Style guide · Special logic.
+
+The playground runs its **own Tailwind** build (Vite plugin) so docs layout utilities work. Consuming apps still only need the SDK’s precompiled `styles.css` — no Tailwind required there.
 
 ## Packages
 
@@ -31,7 +33,7 @@ import '@codearemo/instollar-react/styles.css';
 import { Button, Text, Icon, Home2 } from '@codearemo/instollar-sdk';
 ```
 
-Load Spline Sans / Inter / Open Sans once (CSS `@import` or HTML `<link>`). Full steps, every component, tokens, and troubleshooting are in the [consumer guide](./docs/consuming-app-implementation-guide.md).
+Load Spline Sans / Inter / Open Sans once (CSS `@import` or HTML `<link>`). Explore the live SDK surface with `pnpm playground`.
 
 ## Local development (this repo)
 

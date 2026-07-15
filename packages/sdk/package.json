@@ -1,7 +1,7 @@
 {
   "name": "@codearemo/instollar-sdk",
-  "version": "0.1.4",
-  "description": "Instollar SDK — React UI components and design tokens",
+  "version": "0.2.0",
+  "description": "Instollar SDK — React UI, HTTP client, storage, and shared app data",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -17,9 +17,16 @@
       "import": "./dist/icons.js",
       "require": "./dist/icons.cjs"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./countries": {
+      "types": "./dist/countries.d.ts",
+      "import": "./dist/countries.js",
+      "require": "./dist/countries.cjs"
+    }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup && pnpm build:assets",
     "build:assets": "cp ../react/dist/styles.css dist/styles.css",
@@ -29,11 +36,18 @@
   },
   "dependencies": {
     "@codearemo/instollar-react": "workspace:*",
-    "@codearemo/instollar-tokens": "workspace:*"
+    "@codearemo/instollar-tokens": "workspace:*",
+    "axios": "^1.9.0"
   },
   "peerDependencies": {
+    "expo-secure-store": "*",
     "react": ">=18",
     "react-dom": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "expo-secure-store": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
