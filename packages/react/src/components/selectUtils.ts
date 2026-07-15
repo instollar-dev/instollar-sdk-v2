@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 export interface SelectOption<T = string> {
   value: T;
   label: string;
+  description?: string;
   disabled?: boolean;
   prefix?: ReactNode;
   suffix?: ReactNode;

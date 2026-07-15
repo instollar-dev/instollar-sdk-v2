@@ -24,14 +24,13 @@ export const styleGuideNav: TocGroup[] = [
     items: [
       { id: 'sg-button', label: 'Button' },
       { id: 'sg-chip', label: 'Chip' },
-      { id: 'sg-tabs', label: 'SegmentedTabs' },
+      { id: 'sg-unified-tabs', label: 'Tabs' },
     ],
   },
   {
     title: 'Display',
-    description: 'Badges, alerts, and surfaces',
+    description: 'Status, alerts, and surfaces',
     items: [
-      { id: 'sg-badge', label: 'Badge' },
       { id: 'sg-status', label: 'StatusBadge' },
       { id: 'sg-alert', label: 'Alert' },
       { id: 'sg-card', label: 'Card' },
@@ -50,9 +49,17 @@ export const styleGuideNav: TocGroup[] = [
     ],
   },
   {
+    title: 'Data',
+    description: 'Editable and display-oriented data',
+    items: [{ id: 'sg-table', label: 'Table' }],
+  },
+  {
     title: 'Feedback',
-    description: 'Loading and permission states',
-    items: [{ id: 'sg-load', label: 'LoadBoundary' }],
+    description: 'Overlays, loading, and permission states',
+    items: [
+      { id: 'sg-modal', label: 'ModalProvider / useModal' },
+      { id: 'sg-load', label: 'LoadBoundary' },
+    ],
   },
 ];
 

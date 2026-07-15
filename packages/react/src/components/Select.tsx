@@ -36,7 +36,7 @@ import {
 } from './selectUtils';
 
 export type { SelectOption };
-export type SelectVariant = FieldSurface;
+export type SelectVariant = FieldSurface | 'default' | 'inline';
 export { selectOptionsPropsFromQuery } from './selectUtils';
 
 const PORTAL_ROOT_ID = 'instollar-select-portal-root';
@@ -92,6 +92,10 @@ export interface SelectProps<T = string> {
   compareValue?: (a: T, b: T) => boolean;
   getOptionKey?: (value: T) => string;
   disabled?: boolean;
+  /** Additional class for the outer container. */
+  containerClassName?: string;
+  /** Additional class for the portalled dropdown. */
+  dropdownClassName?: string;
   className?: string;
   id?: string;
 }
@@ -170,10 +174,14 @@ export function Select<T = string>({
   compareValue = defaultCompareValue,
   getOptionKey = defaultGetOptionKey,
   disabled,
+  containerClassName,
+  dropdownClassName,
   className,
   id,
 }: SelectProps<T>) {
-  const resolvedVariant = variant ?? 'light';
+  const resolvedVariant: FieldSurface =
+    variant === 'dark' ? 'dark' : 'light';
+  const isInline = variant === 'inline';
   const selectId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
   const listboxId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -396,6 +404,7 @@ export function Select<T = string>({
           resolvedVariant === 'light'
             ? 'border-border bg-white'
             : 'border-white/14 bg-primary',
+          dropdownClassName,
         )}
       >
         {searchable && !optionsLoading && !optionsError && (
@@ -593,7 +602,7 @@ export function Select<T = string>({
     ) : null;
 
   return (
-    <div ref={rootRef} className={cn('flex flex-col gap-1', className)}>
+    <div ref={rootRef} className={cn('flex flex-col gap-1', containerClassName, className)}>
       {label && (
         <label
           id={`${selectId}-label`}
@@ -613,6 +622,7 @@ export function Select<T = string>({
         error={fieldError}
         disabled={disabled || optionsLoading}
         prefix={prefix}
+        className={isInline ? 'rounded-none border-0 bg-transparent' : undefined}
       >
         <button
           id={selectId}
@@ -629,6 +639,7 @@ export function Select<T = string>({
           className={cn(
             'flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-open-regular-p outline-none',
             'hover:cursor-pointer disabled:cursor-not-allowed',
+            isInline && 'px-0',
             !hasSelection && 'text-muted',
             optionsError && !optionsLoading && 'text-destructive',
           )}

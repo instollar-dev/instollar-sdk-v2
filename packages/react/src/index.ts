@@ -22,8 +22,16 @@ export type { SwitchProps } from './components/Switch';
 export { Select, selectOptionsPropsFromQuery } from './components/Select';
 export type { SelectProps, SelectOption, SelectVariant } from './components/Select';
 
-export { StatusBadge } from './components/StatusBadge';
-export type { StatusBadgeProps, StatusTone } from './components/StatusBadge';
+export { StatusBadge, createStatusResolver } from './components/StatusBadge';
+export type {
+  StatusBadgeProps,
+  StatusBadgeSize,
+  StatusIcon,
+  StatusResolverConfig,
+  StatusRule,
+  StatusTone,
+  StatusVariant,
+} from './components/StatusBadge';
 export {
   statusBadgeBaseClasses,
   statusBadgeToneClasses,
@@ -128,36 +136,41 @@ export {
   toastVariantFromApi,
 } from './components/alertVariants';
 
-export { Badge } from './components/Badge';
-export type { BadgeProps, BadgeVariant } from './components/Badge';
-
 export { Card } from './components/Card';
 export type { CardProps, CardVariant } from './components/Card';
 
 export { Chip } from './components/Chip';
 export type { ChipProps } from './components/Chip';
 
-export { SegmentedTabs, SegmentedTab } from './components/SegmentedTabs';
-export type {
-  SegmentedTabsProps,
-  SegmentedTabProps,
-  SegmentedTabsAccent,
-  SegmentedTabsSize,
-} from './components/SegmentedTabs';
-export {
-  segmentedTabsTrackClasses,
-  segmentedTabBaseClasses,
-  segmentedTabSizeClasses,
-  segmentedTabBadgeBaseClasses,
-  getSegmentedTabStateClasses,
-  getSegmentedTabBadgeClasses,
-} from './components/segmentedTabsVariants';
-
 export { LoadBoundary, loadBoundaryPropsFromQuery } from './components/LoadBoundary';
 export type { LoadBoundaryProps } from './components/LoadBoundary';
+
+export { Table } from './components/Table';
+export type {
+  CellType,
+  ColumnDef,
+  ColumnOption,
+  TableHandle,
+  TableLabels,
+  TableProps,
+} from './components/Table';
+
+export { Tabs } from './components/Tabs';
+export type {
+  TabModel,
+  TabV2Model,
+  TabsProps,
+  TabsRouterAdapter,
+} from './components/Tabs';
+
+export { ModalProvider, useModal } from './components/ModalProvider';
+export type { ModalConfig, ModalContextValue } from './components/ModalProvider';
 
 export { useClickOutside } from './hooks/useClickOutside';
 export { useFloatingPosition } from './hooks/useFloatingPosition';
 export type { FloatingPlacement, FloatingPosition } from './hooks/useFloatingPosition';
+export { useMediaQuery } from './hooks/useMediaQuery';
 
 export { cn } from './utils/cn';
+export { toSelectOptions } from './utils/toSelectOptions';
+export type { NormalizedSelectOption } from './utils/toSelectOptions';

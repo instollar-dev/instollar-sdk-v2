@@ -36,21 +36,21 @@ import { Button, Text } from '@codearemo/instollar-sdk';`,
   Continue
 </Button>`,
 
-  badge: `import { Badge, Icon, Home2 } from '@codearemo/instollar-sdk';
+  statusBadge: `import {
+  StatusBadge,
+  createStatusResolver,
+} from '@codearemo/instollar-sdk';
 
-<Badge variant="success">Approved</Badge>
-<Badge variant="neutral" prefix={<Icon icon={Home2} size="xs" color="primary" />}>
-  With icon
-</Badge>`,
+<StatusBadge variant="warning" label="Pending" icon="clock" />
 
-  statusBadge: `import { StatusBadge, Icon, Home2 } from '@codearemo/instollar-sdk';
+const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
+  rules: [
+    { matches: ['completed'], variant: 'success', icon: 'check' },
+    { matches: ['pending_qa'], variant: 'warning', label: 'Pending QA' },
+  ],
+});
 
-<StatusBadge tone="success" label="Active" />
-<StatusBadge
-  tone="destructive"
-  label="Failed"
-  prefix={<Icon icon={Home2} size="xs" color="primary" />}
-/>`,
+<AppStatusBadge status="pending qa" />`,
 
   chip: `import { Chip, Icon, Home2 } from '@codearemo/instollar-sdk';
 
@@ -63,18 +63,20 @@ import { Button, Text } from '@codearemo/instollar-sdk';`,
   Filter
 </Chip>`,
 
-  tabs: `import { SegmentedTabs, SegmentedTab, Icon, SearchNormal1 } from '@codearemo/instollar-sdk';
+  unifiedTabs: `import { Tabs } from '@codearemo/instollar-sdk';
 
-<SegmentedTabs value={tab} onValueChange={setTab} accent="primary">
-  <SegmentedTab value="overview">Overview</SegmentedTab>
-  <SegmentedTab value="jobs" badge={3}>Jobs</SegmentedTab>
-  <SegmentedTab
-    value="search"
-    prefix={<Icon icon={SearchNormal1} size="xs" color="current" />}
-  >
-    Search
-  </SegmentedTab>
-</SegmentedTabs>`,
+// Active underline is #002816 by default; variant="yellow" uses the accent.
+<Tabs
+  activeTab={activeTab}
+  onTabChange={setActiveTab}
+  tabs={[
+    { value: 'overview', label: 'Overview', content: <Overview /> },
+    { value: 'activity', label: 'Activity', content: () => <Activity /> },
+  ]}
+/>
+
+// Header-only compatibility:
+<Tabs tabs={['Company', 'Team']} activeTab={activeTab} onTabChange={setActiveTab} />`,
 
   alert: `import { Alert } from '@codearemo/instollar-sdk';
 
@@ -165,6 +167,48 @@ import { Button, Text } from '@codearemo/instollar-sdk';`,
   onValueChange={setRole}
   options={roles}
 />`,
+
+  table: `import { useRef, useState } from 'react';
+import { Table, type TableHandle } from '@codearemo/instollar-sdk';
+
+const tableRef = useRef<TableHandle>(null);
+const [rows, setRows] = useState(initialRows);
+
+<Table
+  ref={tableRef}
+  columns={[
+    { key: 'item', label: 'Item', validate: (value) => value ? null : 'Required' },
+    { key: 'quantity', label: 'Quantity', type: 'number' },
+    { key: 'category', label: 'Category', type: 'select', options: categories },
+  ]}
+  rows={rows}
+  onRowsChange={setRows}
+  showInlineDelete
+/>
+
+const result = tableRef.current?.validate();
+const data = tableRef.current?.getDataWithoutIds();`,
+
+  modal: `import {
+  ModalProvider,
+  useModal,
+} from '@codearemo/instollar-sdk';
+
+function CreateButton() {
+  const { openModal, closeModal } = useModal();
+  return (
+    <button onClick={() => openModal({
+      size: 'md',
+      content: <CreateForm onDone={closeModal} />,
+    })}>
+      Create
+    </button>
+  );
+}
+
+<ModalProvider>
+  <App />
+</ModalProvider>`,
 
   loadBoundary: `import { LoadBoundary, Text } from '@codearemo/instollar-sdk';
 

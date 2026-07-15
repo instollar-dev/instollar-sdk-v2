@@ -1,8 +1,7 @@
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import {
   Alert,
   ArrowRight2,
-  Badge,
   Button,
   Card,
   Checkbox,
@@ -12,18 +11,23 @@ import {
   Input,
   LoadBoundary,
   Lock,
+  ModalProvider,
   Radio,
   RadioGroup,
   SearchNormal1,
-  SegmentedTab,
-  SegmentedTabs,
   Select,
   Spinner,
   StatusBadge,
   Switch,
+  Table,
+  Tabs,
   Text,
   Textarea,
   User,
+  createStatusResolver,
+  useModal,
+  type StatusVariant,
+  type TableHandle,
 } from '@codearemo/instollar-sdk';
 import { brand, colors, fonts } from '@codearemo/instollar-tokens';
 import {
@@ -57,11 +61,23 @@ const iconColors = ['current', 'primary', 'secondary', 'muted', 'inverse', 'dest
 const iconStyles = ['Linear', 'Outline', 'Broken', 'Bold', 'Bulk', 'TwoTone'] as const;
 
 const buttonVariants = ['primary', 'secondary', 'ghost', 'destructive', 'danger'] as const;
-const badgeVariants = ['kicker', 'eyebrow', 'success', 'destructive', 'neutral', 'secondary'] as const;
 const alertVariants = ['success', 'error', 'destructive', 'warning', 'info'] as const;
-const statusTones = ['success', 'destructive', 'neutral'] as const;
+const statusVariants: StatusVariant[] = [
+  'success',
+  'successTint',
+  'info',
+  'progress',
+  'warning',
+  'warningAmber',
+  'danger',
+  'dangerBordered',
+  'dangerStrong',
+  'dangerTint',
+  'review',
+  'muted',
+  'neutral',
+];
 const fieldSurfaces = ['light', 'dark'] as const;
-const tabAccents = ['adaptive', 'primary', 'destructive'] as const;
 
 const colorSwatches = [
   { name: 'primary', value: colors.primary, className: 'bg-primary' },
@@ -71,6 +87,42 @@ const colorSwatches = [
   { name: 'destructive', value: colors.destructive, className: 'bg-destructive' },
   { name: 'muted', value: 'var(--color-muted)', className: 'bg-muted' },
 ] as const;
+
+const { StatusBadge: ResolvedStatusBadge } = createStatusResolver({
+  rules: [
+    { matches: ['completed'], variant: 'success', icon: 'check' },
+    { matches: ['pending_qa'], variant: 'warning', icon: 'clock', label: 'Pending QA' },
+    { matches: ['in-progress'], variant: 'progress', icon: 'clock', label: 'In progress' },
+    { matches: ['rejected'], variant: 'dangerStrong', icon: 'ban' },
+  ],
+});
+
+function ModalDemo() {
+  const { openModal, closeModal } = useModal();
+
+  return (
+    <Button
+      onClick={() =>
+        openModal({
+          size: 'md',
+          content: (
+            <div className="flex flex-col gap-4">
+              <Text variant="spline-bold-h5">Programmatic modal</Text>
+              <Text variant="open-regular-p" className="text-muted">
+                Opened with useModal. Backdrop and Escape dismissal are disabled by default.
+              </Text>
+              <Button className="w-fit" onClick={closeModal}>
+                Close and continue
+              </Button>
+            </div>
+          ),
+        })
+      }
+    >
+      Open modal
+    </Button>
+  );
+}
 
 function VariantRow({
   label,
@@ -113,12 +165,14 @@ export function StyleGuidePanel() {
   const [loadMode, setLoadMode] = useState<'content' | 'loading' | 'error' | 'forbidden' | 'stale'>(
     'content',
   );
-  const [tabs, setTabs] = useState({
-    adaptive: 'a',
-    primary: 'a',
-    destructive: 'a',
-    sm: 'a',
-  });
+  const [activeTab, setActiveTab] = useState('overview');
+  const [headerTab, setHeaderTab] = useState('Company');
+  const [tableRows, setTableRows] = useState<Record<string, any>[]>([
+    { id: 1, item: 'Solar panels', quantity: 12, category: 'hardware', status: 'Ready' },
+    { id: 2, item: 'Installation', quantity: 1, category: 'service', status: 'Scheduled' },
+  ]);
+  const [tableResult, setTableResult] = useState('Use the buttons to inspect or validate the rows.');
+  const tableRef = useRef<TableHandle>(null);
 
   return (
     <div className="flex flex-col gap-8">
@@ -305,39 +359,40 @@ export function StyleGuidePanel() {
         </DemoFrame>
       </Section>
 
-      <TocGroupDivider title="Display" description="Badges, alerts, and surfaces" />
-
-      {/* ——— Badge ——— */}
-      <Section id="sg-badge" title="Badge" description="variant · prefix / suffix" code={snippets.badge}>
-        <DemoFrame label="variant" className="!p-0">
-          <div className="px-4">
-            {badgeVariants.map((variant) => (
-              <VariantRow key={variant} label={`variant="${variant}"`}>
-                <Badge variant={variant}>{variant}</Badge>
-              </VariantRow>
-            ))}
-            <VariantRow label="prefix">
-              <Badge prefix={<Icon icon={Home2} size="xs" color="primary" />}>With icon</Badge>
-            </VariantRow>
-          </div>
-        </DemoFrame>
-      </Section>
+      <TocGroupDivider title="Display" description="Status, alerts, and surfaces" />
 
       {/* ——— StatusBadge ——— */}
-      <Section id="sg-status" title="StatusBadge" description="tone (required) · label · prefix / suffix" code={snippets.statusBadge}>
-        <DemoFrame label="tone" className="!p-0">
+      <Section
+        id="sg-status"
+        title="StatusBadge"
+        description="variant · status resolver · icon · size"
+        code={snippets.statusBadge}
+      >
+        <DemoFrame label="variant" className="!p-0">
           <div className="px-4">
-            {statusTones.map((tone) => (
-              <VariantRow key={tone} label={`tone="${tone}"`}>
-                <StatusBadge tone={tone} label={tone} />
+            {statusVariants.map((variant) => (
+              <VariantRow key={variant} label={`variant="${variant}"`}>
+                <StatusBadge variant={variant} label={variant} />
               </VariantRow>
             ))}
-            <VariantRow label="prefix">
-              <StatusBadge
-                tone="success"
-                label="Active"
-                prefix={<Icon icon={Home2} size="xs" color="primary" />}
-              />
+          </div>
+        </DemoFrame>
+        <DemoFrame label="createStatusResolver" className="!p-0">
+          <div className="px-4">
+            <VariantRow label='status="completed"'>
+              <ResolvedStatusBadge status="completed" />
+            </VariantRow>
+            <VariantRow
+              label='status="pending qa"'
+              hint='Also matches "pending-qa", "pending_qa", and "PENDING_QA".'
+            >
+              <ResolvedStatusBadge status="pending qa" />
+            </VariantRow>
+            <VariantRow label='status="unknown_status"'>
+              <ResolvedStatusBadge status="unknown_status" />
+            </VariantRow>
+            <VariantRow label="overrides">
+              <ResolvedStatusBadge status="rejected" label="Needs attention" icon={false} size="lg" />
             </VariantRow>
           </div>
         </DemoFrame>
@@ -368,43 +423,44 @@ export function StyleGuidePanel() {
         </DemoFrame>
       </Section>
 
-      {/* ——— SegmentedTabs ——— */}
+      {/* ——— Tabs ——— */}
       <Section
-        id="sg-tabs"
-        title="SegmentedTabs"
-        description="accent · size · SegmentedTab badge / prefix / suffix"
-        code={snippets.tabs}
+        id="sg-unified-tabs"
+        title="Tabs"
+        description="controlled or uncontrolled · header-only or content · overflow controls · router adapter"
+        code={snippets.unifiedTabs}
       >
-        {tabAccents.map((accent) => (
-          <DemoFrame key={accent} label={`accent="${accent}"`}>
-            <SegmentedTabs
-              value={tabs[accent]}
-              onValueChange={(value) => setTabs((t) => ({ ...t, [accent]: value }))}
-              accent={accent}
-            >
-              <SegmentedTab value="a">Overview</SegmentedTab>
-              <SegmentedTab value="b" badge={3}>
-                Jobs
-              </SegmentedTab>
-              <SegmentedTab
-                value="c"
-                prefix={<Icon icon={SearchNormal1} size="xs" color="current" />}
-              >
-                Search
-              </SegmentedTab>
-            </SegmentedTabs>
-          </DemoFrame>
-        ))}
-        <DemoFrame label='size="sm"'>
-          <SegmentedTabs
-            value={tabs.sm}
-            onValueChange={(value) => setTabs((t) => ({ ...t, sm: value }))}
-            size="sm"
-            accent="primary"
-          >
-            <SegmentedTab value="a">Small</SegmentedTab>
-            <SegmentedTab value="b">Tabs</SegmentedTab>
-          </SegmentedTabs>
+        <DemoFrame label="rich controlled tabs">
+          <Tabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            tabs={[
+              {
+                value: 'overview',
+                label: 'Overview',
+                content: <Text variant="open-regular-p">Overview content is active.</Text>,
+              },
+              {
+                value: 'activity',
+                label: 'Activity',
+                content: <Text variant="open-regular-p">Recent activity appears here.</Text>,
+              },
+              {
+                value: 'settings',
+                label: 'Settings',
+                content: <Text variant="open-regular-p">Settings content is rendered lazily.</Text>,
+              },
+            ]}
+          />
+        </DemoFrame>
+        <DemoFrame label='header-only string tabs · variant="yellow"'>
+          <Tabs
+            tabs={['Company', 'Team', 'Billing']}
+            activeTab={headerTab}
+            onTabChange={setHeaderTab}
+            variant="yellow"
+            fullWidth
+          />
         </DemoFrame>
       </Section>
 
@@ -710,7 +766,95 @@ export function StyleGuidePanel() {
         </DemoFrame>
       </Section>
 
+      <TocGroupDivider title="Data" description="Editable and display-oriented data structures" />
+
+      {/* ——— Table ——— */}
+      <Section
+        id="sg-table"
+        title="Table"
+        description="typed editable cells · controlled rows · validation · imperative ref · add and delete"
+        code={snippets.table}
+      >
+        <DemoFrame label="editable line items" wide className="!p-0">
+          <Table
+            ref={tableRef}
+            columns={[
+              {
+                key: 'item',
+                label: 'Item',
+                minWidth: '220px',
+                validate: (value) => (String(value).trim() ? null : 'Item is required'),
+              },
+              {
+                key: 'quantity',
+                label: 'Quantity',
+                type: 'number',
+                width: '130px',
+                align: 'center',
+                validate: (value) => (value > 0 ? null : 'Use at least one'),
+              },
+              {
+                key: 'category',
+                label: 'Category',
+                type: 'select',
+                options: [
+                  { label: 'Hardware', value: 'hardware' },
+                  { label: 'Service', value: 'service' },
+                ],
+              },
+              { key: 'status', label: 'Status', type: 'readonly' },
+            ]}
+            rows={tableRows}
+            onRowsChange={setTableRows}
+            showInlineDelete
+            addRowText="Add line item"
+            minWidth="780px"
+          />
+        </DemoFrame>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            size="sm"
+            onClick={() => {
+              const result = tableRef.current?.validate();
+              setTableResult(
+                result?.isValid
+                  ? 'All rows are valid.'
+                  : `${result?.errors.length ?? 0} validation error(s).`,
+              );
+            }}
+          >
+            Validate
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() =>
+              setTableResult(JSON.stringify(tableRef.current?.getDataWithoutIds() ?? [], null, 2))
+            }
+          >
+            Read data
+          </Button>
+          <pre className="max-w-full overflow-x-auto text-open-regular-tiny text-muted">
+            {tableResult}
+          </pre>
+        </div>
+      </Section>
+
       <TocGroupDivider title="Feedback" description="Loading and permission states" />
+
+      {/* ——— ModalProvider / useModal ——— */}
+      <Section
+        id="sg-modal"
+        title="ModalProvider / useModal"
+        description="programmatic content · stacking · topmost close semantics · safe dismissal defaults"
+        code={snippets.modal}
+      >
+        <DemoFrame>
+          <ModalProvider>
+            <ModalDemo />
+          </ModalProvider>
+        </DemoFrame>
+      </Section>
 
       {/* ——— LoadBoundary ——— */}
       <Section
