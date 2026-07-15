@@ -1,6 +1,6 @@
 {
   "name": "@codearemo/instollar-sdk",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Instollar SDK — React UI, HTTP client, storage, and shared app data",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,11 +17,26 @@
       "import": "./dist/icons.js",
       "require": "./dist/icons.cjs"
     },
+    "./alert-text": {
+      "types": "./dist/alert-text.d.ts",
+      "import": "./dist/alert-text.js",
+      "require": "./dist/alert-text.cjs"
+    },
     "./styles.css": "./dist/styles.css",
     "./countries": {
       "types": "./dist/countries.d.ts",
       "import": "./dist/countries.js",
       "require": "./dist/countries.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    },
+    "./utils/*": {
+      "types": "./dist/utils/*.d.ts",
+      "import": "./dist/utils/*.js",
+      "require": "./dist/utils/*.cjs"
     }
   },
   "files": [
@@ -32,17 +47,20 @@
     "build:assets": "cp ../react/dist/styles.css dist/styles.css",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@codearemo/instollar-react": "workspace:*",
     "@codearemo/instollar-tokens": "workspace:*",
-    "axios": "^1.9.0"
+    "axios": "^1.9.0",
+    "date-fns": "^4.4.0"
   },
   "peerDependencies": {
     "expo-secure-store": "*",
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "zod": "^4.4.3"
   },
   "peerDependenciesMeta": {
     "expo-secure-store": {
@@ -53,7 +71,9 @@
     "@types/react": "^19.0.0",
     "react": "^19.0.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.7",
+    "zod": "^4.4.3"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

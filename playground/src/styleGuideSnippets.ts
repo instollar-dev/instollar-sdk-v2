@@ -88,6 +88,20 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   Something went wrong.
 </Alert>`,
 
+  alertText: `import {
+  AlertText,
+  dismissibleAlertProps,
+} from '@codearemo/instollar-sdk';
+
+<AlertText variant="error">Email is required.</AlertText>
+<AlertText variant="success">Changes saved.</AlertText>
+
+<AlertText
+  variant="error"
+  className="w-full"
+  {...dismissibleAlertProps(apiError, () => setApiError(null))}
+/>`,
+
   card: `import { Card, Text, Button } from '@codearemo/instollar-sdk';
 
 <Card className="max-w-sm">
@@ -209,6 +223,31 @@ function CreateButton() {
 <ModalProvider>
   <App />
 </ModalProvider>`,
+
+  drawer: `import {
+  DrawerProvider,
+  useDrawer,
+} from '@codearemo/instollar-sdk';
+
+function EditButton() {
+  const { openDrawer, closeDrawer } = useDrawer();
+  return (
+    <button onClick={() => openDrawer({
+      title: 'Edit profile',
+      size: 'xl',            // sm | md | lg | xl | 2xl | full
+      side: 'right',         // right | left
+      closeOnBackdrop: true, // default false
+      content: <EditForm />,
+      footer: <SaveBar onDone={closeDrawer} />,
+    })}>
+      Edit
+    </button>
+  );
+}
+
+<DrawerProvider>
+  <App />
+</DrawerProvider>`,
 
   loadBoundary: `import { LoadBoundary, Text } from '@codearemo/instollar-sdk';
 

@@ -1,11 +1,13 @@
 import { useRef, useState, type ReactNode } from 'react';
 import {
   Alert,
+  AlertText,
   ArrowRight2,
   Button,
   Card,
   Checkbox,
   Chip,
+  DrawerProvider,
   Home2,
   Icon,
   Input,
@@ -25,6 +27,8 @@ import {
   Textarea,
   User,
   createStatusResolver,
+  dismissibleAlertProps,
+  useDrawer,
   useModal,
   type StatusVariant,
   type TableHandle,
@@ -124,6 +128,41 @@ function ModalDemo() {
   );
 }
 
+function DrawerDemo() {
+  const { openDrawer, closeDrawer } = useDrawer();
+
+  return (
+    <Button
+      onClick={() =>
+        openDrawer({
+          title: 'Edit profile',
+          closeOnBackdrop: true,
+          content: (
+            <div className="flex flex-col gap-4">
+              <Text variant="open-regular-p" className="text-muted">
+                Opened with useDrawer. Slides in from the right, stacks like modals, and keeps the
+                same safe dismissal defaults — this one opts into closeOnBackdrop.
+              </Text>
+              <Input label="Full name" placeholder="Ada Lovelace" />
+              <Textarea label="Bio" placeholder="Tell us about yourself" rows={3} />
+            </div>
+          ),
+          footer: (
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={closeDrawer}>
+                Cancel
+              </Button>
+              <Button onClick={closeDrawer}>Save changes</Button>
+            </div>
+          ),
+        })
+      }
+    >
+      Open drawer
+    </Button>
+  );
+}
+
 function VariantRow({
   label,
   hint,
@@ -162,6 +201,7 @@ export function StyleGuidePanel() {
   const [addNewHint, setAddNewHint] = useState(false);
   const [chipOn, setChipOn] = useState(true);
   const [switchOn, setSwitchOn] = useState(true);
+  const [inlineError, setInlineError] = useState<string | null>('Email address is required.');
   const [loadMode, setLoadMode] = useState<'content' | 'loading' | 'error' | 'forbidden' | 'stale'>(
     'content',
   );
@@ -496,6 +536,35 @@ export function StyleGuidePanel() {
             ))}
           </div>
         </SubSection>
+      </Section>
+
+      {/* ——— AlertText ——— */}
+      <Section
+        id="sg-alert-text"
+        title="AlertText"
+        description="compact inline strip · error, success, pending, and info · optional dismissal"
+        code={snippets.alertText}
+      >
+        <DemoFrame label="variants" className="space-y-3">
+          <AlertText variant="error">The form could not be submitted.</AlertText>
+          <AlertText variant="success">Your changes were saved.</AlertText>
+          <AlertText variant="pending">Verification is still pending.</AlertText>
+          <AlertText variant="info">A code was sent to your email address.</AlertText>
+        </DemoFrame>
+        <DemoFrame label="parent-backed dismissal">
+          <div className="flex flex-col items-start gap-3">
+            <AlertText
+              variant="error"
+              className="w-full"
+              {...dismissibleAlertProps(inlineError, () => setInlineError(null))}
+            />
+            {inlineError == null ? (
+              <Button size="sm" variant="ghost" onClick={() => setInlineError('A new error appeared.')}>
+                Show a new message
+              </Button>
+            ) : null}
+          </div>
+        </DemoFrame>
       </Section>
 
       {/* ——— Card ——— */}
@@ -853,6 +922,20 @@ export function StyleGuidePanel() {
           <ModalProvider>
             <ModalDemo />
           </ModalProvider>
+        </DemoFrame>
+      </Section>
+
+      {/* ——— DrawerProvider / useDrawer ——— */}
+      <Section
+        id="sg-drawer"
+        title="DrawerProvider / useDrawer"
+        description="programmatic side panel · title / footer slots · stacking · slide-in animation"
+        code={snippets.drawer}
+      >
+        <DemoFrame>
+          <DrawerProvider>
+            <DrawerDemo />
+          </DrawerProvider>
         </DemoFrame>
       </Section>
 

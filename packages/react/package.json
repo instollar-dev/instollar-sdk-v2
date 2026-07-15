@@ -1,6 +1,6 @@
 {
   "name": "@codearemo/instollar-react",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Instollar React web UI components",
   "type": "module",
   "main": "./dist/index.js",
@@ -16,6 +16,11 @@
       "types": "./dist/icons.d.ts",
       "import": "./dist/icons.js",
       "require": "./dist/icons.cjs"
+    },
+    "./alert-text": {
+      "types": "./dist/components/AlertText.d.ts",
+      "import": "./dist/components/AlertText.js",
+      "require": "./dist/components/AlertText.cjs"
     },
     "./styles.css": "./dist/styles.css"
   },

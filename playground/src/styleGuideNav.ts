@@ -33,6 +33,7 @@ export const styleGuideNav: TocGroup[] = [
     items: [
       { id: 'sg-status', label: 'StatusBadge' },
       { id: 'sg-alert', label: 'Alert' },
+      { id: 'sg-alert-text', label: 'AlertText' },
       { id: 'sg-card', label: 'Card' },
     ],
   },
@@ -58,6 +59,7 @@ export const styleGuideNav: TocGroup[] = [
     description: 'Overlays, loading, and permission states',
     items: [
       { id: 'sg-modal', label: 'ModalProvider / useModal' },
+      { id: 'sg-drawer', label: 'DrawerProvider / useDrawer' },
       { id: 'sg-load', label: 'LoadBoundary' },
     ],
   },

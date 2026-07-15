@@ -128,6 +128,13 @@ export type { IconProps, IconSize, IconColor } from './components/Icon';
 export { Alert } from './components/Alert';
 export type { AlertProps, AlertVariant } from './components/Alert';
 
+export { AlertText, dismissibleAlertProps } from './components/AlertText';
+export type {
+  AlertTextProps,
+  DismissibleAlertProps,
+  AlertVariant as AlertTextVariant,
+} from './components/AlertText';
+
 export {
   alertContainerClasses,
   toastContainerClasses,
@@ -165,6 +172,9 @@ export type {
 
 export { ModalProvider, useModal } from './components/ModalProvider';
 export type { ModalConfig, ModalContextValue } from './components/ModalProvider';
+
+export { DrawerProvider, useDrawer } from './components/DrawerProvider';
+export type { DrawerConfig, DrawerContextValue } from './components/DrawerProvider';
 
 export { useClickOutside } from './hooks/useClickOutside';
 export { useFloatingPosition } from './hooks/useFloatingPosition';

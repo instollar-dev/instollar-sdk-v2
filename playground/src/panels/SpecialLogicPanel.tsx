@@ -3,10 +3,25 @@ import {
   Alert,
   Button,
   FieldControl,
+  formatAmountInput,
+  formatAsTyping,
+  formatCompactAmount,
+  formatCurrencyLabel,
+  formatDate,
+  formatDateTime,
+  formatMoney,
+  formatNumberWithGrouping,
+  formatPhoneForApi,
   formatNumberInput,
+  getApiErrorMessage,
+  isNetworkDisconnectError,
   LoadBoundary,
   loadBoundaryPropsFromQuery,
+  maskEmailForOtpHint,
+  normalizePhoneForApi,
+  normalizeString,
   numberInputRawValue,
+  parseAmountInput,
   sanitizeNumberInput,
   Select,
   selectOptionsPropsFromQuery,
@@ -30,6 +45,10 @@ const logicNav = [
     title: 'Topics',
     items: [
       { id: 'lg-numbers', label: 'Numbers' },
+      { id: 'lg-dates', label: 'Dates' },
+      { id: 'lg-money', label: 'Money' },
+      { id: 'lg-strings-phone', label: 'Strings & phone' },
+      { id: 'lg-validation-errors', label: 'Validation & errors' },
       { id: 'lg-async', label: 'Async' },
       { id: 'lg-toast', label: 'Toasts' },
       { id: 'lg-field', label: 'Fields' },
@@ -125,6 +144,140 @@ export function SpecialLogicPanel() {
 
 formatNumberInput('250000'); // '250,000'
 numberInputRawValue('250,000'); // '250000'`}</CodeBlock>
+        </div>
+      </Section>
+
+      <Section
+        id="lg-dates"
+        title="Date and time helpers"
+        description="date-fns-backed formatters accept Date, ISO strings, and millisecond timestamps. Invalid values return an empty string."
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <DemoFrame label="Examples">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-3 text-open-regular-p">
+              <dt className="text-muted">formatDate</dt>
+              <dd>{formatDate('2025-08-22')}</dd>
+              <dt className="text-muted">formatDateTime</dt>
+              <dd>{formatDateTime('2025-08-22T14:30:00')}</dd>
+              <dt className="text-muted">invalid input</dt>
+              <dd>{formatDate('not-a-date') || '"" (empty string)'}</dd>
+            </dl>
+          </DemoFrame>
+          <CodeBlock>{`import {
+  formatDate,
+  formatDateTime,
+  formatDateSmart,
+  formatRelative,
+  toDateInputValue,
+} from '@codearemo/instollar-sdk/utils/dateTime';
+
+formatDate('2025-08-22'); // "Fri, 22nd Aug, 2025"
+toDateInputValue(apiDate); // "2025-08-22"`}</CodeBlock>
+        </div>
+      </Section>
+
+      <Section
+        id="lg-money"
+        title="Money helpers"
+        description="Two intentionally distinct APIs prevent the app's former formatCurrency name collision."
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <DemoFrame label="Examples">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-3 text-open-regular-p">
+              <dt className="text-muted">formatMoney</dt>
+              <dd>{formatMoney(1_500_000, { currency: 'NGN' })}</dd>
+              <dt className="text-muted">compact money</dt>
+              <dd>{formatMoney(1_500_000, { currency: 'NGN', useShorthand: true })}</dd>
+              <dt className="text-muted">currency label</dt>
+              <dd>{formatCurrencyLabel(1500, 'NGN')}</dd>
+              <dt className="text-muted">no currency</dt>
+              <dd>{formatCurrencyLabel(1500, null)}</dd>
+            </dl>
+          </DemoFrame>
+          <CodeBlock>{`import {
+  formatMoney,
+  formatCurrencyLabel,
+  formatCompactAmount,
+} from '@codearemo/instollar-sdk/utils/money';
+
+formatMoney(1500000, { currency: 'NGN' });
+formatCurrencyLabel(1500, 'NGN'); // "NGN 1,500"
+formatCompactAmount(1200); // "1.2K"`}</CodeBlock>
+        </div>
+      </Section>
+
+      <Section
+        id="lg-strings-phone"
+        title="Number, string, and phone normalization"
+        description="Display formatting stays separate from API normalization."
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <DemoFrame label="Examples">
+            <dl className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-3 text-open-regular-p">
+              <dt className="text-muted">grouped number</dt>
+              <dd>{formatNumberWithGrouping('12345.5')}</dd>
+              <dt className="text-muted">typing state</dt>
+              <dd>{formatAsTyping('1234.')}</dd>
+              <dt className="text-muted">enum label</dt>
+              <dd>{normalizeString('PENDING_QA')}</dd>
+              <dt className="text-muted">OTP email</dt>
+              <dd>{maskEmailForOtpHint('john@example.com')}</dd>
+              <dt className="text-muted">API phone</dt>
+              <dd>{formatPhoneForApi({ phoneCode: '+234', nationalNumber: '801 234 5678' })}</dd>
+            </dl>
+          </DemoFrame>
+          <CodeBlock>{`import {
+  formatAmountInput,
+  parseAmountInput,
+  normalizeString,
+  formatPhoneForApi,
+  normalizePhoneForApi,
+} from '@codearemo/instollar-sdk';
+
+formatAmountInput('1234.50'); // "1,234.50"
+parseAmountInput('1,234.50'); // 1234.5
+normalizeString('PENDING_QA'); // "Pending Qa"
+formatPhoneForApi({ phoneCode: '+234', nationalNumber: '801 234 5678' });
+normalizePhoneForApi('+2348012345678');`}</CodeBlock>
+        </div>
+        <p className="text-open-regular-tiny text-muted">
+          Input formatter example: {formatAmountInput('1234.50')} → {parseAmountInput('1,234.50')}.
+          Compact amount: {formatCompactAmount(1200)}. Normalized phone: {normalizePhoneForApi('+234801')}.
+        </p>
+      </Section>
+
+      <Section
+        id="lg-validation-errors"
+        title="Validation and API errors"
+        description="validateForm flattens Zod errors; error helpers accept unknown axios-like values without framework coupling."
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <DemoFrame label="Error extraction">
+            <div className="flex flex-col gap-2 text-open-regular-p">
+              <p>
+                {getApiErrorMessage({
+                  response: { data: { message: 'The server rejected this request.' } },
+                })}
+              </p>
+              <p className="text-open-regular-tiny text-muted">
+                Disconnect detected:{' '}
+                {String(isNetworkDisconnectError({ request: {}, response: undefined }))}
+              </p>
+            </div>
+          </DemoFrame>
+          <CodeBlock>{`import { z } from 'zod';
+import {
+  validateForm,
+  getApiErrorMessage,
+  isNetworkDisconnectError,
+} from '@codearemo/instollar-sdk';
+
+const schema = z.object({ email: z.string().email('Invalid email') });
+const result = validateForm(schema, formData);
+if (!result.success) setErrors(result.fieldErrors);
+
+getApiErrorMessage(query.error);
+isNetworkDisconnectError(query.error);`}</CodeBlock>
         </div>
       </Section>
 
@@ -262,7 +415,7 @@ numberInputRawValue('250,000'); // '250000'`}</CodeBlock>
               ['useFloatingPosition', 'Flip / clamp dropdowns (powers Select)'],
               ['cn', 'clsx + tailwind-merge'],
               ['Input type="password"', 'Built-in show / hide'],
-              ['Class maps', 'Alerts, segmented tabs, status badges'],
+              ['Class maps', 'Alerts and status badges'],
             ].map(([name, body]) => (
               <li key={name} className="flex flex-col gap-0.5 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-baseline sm:gap-4">
                 <code className="shrink-0 text-open-regular-tiny font-medium text-foreground">

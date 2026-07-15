@@ -1,6 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createRef, useEffect } from 'react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { AlertText, dismissibleAlertProps } from '../components/AlertText';
+import { DrawerProvider, useDrawer } from '../components/DrawerProvider';
 import { ModalProvider, useModal } from '../components/ModalProvider';
 import { createStatusResolver } from '../components/StatusBadge';
 import { Table, type TableHandle } from '../components/Table';
@@ -34,6 +36,48 @@ describe('component foundations', () => {
       { label: 'two', value: 'two' },
       { label: 'Three', value: '3', description: 'Third option' },
     ]);
+  });
+});
+
+describe('AlertText', () => {
+  it('renders nothing for empty content', () => {
+    const { container, rerender } = render(<AlertText>{''}</AlertText>);
+    expect(container).toBeEmptyDOMElement();
+    rerender(<AlertText>{null}</AlertText>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it('dismisses, calls onDismiss, and reappears for a new message', () => {
+    const onDismiss = vi.fn();
+    const { rerender } = render(
+      <AlertText dismissible onDismiss={onDismiss}>
+        First error
+      </AlertText>,
+    );
+    expect(screen.getByRole('alert')).toHaveAttribute('aria-live', 'polite');
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+    expect(onDismiss).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    rerender(
+      <AlertText dismissible onDismiss={onDismiss}>
+        New error
+      </AlertText>,
+    );
+    expect(screen.getByRole('alert')).toHaveTextContent('New error');
+  });
+
+  it('builds dismissible props only when a message exists', () => {
+    const clear = vi.fn();
+    expect(dismissibleAlertProps('', clear)).toEqual({
+      children: '',
+      dismissible: false,
+    });
+    expect(dismissibleAlertProps('Failed', clear)).toEqual({
+      children: 'Failed',
+      dismissible: true,
+      onDismiss: clear,
+    });
   });
 });
 
@@ -148,5 +192,41 @@ describe('ModalProvider', () => {
     expect(screen.getByRole('dialog')).toHaveTextContent('Programmatic content');
     fireEvent.click(screen.getByRole('button', { name: 'Close modal' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+});
+
+describe('DrawerProvider', () => {
+  function OpenDrawer() {
+    const { openDrawer } = useDrawer();
+    useEffect(() => {
+      openDrawer({ title: 'Edit profile', content: <p>Drawer content</p> });
+    }, [openDrawer]);
+    return null;
+  }
+
+  it('opens programmatic content and unmounts after the exit animation', () => {
+    vi.useFakeTimers();
+    try {
+      render(
+        <DrawerProvider>
+          <OpenDrawer />
+        </DrawerProvider>,
+      );
+
+      const drawer = screen.getByRole('dialog');
+      expect(drawer).toHaveTextContent('Edit profile');
+      expect(drawer).toHaveTextContent('Drawer content');
+
+      fireEvent.click(screen.getByRole('button', { name: 'Close drawer' }));
+      // Still mounted while the slide-out animation plays.
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
