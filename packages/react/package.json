@@ -1,6 +1,6 @@
 {
   "name": "@codearemo/instollar-react",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Instollar React web UI components",
   "type": "module",
   "main": "./dist/index.js",

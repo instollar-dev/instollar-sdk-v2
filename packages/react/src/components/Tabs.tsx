@@ -210,7 +210,19 @@ export function Tabs({
     const el = stripRef.current;
     if (!el || !active) return;
     const activeButton = el.querySelector<HTMLElement>('[data-active="true"]');
-    activeButton?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    if (activeButton) {
+      // Scroll the strip horizontally only — never the page.
+      // scrollIntoView would drag long docs (e.g. the Style Guide) down to the Tabs section on mount.
+      const nextLeft = Math.max(
+        0,
+        activeButton.offsetLeft - (el.clientWidth - activeButton.offsetWidth) / 2,
+      );
+      if (typeof el.scrollTo === 'function') {
+        el.scrollTo({ left: nextLeft, behavior: 'smooth' });
+      } else {
+        el.scrollLeft = nextLeft;
+      }
+    }
     const timer = setTimeout(updateArrows, 300);
     return () => clearTimeout(timer);
   }, [active, updateArrows]);
