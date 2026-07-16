@@ -182,6 +182,47 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   options={roles}
 />`,
 
+  dateInput: `import { DateInput, TimeInput } from '@codearemo/instollar-sdk';
+
+<DateInput
+  label="Interview date"
+  value={date}
+  onChange={(e) => setDate(e.target.value)}
+/>
+<TimeInput label="Start time" value={time} onChange={(e) => setTime(e.target.value)} />
+<DateInput variant="inline" value={date} onChange={(e) => setDate(e.target.value)} />`,
+
+  otpInput: `import { OtpInput, VerificationInput } from '@codearemo/instollar-sdk';
+
+<OtpInput
+  onChange={setCode}
+  onResend={() => resendMutation.mutate()}
+  resendLoading={resendMutation.isPending}
+/>
+
+{/* Alias — same component */}
+<VerificationInput showResend={false} mask={false} />`,
+
+  dropdownMenu: `import { DropdownMenu } from '@codearemo/instollar-sdk';
+
+<DropdownMenu
+  items={[
+    { label: 'Edit', onClick: openEdit },
+    { label: 'Delete', onClick: onDelete, className: 'text-destructive' },
+  ]}
+/>
+
+<DropdownMenu
+  trigger={<button>Actions</button>}
+  align="end"
+  items={items}
+  renderPermissionGate={(permission, children) => (
+    <PermissionGuard permission={permission} mode="hide">
+      {children}
+    </PermissionGuard>
+  )}
+/>`,
+
   table: `import { useRef, useState } from 'react';
 import { Table, type TableHandle } from '@codearemo/instollar-sdk';
 

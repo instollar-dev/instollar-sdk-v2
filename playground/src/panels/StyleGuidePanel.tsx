@@ -7,13 +7,16 @@ import {
   Card,
   Checkbox,
   Chip,
+  DateInput,
   DrawerProvider,
+  DropdownMenu,
   Home2,
   Icon,
   Input,
   LoadBoundary,
   Lock,
   ModalProvider,
+  OtpInput,
   Radio,
   RadioGroup,
   SearchNormal1,
@@ -25,6 +28,7 @@ import {
   Tabs,
   Text,
   Textarea,
+  TimeInput,
   User,
   createStatusResolver,
   dismissibleAlertProps,
@@ -202,6 +206,8 @@ export function StyleGuidePanel() {
   const [chipOn, setChipOn] = useState(true);
   const [switchOn, setSwitchOn] = useState(true);
   const [inlineError, setInlineError] = useState<string | null>('Email address is required.');
+  const [interviewDate, setInterviewDate] = useState('2025-08-22');
+  const [otpCode, setOtpCode] = useState('');
   const [loadMode, setLoadMode] = useState<'content' | 'loading' | 'error' | 'forbidden' | 'stale'>(
     'content',
   );
@@ -614,6 +620,50 @@ export function StyleGuidePanel() {
         </DemoFrame>
       </Section>
 
+      {/* ——— DateInput ——— */}
+      <Section
+        id="sg-date-input"
+        title="DateInput / TimeInput"
+        description="native date/time picker · default or inline · Calendar/Clock affordance"
+        code={snippets.dateInput}
+      >
+        <DemoFrame className="max-w-xl space-y-4">
+          <DateInput
+            label="Interview date"
+            value={interviewDate}
+            onChange={(event) => setInterviewDate(event.target.value)}
+          />
+          <TimeInput label="Start time" defaultValue="14:30" />
+          <DateInput label="With error" error="Pick a date" value="" onChange={() => undefined} />
+          <DateInput
+            label="Inline (table cell style)"
+            variant="inline"
+            value={interviewDate}
+            onChange={(event) => setInterviewDate(event.target.value)}
+          />
+        </DemoFrame>
+      </Section>
+
+      {/* ——— OtpInput ——— */}
+      <Section
+        id="sg-otp-input"
+        title="OtpInput"
+        description="segmented digits · mask · paste · resend footer · VerificationInput alias"
+        code={snippets.otpInput}
+      >
+        <DemoFrame className="max-w-xl space-y-3">
+          <OtpInput
+            onChange={setOtpCode}
+            onResend={() => undefined}
+            resendLoading={false}
+          />
+          <Text variant="open-regular-tiny" className="text-muted">
+            Current code: {otpCode || '(empty)'}
+          </Text>
+          <OtpInput length={4} separatorAfterIndex={null} showResend={false} mask={false} />
+        </DemoFrame>
+      </Section>
+
       {/* ——— Textarea ——— */}
       <Section id="sg-textarea" title="Textarea" description="variant · error · disabled" code={snippets.textarea}>
         {fieldSurfaces.map((surface) => (
@@ -830,6 +880,32 @@ export function StyleGuidePanel() {
             options={[
               { value: 'admin', label: 'Admin' },
               { value: 'installer', label: 'Installer' },
+            ]}
+          />
+        </DemoFrame>
+      </Section>
+
+      {/* ——— DropdownMenu ——— */}
+      <Section
+        id="sg-dropdown-menu"
+        title="DropdownMenu"
+        description="actions menu · portal positioning · custom trigger · permission gate hook"
+        code={snippets.dropdownMenu}
+      >
+        <DemoFrame className="flex flex-wrap items-center gap-6">
+          <DropdownMenu
+            items={[
+              { label: 'Edit', onClick: () => undefined },
+              { label: 'Duplicate', onClick: () => undefined },
+              { label: 'Delete', onClick: () => undefined, className: 'text-destructive' },
+            ]}
+          />
+          <DropdownMenu
+            align="end"
+            trigger={<Button size="sm" variant="ghost">Actions</Button>}
+            items={[
+              { label: 'Export CSV', onClick: () => undefined },
+              { label: 'Archive', onClick: () => undefined, disabled: true },
             ]}
           />
         </DemoFrame>

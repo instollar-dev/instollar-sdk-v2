@@ -1,6 +1,6 @@
 {
   "name": "@codearemo/instollar-react",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Instollar React web UI components",
   "type": "module",
   "main": "./dist/index.js",
@@ -22,10 +22,13 @@
       "import": "./dist/components/AlertText.js",
       "require": "./dist/components/AlertText.cjs"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./theme.css": "./src/styles/theme.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "src/styles/theme.css",
+    "src/styles/theme-base.css"
   ],
   "scripts": {
     "build": "tsup && pnpm build:css",
@@ -43,7 +46,13 @@
   },
   "peerDependencies": {
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "tailwindcss": "^4.1.0"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.0",

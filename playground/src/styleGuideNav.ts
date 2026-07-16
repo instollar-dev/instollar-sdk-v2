@@ -42,11 +42,14 @@ export const styleGuideNav: TocGroup[] = [
     description: 'Inputs and selection controls',
     items: [
       { id: 'sg-input', label: 'Input' },
+      { id: 'sg-date-input', label: 'DateInput' },
+      { id: 'sg-otp-input', label: 'OtpInput' },
       { id: 'sg-textarea', label: 'Textarea' },
       { id: 'sg-checkbox', label: 'Checkbox' },
       { id: 'sg-radio', label: 'Radio' },
       { id: 'sg-switch', label: 'Switch' },
       { id: 'sg-select', label: 'Select' },
+      { id: 'sg-dropdown-menu', label: 'DropdownMenu' },
     ],
   },
   {

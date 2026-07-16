@@ -2,8 +2,11 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createRef, useEffect } from 'react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { AlertText, dismissibleAlertProps } from '../components/AlertText';
+import { DateInput, TimeInput } from '../components/DateInput';
 import { DrawerProvider, useDrawer } from '../components/DrawerProvider';
+import { DropdownMenu } from '../components/DropdownMenu';
 import { ModalProvider, useModal } from '../components/ModalProvider';
+import { OtpInput, VerificationInput } from '../components/OtpInput';
 import { createStatusResolver } from '../components/StatusBadge';
 import { Table, type TableHandle } from '../components/Table';
 import { Tabs } from '../components/Tabs';
@@ -225,6 +228,63 @@ describe('DrawerProvider', () => {
         vi.advanceTimersByTime(300);
       });
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe('DropdownMenu', () => {
+  it('opens the menu and fires item onClick', () => {
+    const onClick = vi.fn();
+    render(
+      <DropdownMenu
+        items={[
+          { label: 'Edit', onClick },
+          { label: 'Delete', onClick: vi.fn(), disabled: true },
+        ]}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { expanded: false }));
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Edit' }));
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+});
+
+describe('DateInput', () => {
+  it('coerces Date values and exposes TimeInput as type=time', () => {
+    const onChange = vi.fn();
+    const { rerender } = render(
+      <DateInput label="Interview" value={new Date(2025, 7, 22)} onChange={onChange} />,
+    );
+    expect(screen.getByLabelText('Interview')).toHaveAttribute('type', 'date');
+    expect(screen.getByLabelText('Interview')).toHaveValue('2025-08-22');
+
+    rerender(<TimeInput label="Start" defaultValue="14:30" />);
+    expect(screen.getByLabelText('Start')).toHaveAttribute('type', 'time');
+  });
+});
+
+describe('OtpInput', () => {
+  it('accepts digits, masks, and aliases VerificationInput', () => {
+    vi.useFakeTimers();
+    try {
+      const onChange = vi.fn();
+      expect(VerificationInput).toBe(OtpInput);
+
+      render(<OtpInput onChange={onChange} showResend={false} />);
+      const first = screen.getByLabelText('Digit 1 of 6');
+      fireEvent.change(first, { target: { value: '1' } });
+      expect(onChange).toHaveBeenCalledWith('1');
+      expect(first).toHaveValue('1');
+
+      act(() => {
+        vi.advanceTimersByTime(500);
+      });
+      expect(first).toHaveValue('*');
     } finally {
       vi.useRealTimers();
     }

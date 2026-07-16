@@ -1,0 +1,17 @@
+/**
+ * IntelliSense / Tailwind v4 CSS entry for consuming apps.
+ *
+ * Runtime styles still come from `styles.css` (precompiled). Point the
+ * Tailwind CSS IntelliSense extension at this file so editors suggest
+ * Instollar theme tokens (`bg-primary`, `text-muted`, …) and typography
+ * utilities (`text-spline-bold-h4`, `text-open-regular-p`, …).
+ *
+ * Consumers need `tailwindcss` installed (devDependency) for the extension.
+ *
+ * @example .vscode/settings.json
+ * {
+ *   "tailwindCSS.experimental.configFile": "./node_modules/@codearemo/instollar-react/theme.css",
+ *   "editor.quickSuggestions": { "strings": true }
+ * }
+ */
+@import './theme-base.css';

@@ -1,6 +1,6 @@
 {
   "name": "@codearemo/instollar-sdk",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Instollar SDK — React UI, HTTP client, storage, and shared app data",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,6 +23,7 @@
       "require": "./dist/alert-text.cjs"
     },
     "./styles.css": "./dist/styles.css",
+    "./theme.css": "./theme.css",
     "./countries": {
       "types": "./dist/countries.d.ts",
       "import": "./dist/countries.js",
@@ -40,7 +41,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "theme.css"
   ],
   "scripts": {
     "build": "tsup && pnpm build:assets",
