@@ -23,7 +23,7 @@ const pillars = [
     index: '02',
     title: 'Style guide',
     status: 'shipped' as const,
-    statusLabel: 'Live in 0.1.x',
+    statusLabel: 'Live in 0.2.x',
     body: 'Tokens, typography, and React UI — published as @codearemo/instollar-sdk with precompiled styles.css.',
   },
   {
@@ -87,7 +87,7 @@ export function OverviewPanel({ onNavigate }: { onNavigate: (id: PillarId) => vo
       </Section>
 
       <Section title="Install once">
-        <CodeBlock label="Terminal + React">{`npm install @codearemo/instollar-sdk@^0.1.4
+        <CodeBlock label="Terminal + React">{`npm install @codearemo/instollar-sdk@^0.2.4
 
 import '@codearemo/instollar-react/styles.css';
 import { Button, Text } from '@codearemo/instollar-sdk';`}</CodeBlock>

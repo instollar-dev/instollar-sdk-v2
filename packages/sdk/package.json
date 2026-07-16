@@ -1,6 +1,6 @@
 {
   "name": "@codearemo/instollar-sdk",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Instollar SDK — React UI, HTTP client, storage, and shared app data",
   "type": "module",
   "main": "./dist/index.js",

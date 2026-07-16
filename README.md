@@ -1,10 +1,12 @@
 # Instollar SDK
 
-Design-system SDK for Instollar — tokens, React components, and a precompiled `styles.css` (Tailwind compiled at publish time; consuming apps do not need Tailwind configured for SDK UI).
+Design-system SDK for Instollar — tokens, React components, and a precompiled `styles.css` (Tailwind compiled at publish time; consuming apps do not need Tailwind configured for SDK UI or standard layout utilities).
 
 **Walkthrough:** `pnpm playground` — Overview · API · Style guide · Special logic.
 
-The playground runs its **own Tailwind** build (Vite plugin) so docs layout utilities work. Consuming apps still only need the SDK’s precompiled `styles.css` — no Tailwind required there.
+`styles.css` ships the **standard Tailwind utility set** (flex, grid, spacing, object-fit, responsive `sm:`/`md:`/`lg:` variants, theme colors, etc.) so app layouts can use those classes without a local Tailwind build. **Arbitrary values** (`w-[37px]`, `grid-cols-[200px_1fr]`) are not pre-generated — use inline styles or add an app-side Tailwind pipeline for those.
+
+The playground still runs its **own Tailwind** build (Vite plugin) so docs-only classes and arbitrary values work during development.
 
 ## Packages
 
@@ -25,7 +27,7 @@ In the consuming app, create `.npmrc` (exact name):
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token   # needs read:packages
-npm install @codearemo/instollar-sdk@^0.1.4
+npm install @codearemo/instollar-sdk@^0.2.4
 ```
 
 ```tsx
@@ -46,12 +48,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.1.4` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.2.4` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.1.4
-git push origin v0.1.4
+git tag v0.2.4
+git push origin v0.2.4
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages.

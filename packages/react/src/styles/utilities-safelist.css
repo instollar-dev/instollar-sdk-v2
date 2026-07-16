@@ -1,0 +1,191 @@
+/**
+ * Force-emit the standard Tailwind utility surface into styles.css so consuming
+ * apps can use layout/spacing/flex/grid/responsive classes without running their
+ * own Tailwind build.
+ *
+ * Arbitrary values (e.g. w-[37px], grid-cols-[200px_1fr]) cannot be pre-generated —
+ * use inline styles or an app-side Tailwind pipeline for those.
+ *
+ * Brace expansion: {,sm:,md:} means base + sm: + md: variants.
+ */
+
+/* ── Display / visibility ─────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{block,inline-block,inline,flex,inline-flex,grid,inline-grid,contents,flow-root,hidden,table,table-cell,table-row}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{visible,invisible,collapse}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{sr-only,not-sr-only}");
+
+/* ── Position ─────────────────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{static,fixed,absolute,relative,sticky}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{inset-0,inset-x-0,inset-y-0,inset-auto,inset-px,inset-full}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{top,right,bottom,left}-{0,px,auto,full,1/2}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{top,right,bottom,left}-{0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}-{top,right,bottom,left}-{0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+
+/* ── Z-index ──────────────────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}z-{0,10,20,30,40,50,auto}");
+
+/* ── Overflow / overscroll / object ───────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}overflow-{auto,hidden,clip,visible,scroll}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}overflow-{x,y}-{auto,hidden,clip,visible,scroll}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}overscroll-{auto,contain,none}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}object-{contain,cover,fill,none,scale-down}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}object-{top,bottom,left,right,center,left-top,left-bottom,right-top,right-bottom}");
+
+/* ── Flexbox ──────────────────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}flex-{row,row-reverse,col,col-reverse}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}flex-{wrap,wrap-reverse,nowrap}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}flex-{1,auto,initial,none}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}grow{,-0}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}shrink{,-0}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}basis-{0,px,auto,full,1/2,1/3,2/3,1/4,3/4}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}basis-{0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}items-{start,end,center,baseline,stretch}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}justify-{normal,start,end,center,between,around,evenly,stretch}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}justify-items-{start,end,center,stretch}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}justify-self-{auto,start,end,center,stretch}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}content-{normal,center,start,end,between,around,evenly,baseline,stretch}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}self-{auto,start,end,center,stretch,baseline}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}place-content-{center,start,end,between,around,evenly,baseline,stretch}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}place-items-{start,end,center,baseline,stretch}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}place-self-{auto,start,end,center,stretch}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}order-{first,last,none,{1..12}}");
+
+/* ── Grid ─────────────────────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}grid-cols-{none,subgrid,{1..12}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}grid-rows-{none,subgrid,{1..6}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}col-span-{full,auto,{1..12}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}col-start-{auto,{1..13}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}col-end-{auto,{1..13}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}row-span-{full,auto,{1..6}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}row-start-{auto,{1..7}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}row-end-{auto,{1..7}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}grid-flow-{row,col,dense,row-dense,col-dense}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}auto-cols-{auto,min,max,fr}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}auto-rows-{auto,min,max,fr}");
+
+/* ── Gap ──────────────────────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}gap-{0,px,0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}gap-{x,y}-{0,px,0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+
+/* ── Spacing (padding / margin) ───────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{p,px,py,pt,pr,pb,pl,ps,pe}-{0,px,0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{m,mx,my,mt,mr,mb,ml,ms,me}-{0,px,auto,0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}-{m,mx,my,mt,mr,mb,ml,ms,me}-{0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}space-{x,y}-{0,px,0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}space-{x,y}-reverse");
+
+/* ── Sizing ───────────────────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{w,h,size}-{0,px,auto,full,screen,svw,svh,lvw,lvh,dvw,dvh,min,max,fit}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{w,h,size}-{0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{w,h,size}-{1/2,1/3,2/3,1/4,2/4,3/4,1/5,2/5,3/5,4/5,1/6,2/6,3/6,4/6,5/6,1/12,2/12,3/12,4/12,5/12,6/12,7/12,8/12,9/12,10/12,11/12}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{min-w,max-w,min-h,max-h}-{0,px,full,min,max,fit,none,prose,screen}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}{min-w,max-w,min-h,max-h}-{0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}max-w-{xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}max-w-screen-{sm,md,lg,xl,2xl}");
+
+/* ── Typography ───────────────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}text-{left,center,right,justify,start,end}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}text-{xs,sm,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}leading-{none,tight,snug,normal,relaxed,loose,{3..10}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}tracking-{tighter,tight,normal,wide,wider,widest}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}whitespace-{normal,nowrap,pre,pre-line,pre-wrap,break-spaces}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}break-{normal,words,all,keep}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}truncate");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}text-{ellipsis,clip}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}align-{baseline,top,middle,bottom,text-top,text-bottom,sub,super}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}uppercase");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}lowercase");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}capitalize");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}normal-case");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}underline");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}overline");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}line-through");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}no-underline");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}italic");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}not-italic");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}antialiased");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}subpixel-antialiased");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}line-clamp-{none,{1..6}}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}list-{none,disc,decimal}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}list-{inside,outside}");
+
+/* ── Borders / outline / ring ─────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}border{,-0,-2,-4,-8}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}border-{x,y,t,r,b,l,s,e}{,-0,-2,-4,-8}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}border-{solid,dashed,dotted,double,hidden,none}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}rounded{,-none,-sm,-md,-lg,-xl,-2xl,-3xl,-full}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}rounded-{t,r,b,l,tl,tr,br,bl,s,e,ss,se,ee,es}{,-none,-sm,-md,-lg,-xl,-2xl,-3xl,-full}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}outline{,-0,-1,-2,-4,-8,-none}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}outline-{solid,dashed,dotted,double,none}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}outline-offset-{0,1,2,4,8}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}ring{,-0,-1,-2,-4,-8}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}ring-inset");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}ring-offset-{0,1,2,4,8}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}divide-{x,y}{,-0,-2,-4,-8}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}divide-{x,y}-reverse");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}divide-{solid,dashed,dotted,double,none}");
+
+/* ── Shadows / opacity / filters ──────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}shadow{,-sm,-md,-lg,-xl,-2xl,-inner,-none}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}opacity-{0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}blur{,-none,-sm,-md,-lg,-xl,-2xl,-3xl}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}drop-shadow{,-sm,-md,-lg,-xl,-2xl,-none}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}backdrop-blur{,-none,-sm,-md,-lg,-xl,-2xl,-3xl}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}backdrop-opacity-{0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100}");
+
+/* ── Backgrounds ──────────────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}bg-{auto,cover,contain,fixed,local,scroll}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}bg-{bottom,center,left,left-bottom,left-top,right,right-bottom,right-top,top}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}bg-{no-repeat,repeat,repeat-x,repeat-y,repeat-round,repeat-space}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}bg-clip-{border,padding,content,text}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}bg-origin-{border,padding,content}");
+
+/* ── Colors — theme tokens + neutrals ─────────────────────────────────── */
+@source inline("{,hover:,focus:,disabled:,sm:,md:,lg:,xl:,2xl:}{bg,text,border,outline,ring,divide,fill,stroke,caret,accent,decoration,from,via,to}-{primary,secondary,background,foreground,muted,border,destructive,white,black,transparent,current,inherit}");
+@source inline("{,hover:,focus:,disabled:,sm:,md:,lg:,xl:,2xl:}{bg,text,border,outline,ring,divide,fill,stroke}-{slate,gray,zinc,neutral,stone}-{50,{100..900..100},950}");
+@source inline("{,hover:,focus:,disabled:,sm:,md:,lg:,xl:,2xl:}{bg,text,border}-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose}-{50,{100..900..100},950}");
+
+/* Color opacity modifiers commonly used with theme tokens */
+@source inline("{,hover:,sm:,md:,lg:}{bg,text,border}-{primary,secondary,foreground,muted,destructive,black,white}/{5,10,15,20,25,30,40,50,60,70,75,80,90}");
+
+/* ── Transitions / transforms / interactivity ─────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}transition{,-none,-all,-colors,-opacity,-shadow,-transform}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}duration-{0,75,100,150,200,300,500,700,1000}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}ease-{linear,in,out,in-out}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}delay-{0,75,100,150,200,300,500,700,1000}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}animate-{none,spin,ping,pulse,bounce}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}scale-{0,50,75,90,95,100,105,110,125,150}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}rotate-{0,1,2,3,6,12,45,90,180}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}-rotate-{1,2,3,6,12,45,90,180}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}translate-{x,y}-{0,px,full,1/2}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}translate-{x,y}-{0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}-translate-{x,y}-{0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96,full,1/2}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}transform{,-none,-gpu,-cpu}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}origin-{center,top,top-right,right,bottom-right,bottom,bottom-left,left,top-left}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}cursor-{auto,default,pointer,wait,text,move,help,not-allowed,none,grab,grabbing}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}pointer-events-{none,auto}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}select-{none,text,all,auto}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}resize{,-none,-y,-x}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}scroll-{auto,smooth}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}snap-{start,end,center,align-none,normal,always,none,x,y,both,mandatory,proximity}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}touch-{auto,none,pan-x,pan-left,pan-right,pan-y,pan-up,pan-down,pinch-zoom,manipulation}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}will-change-{auto,scroll,contents,transform}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}appearance-none");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}accent-auto");
+
+/* ── Tables ───────────────────────────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}table-{auto,fixed}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}border-{collapse,separate}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}border-spacing-{0,px,0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}caption-{top,bottom}");
+
+/* ── Aspect / columns / isolation ─────────────────────────────────────── */
+@source inline("{,sm:,md:,lg:,xl:,2xl:}aspect-{auto,square,video}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}columns-{1,2,3,4,5,6,7,8,9,10,11,12,auto}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}break-{after,before,inside}-{auto,avoid,all,avoid-page,page,left,right,column}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}box-{border,content}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}isolation-{auto,isolate}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}mix-blend-{normal,multiply,screen,overlay,darken,lighten,difference}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}bg-blend-{normal,multiply,screen,overlay,darken,lighten,difference}");
+@source inline("{,sm:,md:,lg:,xl:,2xl:}container");

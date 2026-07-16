@@ -39,7 +39,7 @@ export function App() {
             <p className="font-spline text-[1.35rem] font-bold tracking-tight text-primary">
               Instollar
             </p>
-            <p className="mt-1 text-open-regular-tiny text-muted">SDK docs · v0.2.3</p>
+            <p className="mt-1 text-open-regular-tiny text-muted">SDK docs · v0.2.4</p>
           </div>
 
           <nav className="flex flex-1 flex-col gap-0.5" aria-label="SDK chapters">
@@ -87,7 +87,7 @@ export function App() {
           <div className="sticky top-0 z-20 border-b border-border/80 bg-[#f7f8f6]/90 px-4 pt-4 pb-3 backdrop-blur-md lg:hidden">
             <div className="mb-3 flex items-baseline justify-between gap-3">
               <p className="font-spline text-lg font-bold text-primary">Instollar</p>
-              <span className="text-open-regular-tiny text-muted">v0.2.3</span>
+              <span className="text-open-regular-tiny text-muted">v0.2.4</span>
             </div>
             <div className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
               {nav.map((item) => (
