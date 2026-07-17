@@ -26,9 +26,11 @@ In the consuming app, create `.npmrc` (exact name):
 ```
 
 ```bash
-export NODE_AUTH_TOKEN=ghp_your_token   # needs read:packages
+export NODE_AUTH_TOKEN=ghp_your_token
 pnpm add @instollar-dev/instollar-sdk@^0.3.0
 ```
+
+`NODE_AUTH_TOKEN` must be a GitHub personal access token (or fine-grained token) with `read:packages` on the **instollar-dev** org. Use the same token in CI for installs.
 
 ```tsx
 import '@instollar-dev/instollar-react/styles.css';
@@ -89,27 +91,3 @@ git push origin v0.3.0
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.
-
-## Migrating from `@codearemo`
-
-This repo lives at [instollar-dev/instollar-sdk-v2](https://github.com/instollar-dev/instollar-sdk-v2). Package scope is **`@instollar-dev`** (GitHub Packages requires the npm scope to match the org).
-
-In consuming apps:
-
-1. Update `.npmrc`:
-   ```ini
-   @instollar-dev:registry=https://npm.pkg.github.com
-   //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-   ```
-2. Replace dependency / imports:
-   - `@codearemo/instollar-sdk` → `@instollar-dev/instollar-sdk`
-   - `@codearemo/instollar-react` → `@instollar-dev/instollar-react`
-   - `@codearemo/instollar-tokens` → `@instollar-dev/instollar-tokens`
-3. Point IntelliSense at `./node_modules/@instollar-dev/instollar-react/theme.css`
-4. Ensure `NODE_AUTH_TOKEN` has `read:packages` on the **instollar-dev** org
-
-## Vercel / CI after the transfer
-
-- **GitHub Actions** (`ci.yml`, `publish.yml`) use `GITHUB_TOKEN` from the repo — no code change required once the workflow runs under `instollar-dev`.
-- **Vercel:** Project → Settings → Git → reconnect to `instollar-dev/instollar-sdk-v2` (or import the repo again). Redeploy. Root Directory should remain `playground` (or repo root with `vercel.json` as configured).
-- Re-add any secrets that lived only on the old project (if you used a custom `NODE_AUTH_TOKEN` outside `GITHUB_TOKEN`).
