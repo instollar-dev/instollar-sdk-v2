@@ -12,6 +12,7 @@ export const styleGuideNav: TocGroup[] = [
     description: 'Install, tokens, and primitives',
     items: [
       { id: 'sg-setup', label: 'Setup' },
+      { id: 'sg-theme', label: 'ThemeProvider' },
       { id: 'sg-colors', label: 'Colors' },
       { id: 'sg-text', label: 'Text' },
       { id: 'sg-icon', label: 'Icon' },
@@ -42,6 +43,7 @@ export const styleGuideNav: TocGroup[] = [
     description: 'Inputs and selection controls',
     items: [
       { id: 'sg-input', label: 'Input' },
+      { id: 'sg-address-autocomplete', label: 'AddressAutocomplete' },
       { id: 'sg-date-input', label: 'DateInput' },
       { id: 'sg-otp-input', label: 'OtpInput' },
       { id: 'sg-textarea', label: 'Textarea' },

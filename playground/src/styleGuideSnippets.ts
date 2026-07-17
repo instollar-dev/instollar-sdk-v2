@@ -1,6 +1,25 @@
 export const styleGuideSnippets = {
   setup: `import '@instollar-dev/instollar-react/styles.css';
-import { Button, Text } from '@instollar-dev/instollar-sdk';`,
+import { ThemeProvider, Button, Text } from '@instollar-dev/instollar-sdk';
+
+createRoot(document.getElementById('root')!).render(
+  <ThemeProvider defaultTheme="system">
+    <App />
+  </ThemeProvider>,
+);`,
+
+  theme: `import { ThemeProvider, useTheme } from '@instollar-dev/instollar-sdk';
+
+function ThemeToggle() {
+  const { resolvedTheme, toggleTheme } = useTheme();
+  return (
+    <button type="button" onClick={toggleTheme}>
+      {resolvedTheme === 'dark' ? 'Light' : 'Dark'}
+    </button>
+  );
+}
+
+// Persists preference · respects system · sets data-theme on <html>`,
 
   colors: `import { colors, darkColors, brand } from '@instollar-dev/instollar-tokens';
 import { ThemeProvider, useTheme } from '@instollar-dev/instollar-sdk';
@@ -121,6 +140,21 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 <Input label="Email" placeholder="you@example.com" />
 <Input label="Search" prefix={<Icon icon={SearchNormal1} size="sm" color="muted" />} />
 <Input label="Password" type="password" error="Required" />`,
+
+  addressAutocomplete: `import {
+  AddressAutocomplete,
+  type AddressComponents,
+} from '@instollar-dev/instollar-sdk';
+
+const [query, setQuery] = useState('');
+
+<AddressAutocomplete
+  label="Address"
+  apiKey={googlePlacesApiKey}
+  inputValue={query}
+  onInputChange={setQuery}
+  onPlaceSelect={(address: AddressComponents) => console.log(address)}
+/>`,
 
   textarea: `import { Textarea } from '@instollar-dev/instollar-sdk';
 

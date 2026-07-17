@@ -1,3 +1,4 @@
+import { configureGooglePlacesApiKey } from '@instollar-dev/instollar-react';
 import { initAxios } from './api';
 import type { InstollarSDKConfig } from './types';
 import {
@@ -14,7 +15,9 @@ export type InitInstollarSDKOptions = InstollarSDKConfig & {
 };
 
 export function initInstollarSDK(options: InitInstollarSDKOptions): void {
-  const { storage, autoStorage = !storage, ...axiosConfig } = options;
+  const { storage, autoStorage = !storage, googlePlacesApiKey, ...axiosConfig } = options;
+
+  configureGooglePlacesApiKey(googlePlacesApiKey);
 
   if (storage) {
     initStorage(storage);

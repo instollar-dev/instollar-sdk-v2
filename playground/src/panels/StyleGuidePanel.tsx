@@ -1,5 +1,6 @@
 import { useRef, useState, type ReactNode } from 'react';
 import {
+  AddressAutocomplete,
   Alert,
   AlertText,
   ArrowRight2,
@@ -30,12 +31,17 @@ import {
   Text,
   Textarea,
   TimeInput,
+  VerificationInput,
   createStatusResolver,
   dismissibleAlertProps,
   useDrawer,
   useModal,
+  useTheme,
+  Moon,
+  Sun1,
   type StatusVariant,
   type TableHandle,
+  type AddressComponents,
 } from '@instollar-dev/instollar-sdk';
 import { brand, colors, darkColors, fonts } from '@instollar-dev/instollar-tokens';
 import {
@@ -67,6 +73,9 @@ const textVariants = [
 const iconSizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 const iconColors = ['current', 'brand', 'primary', 'secondary', 'muted', 'inverse', 'destructive'] as const;
 const iconStyles = ['Linear', 'Outline', 'Broken', 'Bold', 'Bulk', 'TwoTone'] as const;
+
+const playgroundGooglePlacesApiKey =
+  import.meta.env.VITE_GOOGLE_PLACES_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY || '';
 
 const buttonVariants = [
   'primary',
@@ -148,6 +157,36 @@ function ModalDemo() {
   );
 }
 
+function StyleGuideThemeDemo() {
+  const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <Button size="sm" onClick={toggleTheme}>
+          <Icon icon={isDark ? Sun1 : Moon} size="sm" color="primary" />
+          Toggle ({resolvedTheme})
+        </Button>
+        {(['light', 'dark', 'system'] as const).map((value) => (
+          <Button
+            key={value}
+            size="sm"
+            variant={theme === value ? 'primary' : 'ghost'}
+            onClick={() => setTheme(value)}
+          >
+            {value}
+          </Button>
+        ))}
+      </div>
+      <Text variant="open-regular-tiny" className="text-muted">
+        Sets <code>data-theme</code> on <code>&lt;html&gt;</code> and persists the user preference.
+        The playground shell uses the same <code>ThemeProvider</code> as your app should.
+      </Text>
+    </div>
+  );
+}
+
 function DrawerDemo() {
   const { openDrawer, closeDrawer } = useDrawer();
 
@@ -211,6 +250,8 @@ export function StyleGuidePanel() {
   const [switchOn, setSwitchOn] = useState(true);
   const [inlineError, setInlineError] = useState<string | null>('Email address is required.');
   const [interviewDate, setInterviewDate] = useState('2025-08-22');
+  const [addressQuery, setAddressQuery] = useState('');
+  const [selectedAddress, setSelectedAddress] = useState<AddressComponents | null>(null);
   const [scheduledAt, setScheduledAt] = useState('2025-08-22T14:30');
   const [otpCode, setOtpCode] = useState('');
   const [loadMode, setLoadMode] = useState<'content' | 'loading' | 'error' | 'forbidden' | 'stale'>(
@@ -241,8 +282,20 @@ export function StyleGuidePanel() {
 
       <Section id="sg-setup" title="Setup" code={snippets.setup}>
         <p className="max-w-xl text-open-regular-p text-muted">
-          Import styles once at app entry, then pull components from the SDK package.
+          Import styles once at app entry, wrap the tree in <code>ThemeProvider</code>, then pull
+          components from the SDK package.
         </p>
+      </Section>
+
+      <Section
+        id="sg-theme"
+        title="ThemeProvider"
+        description="light · dark · system · persisted preference"
+        code={snippets.theme}
+      >
+        <DemoFrame label="useTheme()" className="max-w-xl">
+          <StyleGuideThemeDemo />
+        </DemoFrame>
       </Section>
 
       <Section id="sg-colors" title="Colors" code={snippets.colors}>
@@ -647,6 +700,34 @@ export function StyleGuidePanel() {
         </DemoFrame>
       </Section>
 
+      <Section
+        id="sg-address-autocomplete"
+        title="AddressAutocomplete"
+        description="Places API (New) · controlled input · debounced autocomplete · place details · no Maps JS SDK"
+        code={snippets.addressAutocomplete}
+      >
+        <DemoFrame label="Preview" className="max-w-xl space-y-3">
+          <AddressAutocomplete
+            label="Street address"
+            placeholder="Start typing an address…"
+            apiKey={playgroundGooglePlacesApiKey || undefined}
+            inputValue={addressQuery}
+            onInputChange={setAddressQuery}
+            onPlaceSelect={setSelectedAddress}
+            helperText={
+              playgroundGooglePlacesApiKey
+                ? 'Uses VITE_GOOGLE_PLACES_API_KEY or VITE_GOOGLE_API_KEY in the playground only.'
+                : 'Set VITE_GOOGLE_PLACES_API_KEY (or VITE_GOOGLE_API_KEY) to try live suggestions.'
+            }
+          />
+          {selectedAddress ? (
+            <Text variant="open-regular-tiny" className="text-muted whitespace-pre-wrap">
+              {JSON.stringify(selectedAddress, null, 2)}
+            </Text>
+          ) : null}
+        </DemoFrame>
+      </Section>
+
       {/* ——— DateInput ——— */}
       <Section
         id="sg-date-input"
@@ -693,6 +774,10 @@ export function StyleGuidePanel() {
             Current code: {otpCode || '(empty)'}
           </Text>
           <OtpInput length={4} separatorAfterIndex={null} showResend={false} mask={false} />
+          <Text variant="open-regular-tiny" className="text-muted">
+            VerificationInput is the same component (alias export):
+          </Text>
+          <VerificationInput length={6} showResend={false} onChange={() => undefined} />
         </DemoFrame>
       </Section>
 

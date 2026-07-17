@@ -27,7 +27,7 @@ In the consuming app, create `.npmrc` (exact name):
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token
-pnpm add @instollar-dev/instollar-sdk@^0.4.0
+pnpm add @instollar-dev/instollar-sdk@^0.4.1
 ```
 
 `NODE_AUTH_TOKEN` must be a GitHub personal access token (or fine-grained token) with `read:packages` on the **instollar-dev** org. Use the same token in CI for installs.
@@ -134,6 +134,91 @@ function ThemeToggle() {
 
 Prefer semantic classes (`bg-background`, `text-foreground`, `border-border`, `bg-brand`) so surfaces follow the theme. Solid primary buttons use `--color-brand` so they stay forest green in both modes.
 
+## Toasts
+
+The SDK ships an imperative **`toast`** helper (no third-party toast library). On **web** it renders a fixed stack on `document.body`; on **mobile** it logs to the console. Import `@instollar-dev/instollar-react/styles.css` (or ensure Instollar CSS variables are on `:root`) so web toasts pick up light/dark tokens.
+
+```tsx
+import { toast } from '@instollar-dev/instollar-sdk';
+
+toast.success('Saved');
+toast.error('Something went wrong');
+toast.warning('Check your input');
+toast.info('New version available');
+toast.message('Longer notice', { title: 'Update', autoClose: 15000 });
+toast.show({
+  type: 'error',
+  title: 'Validation',
+  description: 'Email is required',
+  position: 'bottom-center',
+});
+```
+
+**Options** (`ToastOptions`): `title`, `description`, `message`, `type`, `autoClose` (default 5000ms, `message` type 10000ms), `closeOnClick`, `position` (`top-right`, `bottom-center`, …).
+
+### Automatic toasts from the HTTP client
+
+After `initAxios`, interceptors read **request metadata**:
+
+- **`showErrorToast`** — defaults to **`true`** if omitted. Set to `false` to silence errors, or pass a partial `ToastOptions` object for title/position overrides.
+- **`showSuccessToast`** — off by default. Set to `true` or pass partial options; success title defaults by HTTP method (POST → “Action Successful”, etc.).
+
+```tsx
+await api.post('/users', payload, {}, { showSuccessToast: true });
+
+await api.get('/quiet', {}, {}, { showErrorToast: false });
+
+await api.post('/x', data, {}, {
+  showErrorToast: { title: 'Validation', position: 'bottom-right' },
+});
+```
+
+Domain APIs often use `{ showSuccessToast: true }` on mutations and `{ showSuccessToast: false, showErrorToast: false }` for silent reads.
+
+### React `Alert` vs `toast`
+
+| | `toast.*` | `<Alert appearance="toast" />` |
+|--|-----------|----------------------------------|
+| Use | Imperative / axios | Declarative in React trees |
+| API errors | Yes (default) | No (unless you wire it) |
+| Theming | Reads CSS variables on web | Tailwind classes from `styles.css` |
+
+`toastVariantFromApi('success' | 'error')` maps API flags to Alert variants when you build your own UI.
+
+## Address autocomplete (Google Places API New)
+
+`AddressAutocomplete` is a **controlled** text field with debounced Places **Autocomplete** + **Place Details** over plain `fetch` — no Google Maps JavaScript SDK.
+
+Provide a key via the **`apiKey` prop** or `initInstollarSDK({ googlePlacesApiKey, … })`. Restrict the key in Google Cloud (Places API (New) only; HTTP referrers as needed).
+
+```tsx
+import {
+  AddressAutocomplete,
+  type AddressComponents,
+  initInstollarSDK,
+} from '@instollar-dev/instollar-sdk';
+
+initInstollarSDK({ baseUrl: '…', googlePlacesApiKey: process.env.GOOGLE_PLACES_API_KEY });
+
+const [query, setQuery] = useState('');
+
+<AddressAutocomplete
+  label="Street address"
+  inputValue={query}
+  onInputChange={setQuery}
+  onPlaceSelect={(address: AddressComponents) => {
+    console.log(address.street, address.city, address.latitude);
+  }}
+  apiKey={process.env.GOOGLE_PLACES_API_KEY}
+  helperText="Start typing to search"
+  error={formError}
+/>
+```
+
+**Parent contract:** `inputValue` / `onInputChange` for typing; `onPlaceSelect` receives parsed `AddressComponents` (`street`, `city`, `state`, `lga`, `postalCode`, `country`, `landmark`, `latitude`, `longitude`, `formattedAddress`, `placeTypes`). The `error` prop overrides API error text for display.
+
+Low-level helpers are exported for custom UIs: `fetchPlaceAutocompleteSuggestions`, `fetchPlaceDetailsAsAddress`, `parseAddressComponents`.
+
 ## Local development (this repo)
 
 ```bash
@@ -145,12 +230,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.4.0` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.4.1` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.4.0
-git push origin v0.4.0
+git tag v0.4.1
+git push origin v0.4.1
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.

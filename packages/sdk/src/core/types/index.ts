@@ -58,6 +58,8 @@ export interface InstollarSDKConfig {
   onAuthError?: () => void;
   onTokenRefreshed?: (tokenData: TokenData) => void;
   defaultHeaders?: Record<string, string>;
+  /** Google Places API (New) key for `AddressAutocomplete` when `apiKey` prop is omitted */
+  googlePlacesApiKey?: string;
 }
 
 export interface ServerError {

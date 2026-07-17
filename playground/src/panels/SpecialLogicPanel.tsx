@@ -26,6 +26,7 @@ import {
   Select,
   selectOptionsPropsFromQuery,
   Text,
+  toast,
   toastVariantFromApi,
   formFieldErrorClass,
   formFieldLabelClass,
@@ -51,6 +52,7 @@ const logicNav = [
       { id: 'lg-validation-errors', label: 'Validation & errors' },
       { id: 'lg-async', label: 'Async' },
       { id: 'lg-toast', label: 'Toasts' },
+      { id: 'lg-places', label: 'Address autocomplete' },
       { id: 'lg-field', label: 'Fields' },
       { id: 'lg-more', label: 'Also exported' },
     ],
@@ -343,38 +345,141 @@ isNetworkDisconnectError(query.error);`}</CodeBlock>
 
       <Section
         id="lg-toast"
-        title="toastVariantFromApi"
-        description="Map a simple API success/error flag onto Alert variants."
+        title="Toasts"
+        description="Imperative toast API (web DOM stack) and React Alert mapping for in-app UI."
       >
-        <div className="mb-3 flex flex-wrap gap-2">
-          <Button
-            size="sm"
-            variant={apiToast === 'success' ? 'primary' : 'ghost'}
-            onClick={() => setApiToast('success')}
-          >
-            success
-          </Button>
-          <Button
-            size="sm"
-            variant={apiToast === 'error' ? 'destructive' : 'ghost'}
-            onClick={() => setApiToast('error')}
-          >
-            error
-          </Button>
-        </div>
+        <SubSection title="toast (SDK core)">
+          <p className="mb-3 max-w-2xl text-open-regular-tiny text-muted">
+            Import <code>styles.css</code> so CSS variables resolve — toasts read{' '}
+            <code>--color-bg</code>, <code>--color-primary</code>, <code>--color-destructive</code>, etc.
+            and follow light/dark theme. On mobile (Expo/RN) the same calls log to the console.
+          </p>
+          <div className="mb-4 flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              onClick={() => toast.success('Changes saved successfully.')}
+            >
+              success
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() =>
+                toast.error('Could not save profile.', { title: 'Request failed' })
+              }
+            >
+              error
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => toast.warning('Review required before publish.')}
+            >
+              warning
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => toast.info('New catalog items are available.')}
+            >
+              info
+            </Button>
+            <Button
+              size="sm"
+              variant="underline"
+              onClick={() =>
+                toast.message('Maintenance window tonight 11pm–1am.', {
+                  title: 'Scheduled',
+                  autoClose: 10000,
+                })
+              }
+            >
+              message
+            </Button>
+          </div>
+          <CodeBlock>{`import { toast } from '@instollar-dev/instollar-sdk';
+
+toast.success('Saved');
+toast.error('Something went wrong', { title: 'Error' });
+toast.show({ type: 'info', title: 'Update', description: '…', position: 'bottom-right' });`}</CodeBlock>
+        </SubSection>
+
+        <SubSection title="toastVariantFromApi + Alert">
+          <div className="mb-3 flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={apiToast === 'success' ? 'primary' : 'ghost'}
+              onClick={() => setApiToast('success')}
+            >
+              API success
+            </Button>
+            <Button
+              size="sm"
+              variant={apiToast === 'error' ? 'destructive' : 'ghost'}
+              onClick={() => setApiToast('error')}
+            >
+              API error
+            </Button>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Alert
+              appearance="toast"
+              variant={toastVariantFromApi(apiToast)}
+              title={apiToast === 'success' ? 'Saved' : 'Failed'}
+            >
+              Use <code>Alert appearance=&quot;toast&quot;</code> for declarative UI — axios still
+              uses <code>toast.*</code> unless you disable metadata toasts.
+            </Alert>
+            <CodeBlock>{`// Axios (automatic)
+await api.post('/users', payload, {}, { showSuccessToast: true });
+
+// React (declarative)
+<Alert appearance="toast" variant={toastVariantFromApi('success')} title="Saved" />`}</CodeBlock>
+          </div>
+        </SubSection>
+      </Section>
+
+      <Section
+        id="lg-places"
+        title="Address autocomplete (Google Places API New)"
+        description="Controlled field + REST autocomplete/details — no Maps JS SDK. Live demo is in the Style guide."
+      >
         <div className="grid gap-4 lg:grid-cols-2">
-          <Alert
-            appearance="toast"
-            variant={toastVariantFromApi(apiToast)}
-            title={apiToast === 'success' ? 'Saved' : 'Failed'}
-          >
-            toastVariantFromApi(&apos;{apiToast}&apos;) → {toastVariantFromApi(apiToast)}
-          </Alert>
-          <CodeBlock>{`<Alert
-  appearance="toast"
-  variant={toastVariantFromApi(api.type)}
+          <DemoFrame label="SDK init">
+            <Text variant="open-regular-p" className="text-muted">
+              Pass <code>googlePlacesApiKey</code> at init, or supply <code>apiKey</code> on each{' '}
+              <code>AddressAutocomplete</code>. Restrict the key in Google Cloud (Places API New
+              only).
+            </Text>
+          </DemoFrame>
+          <CodeBlock>{`import {
+  initInstollarSDK,
+  AddressAutocomplete,
+  type AddressComponents,
+} from '@instollar-dev/instollar-sdk';
+
+initInstollarSDK({
+  baseUrl: 'https://api.example.com',
+  googlePlacesApiKey: process.env.GOOGLE_PLACES_API_KEY,
+});
+
+const [query, setQuery] = useState('');
+
+<AddressAutocomplete
+  label="Site address"
+  inputValue={query}
+  onInputChange={setQuery}
+  onPlaceSelect={(address: AddressComponents) => {
+    form.setValue('street', address.street);
+    form.setValue('city', address.city);
+  }}
 />`}</CodeBlock>
         </div>
+        <p className="text-open-regular-tiny text-muted">
+          Playground only: set <code>VITE_GOOGLE_PLACES_API_KEY</code> or{' '}
+          <code>VITE_GOOGLE_API_KEY</code> in <code>playground/.env.local</code> to try live
+          suggestions under Style guide → AddressAutocomplete.
+        </p>
       </Section>
 
       <Section
@@ -411,8 +516,11 @@ isNetworkDisconnectError(query.error);`}</CodeBlock>
         <DemoFrame>
           <ul className="flex flex-col divide-y divide-border">
             {[
-              ['useClickOutside', 'Close popovers when pointer leaves'],
+              ['useClickOutside / useOnClickOutside', 'Close popovers when pointer leaves'],
               ['useFloatingPosition', 'Flip / clamp dropdowns (powers Select)'],
+              ['useMediaQuery', 'Match CSS media queries (powers Table breakpoints)'],
+              ['AddressAutocomplete + Places client', 'REST autocomplete — see Style guide'],
+              ['configureGooglePlacesApiKey', 'Set via initInstollarSDK or apiKey prop'],
               ['cn', 'clsx + tailwind-merge'],
               ['Input type="password"', 'Built-in show / hide'],
               ['Class maps', 'Alerts and status badges'],

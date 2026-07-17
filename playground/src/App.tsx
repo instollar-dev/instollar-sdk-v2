@@ -26,13 +26,24 @@ function ThemeToggle({ className }: { className?: string }) {
   );
 }
 
+function hashSectionId(hash: string): string | undefined {
+  const part = hash.replace(/^#/, '').split('/')[1];
+  return part?.trim() || undefined;
+}
+
 export function App() {
   const [pillar, setPillar] = useState<PillarId>(() =>
     typeof window === 'undefined' ? 'overview' : resolvePillar(window.location.hash),
   );
+  const [sectionId, setSectionId] = useState<string | undefined>(() =>
+    typeof window === 'undefined' ? undefined : hashSectionId(window.location.hash),
+  );
 
   useEffect(() => {
-    const onHash = () => setPillar(resolvePillar(window.location.hash));
+    const onHash = () => {
+      setPillar(resolvePillar(window.location.hash));
+      setSectionId(hashSectionId(window.location.hash));
+    };
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
@@ -40,12 +51,22 @@ export function App() {
   // Direct hash loads (e.g. /#style) and in-app nav must start the chapter at the top.
   // Pillar panels remount via key={pillar}; scroll after that paint.
   useEffect(() => {
+    if (sectionId) return;
     window.scrollTo({ top: 0, behavior: 'auto' });
-  }, [pillar]);
+  }, [pillar, sectionId]);
 
-  function go(id: PillarId) {
+  useEffect(() => {
+    if (!sectionId) return;
+    const timeoutId = window.setTimeout(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+    return () => window.clearTimeout(timeoutId);
+  }, [pillar, sectionId]);
+
+  function go(id: PillarId, scrollToSectionId?: string) {
     setPillar(id);
-    window.location.hash = id;
+    setSectionId(scrollToSectionId);
+    window.location.hash = scrollToSectionId ? `${id}/${scrollToSectionId}` : id;
   }
 
   const current = nav.find((n) => n.id === pillar)!;
@@ -59,7 +80,7 @@ export function App() {
             <p className="font-spline text-[1.35rem] font-bold tracking-tight text-foreground">
               Instollar
             </p>
-            <p className="mt-1 text-open-regular-tiny text-muted">SDK docs · v0.4.0</p>
+            <p className="mt-1 text-open-regular-tiny text-muted">SDK docs · v0.4.1</p>
           </div>
 
           <nav className="flex flex-1 flex-col gap-0.5" aria-label="SDK chapters">
@@ -111,7 +132,7 @@ export function App() {
             <div className="mb-3 flex items-center justify-between gap-3">
               <p className="font-spline text-lg font-bold text-foreground">Instollar</p>
               <div className="flex items-center gap-2">
-                <span className="text-open-regular-tiny text-muted">v0.4.0</span>
+                <span className="text-open-regular-tiny text-muted">v0.4.1</span>
                 <ThemeToggle />
               </div>
             </div>
@@ -142,7 +163,9 @@ export function App() {
                 <span className="text-open-regular-tiny text-muted">{current.hint}</span>
               </div>
 
-              {pillar === 'overview' ? <OverviewPanel onNavigate={go} /> : null}
+              {pillar === 'overview' ? (
+                <OverviewPanel onNavigate={(id, section) => go(id, section)} />
+              ) : null}
               {pillar === 'api' ? <ApiPanel /> : null}
               {pillar === 'style' ? <StyleGuidePanel /> : null}
               {pillar === 'logic' ? <SpecialLogicPanel /> : null}

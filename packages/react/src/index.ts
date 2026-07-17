@@ -7,6 +7,18 @@ export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize } from './compo
 export { Input } from './components/Input';
 export type { InputProps } from './components/Input';
 
+export { AddressAutocomplete, default } from './components/AddressAutocomplete';
+export type { AddressAutocompleteProps } from './components/AddressAutocomplete';
+export type { AddressComponents } from './places/types';
+export {
+  parseAddressComponents,
+  fetchPlaceAutocompleteSuggestions,
+  fetchPlaceDetailsAsAddress,
+  configureGooglePlacesApiKey,
+  getConfiguredGooglePlacesApiKey,
+  resolveGooglePlacesApiKey,
+} from './places';
+
 export { Textarea } from './components/Textarea';
 export type { TextareaProps } from './components/Textarea';
 
