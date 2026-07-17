@@ -9,6 +9,15 @@ export type { InputProps } from './components/Input';
 
 export { AddressAutocomplete, default } from './components/AddressAutocomplete';
 export type { AddressAutocompleteProps } from './components/AddressAutocomplete';
+
+export { FileUpload } from './components/FileUpload';
+export { default as FileUploadDefault } from './components/FileUpload';
+export type {
+  FileUploadProps,
+  FileUploadStrings,
+  UploadedFileAsset,
+} from './components/FileUpload.types';
+export { ALL_DOCUMENT_UPLOAD_ACCEPT } from './components/fileUploadUtils';
 export type { AddressComponents } from './places/types';
 export {
   parseAddressComponents,

@@ -37,6 +37,3 @@ export interface ChatPaginationParams extends Record<string, unknown> {
   sortedBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
-
-/** @deprecated Use UploadedFileAssetModel */
-export type UploadedFileAsset = UploadedFileAssetModel;

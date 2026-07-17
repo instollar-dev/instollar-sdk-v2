@@ -249,6 +249,26 @@ const [query, setQuery] = useState('');
 {/* Alias — same component */}
 <VerificationInput showResend={false} mask={false} />`,
 
+  fileUpload: `import {
+  FileUpload,
+  ALL_DOCUMENT_UPLOAD_ACCEPT,
+  type UploadedFileAsset,
+} from '@instollar-dev/instollar-sdk';
+
+<FileUpload
+  label="ID document"
+  accept={ALL_DOCUMENT_UPLOAD_ACCEPT}
+  autoUpload
+  uploadFn={async (formData, { applyWatermark }) => {
+    const res = await uploadFiles(formData, { applyWatermark });
+    return res.data ?? [];
+  }}
+  offlineSaveFn={saveFilesToIndexedDB}
+  allowOfflineSave
+  isOnline={isOnline}
+  onUploadComplete={(assets) => setValue(assets[0]?.fileUrl)}
+/>`,
+
   dropdownMenu: `import { DropdownMenu } from '@instollar-dev/instollar-sdk';
 
 <DropdownMenu

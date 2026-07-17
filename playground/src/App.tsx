@@ -80,7 +80,7 @@ export function App() {
             <p className="font-spline text-[1.35rem] font-bold tracking-tight text-foreground">
               Instollar
             </p>
-            <p className="mt-1 text-open-regular-tiny text-muted">SDK docs · v0.4.2</p>
+            <p className="mt-1 text-open-regular-tiny text-muted">SDK docs · v0.4.3</p>
           </div>
 
           <nav className="flex flex-1 flex-col gap-0.5" aria-label="SDK chapters">
@@ -132,7 +132,7 @@ export function App() {
             <div className="mb-3 flex items-center justify-between gap-3">
               <p className="font-spline text-lg font-bold text-foreground">Instollar</p>
               <div className="flex items-center gap-2">
-                <span className="text-open-regular-tiny text-muted">v0.4.2</span>
+                <span className="text-open-regular-tiny text-muted">v0.4.3</span>
                 <ThemeToggle />
               </div>
             </div>

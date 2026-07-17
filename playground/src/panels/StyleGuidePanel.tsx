@@ -12,6 +12,7 @@ import {
   DateTimeInput,
   DrawerProvider,
   DropdownMenu,
+  FileUpload,
   Home2,
   Icon,
   Input,
@@ -967,6 +968,22 @@ export function StyleGuidePanel() {
               { value: 'admin', label: 'Admin' },
               { value: 'installer', label: 'Installer' },
             ]}
+          />
+        </DemoFrame>
+      </Section>
+
+      <Section
+        id="sg-file-upload"
+        title="FileUpload"
+        description="drag-drop · browse · autoUpload + injectable uploadFn · offline hooks from host app"
+        code={snippets.fileUpload}
+      >
+        <DemoFrame className="max-w-xl">
+          <FileUpload
+            label="Attachment"
+            autoUpload={false}
+            onFileSelect={() => undefined}
+            helperText="Playground uses autoUpload=false — wire uploadFn in your app shim"
           />
         </DemoFrame>
       </Section>

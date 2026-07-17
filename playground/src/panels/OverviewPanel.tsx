@@ -41,6 +41,7 @@ const styleGuideHighlights: { id: string; label: string; note?: string }[] = [
   { id: 'sg-theme', label: 'ThemeProvider', note: 'light / dark / system' },
   { id: 'sg-button', label: 'Button', note: 'includes underline variant' },
   { id: 'sg-address-autocomplete', label: 'AddressAutocomplete', note: 'Places API (New)' },
+  { id: 'sg-file-upload', label: 'FileUpload', note: 'uploadFn / offline hooks' },
   { id: 'sg-date-input', label: 'DateInput / TimeInput / DateTimeInput' },
   { id: 'sg-otp-input', label: 'OtpInput / VerificationInput' },
   { id: 'sg-dropdown-menu', label: 'DropdownMenu' },
@@ -161,7 +162,7 @@ export function OverviewPanel({
       </Section>
 
       <Section title="Install once">
-        <CodeBlock label="Terminal + React">{`pnpm add @instollar-dev/instollar-sdk@^0.4.2
+        <CodeBlock label="Terminal + React">{`pnpm add @instollar-dev/instollar-sdk@^0.4.3
 pnpm add -D tailwindcss@^4.1.0
 
 import '@instollar-dev/instollar-react/styles.css';

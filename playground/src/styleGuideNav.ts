@@ -51,6 +51,7 @@ export const styleGuideNav: TocGroup[] = [
       { id: 'sg-radio', label: 'Radio' },
       { id: 'sg-switch', label: 'Switch' },
       { id: 'sg-select', label: 'Select' },
+      { id: 'sg-file-upload', label: 'FileUpload' },
       { id: 'sg-dropdown-menu', label: 'DropdownMenu' },
     ],
   },

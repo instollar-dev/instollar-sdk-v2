@@ -27,7 +27,7 @@ In the consuming app, create `.npmrc` (exact name):
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token
-pnpm add @instollar-dev/instollar-sdk@^0.4.2
+pnpm add @instollar-dev/instollar-sdk@^0.4.3
 ```
 
 `NODE_AUTH_TOKEN` must be a GitHub personal access token (or fine-grained token) with `read:packages` on the **instollar-dev** org. Use the same token in CI for installs.
@@ -219,6 +219,31 @@ const [query, setQuery] = useState('');
 
 Low-level helpers are exported for custom UIs: `fetchPlaceAutocompleteSuggestions`, `fetchPlaceDetailsAsAddress`, `parseAddressComponents`.
 
+## File upload
+
+`FileUpload` is drag-and-drop + browse with optional `autoUpload`. The SDK does **not** ship your HTTP client or IndexedDB — pass `uploadFn` (multipart field `files`) and optional `offlineSaveFn` / `resolveOfflineBlobLabel` / `renderOfflineBlobPreview` from the host app.
+
+```tsx
+import {
+  FileUpload,
+  ALL_DOCUMENT_UPLOAD_ACCEPT,
+  type UploadedFileAsset,
+} from '@instollar-dev/instollar-sdk';
+
+<FileUpload
+  autoUpload
+  uploadFn={uploadFromYourApi}
+  allowOfflineSave
+  offlineSaveFn={saveToLocalStore}
+  isOnline={isOnline}
+  onUploadComplete={(assets: UploadedFileAsset[]) => {
+    form.setValue('fileUrl', assets[0]?.fileUrl);
+  }}
+/>
+```
+
+Export `ALL_DOCUMENT_UPLOAD_ACCEPT` (`*/*`) for workflow screens that accept any document type.
+
 ## Local development (this repo)
 
 ```bash
@@ -230,12 +255,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.4.2` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.4.3` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.4.2
-git push origin v0.4.2
+git tag v0.4.3
+git push origin v0.4.3
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.
