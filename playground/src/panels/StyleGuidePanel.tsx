@@ -36,8 +36,8 @@ import {
   useModal,
   type StatusVariant,
   type TableHandle,
-} from '@codearemo/instollar-sdk';
-import { brand, colors, fonts } from '@codearemo/instollar-tokens';
+} from '@instollar-dev/instollar-sdk';
+import { brand, colors, fonts } from '@instollar-dev/instollar-tokens';
 import {
   DemoFrame,
   PageHeader,

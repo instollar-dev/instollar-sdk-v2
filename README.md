@@ -12,27 +12,27 @@ The playground still runs its **own Tailwind** build (Vite plugin) so docs-only 
 
 | Package | Description |
 |---------|-------------|
-| `@codearemo/instollar-sdk` | Umbrella re-exports (preferred install) |
-| `@codearemo/instollar-react` | React components + `styles.css` + `theme.css` (IntelliSense) |
-| `@codearemo/instollar-tokens` | CSS variables + typography utilities |
+| `@instollar-dev/instollar-sdk` | Umbrella re-exports (preferred install) |
+| `@instollar-dev/instollar-react` | React components + `styles.css` + `theme.css` (IntelliSense) |
+| `@instollar-dev/instollar-tokens` | CSS variables + typography utilities |
 
 ## Quick start
 
 In the consuming app, create `.npmrc` (exact name):
 
 ```ini
-@codearemo:registry=https://npm.pkg.github.com
+@instollar-dev:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
 ```
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token   # needs read:packages
-npm install @codearemo/instollar-sdk@^0.2.5
+pnpm add @instollar-dev/instollar-sdk@^0.3.0
 ```
 
 ```tsx
-import '@codearemo/instollar-react/styles.css';
-import { Button, Text, Icon, Home2 } from '@codearemo/instollar-sdk';
+import '@instollar-dev/instollar-react/styles.css';
+import { Button, Text, Icon, Home2 } from '@instollar-dev/instollar-sdk';
 ```
 
 Load Spline Sans / Inter / Open Sans once (CSS `@import` or HTML `<link>`). Explore the live SDK surface with `pnpm playground`.
@@ -45,21 +45,29 @@ Runtime CSS comes from `styles.css`. Editor autocomplete needs a live Tailwind v
 2. Add `tailwindcss` as a **devDependency** (required by the extension; optional for runtime if you only import `styles.css`):
 
 ```bash
-npm install -D tailwindcss@^4.1.0
+pnpm add -D tailwindcss@^4.1.0
 ```
 
 3. Copy the templates from this repo (`templates/vscode/`) into your app’s `.vscode/`, or add:
 
 ```json
 {
-  "tailwindCSS.experimental.configFile": "./node_modules/@codearemo/instollar-react/theme.css",
+  "tailwindCSS.experimental.configFile": "./node_modules/@instollar-dev/instollar-react/theme.css",
   "editor.quickSuggestions": { "strings": true }
 }
 ```
 
-You can also point at `@codearemo/instollar-sdk/theme.css` (re-exports the same entry).
+If IntelliSense can’t resolve that path under pnpm’s layout, point at the umbrella package instead:
 
-**What you get:** standard Tailwind utilities, Instollar `@theme` colors/fonts, and typography `@utility` classes from `@codearemo/instollar-tokens`. Arbitrary values still need an app-side Tailwind build if you want them at runtime.
+```json
+{
+  "tailwindCSS.experimental.configFile": "./node_modules/@instollar-dev/instollar-sdk/theme.css"
+}
+```
+
+Reload the editor window after changing settings.
+
+**What you get:** standard Tailwind utilities, Instollar `@theme` colors/fonts, and typography `@utility` classes from `@instollar-dev/instollar-tokens`. Arbitrary values still need an app-side Tailwind build if you want them at runtime.
 
 ## Local development (this repo)
 
@@ -72,12 +80,36 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.2.5` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.3.0` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.2.5
-git push origin v0.2.5
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
-The Publish workflow builds and publishes all packages to GitHub Packages.
+The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.
+
+## Migrating from `@codearemo`
+
+This repo lives at [instollar-dev/instollar-sdk-v2](https://github.com/instollar-dev/instollar-sdk-v2). Package scope is **`@instollar-dev`** (GitHub Packages requires the npm scope to match the org).
+
+In consuming apps:
+
+1. Update `.npmrc`:
+   ```ini
+   @instollar-dev:registry=https://npm.pkg.github.com
+   //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+   ```
+2. Replace dependency / imports:
+   - `@codearemo/instollar-sdk` → `@instollar-dev/instollar-sdk`
+   - `@codearemo/instollar-react` → `@instollar-dev/instollar-react`
+   - `@codearemo/instollar-tokens` → `@instollar-dev/instollar-tokens`
+3. Point IntelliSense at `./node_modules/@instollar-dev/instollar-react/theme.css`
+4. Ensure `NODE_AUTH_TOKEN` has `read:packages` on the **instollar-dev** org
+
+## Vercel / CI after the transfer
+
+- **GitHub Actions** (`ci.yml`, `publish.yml`) use `GITHUB_TOKEN` from the repo — no code change required once the workflow runs under `instollar-dev`.
+- **Vercel:** Project → Settings → Git → reconnect to `instollar-dev/instollar-sdk-v2` (or import the repo again). Redeploy. Root Directory should remain `playground` (or repo root with `vercel.json` as configured).
+- Re-add any secrets that lived only on the old project (if you used a custom `NODE_AUTH_TOKEN` outside `GITHUB_TOKEN`).

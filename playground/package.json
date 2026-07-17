@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codearemo/instollar-react": "workspace:*",
-    "@codearemo/instollar-sdk": "workspace:*",
-    "@codearemo/instollar-tokens": "workspace:*",
+    "@instollar-dev/instollar-react": "workspace:*",
+    "@instollar-dev/instollar-sdk": "workspace:*",
+    "@instollar-dev/instollar-tokens": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

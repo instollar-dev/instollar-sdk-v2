@@ -1,30 +1,30 @@
 export const styleGuideSnippets = {
-  setup: `import '@codearemo/instollar-react/styles.css';
-import { Button, Text } from '@codearemo/instollar-sdk';`,
+  setup: `import '@instollar-dev/instollar-react/styles.css';
+import { Button, Text } from '@instollar-dev/instollar-sdk';`,
 
-  colors: `import { colors, brand, fonts } from '@codearemo/instollar-tokens';
+  colors: `import { colors, brand, fonts } from '@instollar-dev/instollar-tokens';
 
 // CSS variables are also available via styles.css:
 // bg-primary · text-muted · border-border · etc.`,
 
-  text: `import { Text } from '@codearemo/instollar-sdk';
+  text: `import { Text } from '@instollar-dev/instollar-sdk';
 
 <Text variant="spline-bold-h4">Page title</Text>
 <Text variant="open-regular-p" className="text-muted">
   Body copy
 </Text>`,
 
-  icon: `import { Icon, Home2 } from '@codearemo/instollar-sdk';
+  icon: `import { Icon, Home2 } from '@instollar-dev/instollar-sdk';
 
 <Icon icon={Home2} size="md" color="primary" />
 <Icon icon={Home2} size="lg" color="muted" variant="Bold" />`,
 
-  spinner: `import { Spinner } from '@codearemo/instollar-sdk';
+  spinner: `import { Spinner } from '@instollar-dev/instollar-sdk';
 
 <Spinner size={24} className="text-primary" />
 <Spinner size={32} className="text-destructive" />`,
 
-  button: `import { Button, Icon, Home2, ArrowRight2 } from '@codearemo/instollar-sdk';
+  button: `import { Button, Icon, Home2, ArrowRight2 } from '@instollar-dev/instollar-sdk';
 
 <Button variant="primary">Save</Button>
 <Button variant="ghost" tone="destructive">Cancel</Button>
@@ -39,7 +39,7 @@ import { Button, Text } from '@codearemo/instollar-sdk';`,
   statusBadge: `import {
   StatusBadge,
   createStatusResolver,
-} from '@codearemo/instollar-sdk';
+} from '@instollar-dev/instollar-sdk';
 
 <StatusBadge variant="warning" label="Pending" icon="clock" />
 
@@ -52,7 +52,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 
 <AppStatusBadge status="pending qa" />`,
 
-  chip: `import { Chip, Icon, Home2 } from '@codearemo/instollar-sdk';
+  chip: `import { Chip, Icon, Home2 } from '@instollar-dev/instollar-sdk';
 
 <Chip selected={false} onClick={() => undefined}>Idle</Chip>
 <Chip
@@ -63,7 +63,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   Filter
 </Chip>`,
 
-  unifiedTabs: `import { Tabs } from '@codearemo/instollar-sdk';
+  unifiedTabs: `import { Tabs } from '@instollar-dev/instollar-sdk';
 
 // Active underline is #002816 by default; variant="yellow" uses the accent.
 <Tabs
@@ -78,7 +78,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 // Header-only compatibility:
 <Tabs tabs={['Company', 'Team']} activeTab={activeTab} onTabChange={setActiveTab} />`,
 
-  alert: `import { Alert } from '@codearemo/instollar-sdk';
+  alert: `import { Alert } from '@instollar-dev/instollar-sdk';
 
 <Alert variant="success" appearance="inline" title="Saved" onDismiss={() => undefined}>
   Your changes were saved.
@@ -91,7 +91,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   alertText: `import {
   AlertText,
   dismissibleAlertProps,
-} from '@codearemo/instollar-sdk';
+} from '@instollar-dev/instollar-sdk';
 
 <AlertText variant="error">Email is required.</AlertText>
 <AlertText variant="success">Changes saved.</AlertText>
@@ -102,7 +102,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   {...dismissibleAlertProps(apiError, () => setApiError(null))}
 />`,
 
-  card: `import { Card, Text, Button } from '@codearemo/instollar-sdk';
+  card: `import { Card, Text, Button } from '@instollar-dev/instollar-sdk';
 
 <Card className="max-w-sm">
   <Text variant="spline-bold-h5">Invoice</Text>
@@ -112,7 +112,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   <Button size="sm" className="mt-3 w-fit">Pay</Button>
 </Card>`,
 
-  input: `import { Input, Icon, SearchNormal1, User } from '@codearemo/instollar-sdk';
+  input: `import { Input, Icon, SearchNormal1, User } from '@instollar-dev/instollar-sdk';
 
 <Input label="Email" placeholder="you@example.com" />
 <Input label="Search" prefix={<Icon icon={SearchNormal1} size="sm" color="muted" />} />
@@ -120,18 +120,18 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 
 <Input variant="dark" label="Dark surface" placeholder="Search…" />`,
 
-  textarea: `import { Textarea } from '@codearemo/instollar-sdk';
+  textarea: `import { Textarea } from '@instollar-dev/instollar-sdk';
 
 <Textarea label="Notes" placeholder="Optional" rows={3} />
 <Textarea variant="dark" label="Notes" error="Too short" rows={2} />`,
 
-  checkbox: `import { Checkbox } from '@codearemo/instollar-sdk';
+  checkbox: `import { Checkbox } from '@instollar-dev/instollar-sdk';
 
 <Checkbox label="I agree" description="Required to continue" />
 <Checkbox label="Must accept" error="Required" defaultChecked />
 <Checkbox variant="dark" label="Dark surface" defaultChecked />`,
 
-  radio: `import { Radio, RadioGroup } from '@codearemo/instollar-sdk';
+  radio: `import { Radio, RadioGroup } from '@instollar-dev/instollar-sdk';
 
 <RadioGroup label="Plan" defaultValue="pro" description="Pick a billing plan">
   <Radio value="starter" label="Starter" />
@@ -139,7 +139,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   <Radio value="enterprise" label="Enterprise" disabled />
 </RadioGroup>`,
 
-  switch: `import { Switch } from '@codearemo/instollar-sdk';
+  switch: `import { Switch } from '@instollar-dev/instollar-sdk';
 
 <Switch
   label="Email digests"
@@ -149,7 +149,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 />
 <Switch label="Required" error="Must enable" />`,
 
-  select: `import { Select } from '@codearemo/instollar-sdk';
+  select: `import { Select } from '@instollar-dev/instollar-sdk';
 
 <Select
   label="Role"
@@ -182,7 +182,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   options={roles}
 />`,
 
-  dateInput: `import { DateInput, TimeInput } from '@codearemo/instollar-sdk';
+  dateInput: `import { DateInput, TimeInput } from '@instollar-dev/instollar-sdk';
 
 <DateInput
   label="Interview date"
@@ -192,7 +192,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 <TimeInput label="Start time" value={time} onChange={(e) => setTime(e.target.value)} />
 <DateInput variant="inline" value={date} onChange={(e) => setDate(e.target.value)} />`,
 
-  otpInput: `import { OtpInput, VerificationInput } from '@codearemo/instollar-sdk';
+  otpInput: `import { OtpInput, VerificationInput } from '@instollar-dev/instollar-sdk';
 
 <OtpInput
   onChange={setCode}
@@ -203,7 +203,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 {/* Alias — same component */}
 <VerificationInput showResend={false} mask={false} />`,
 
-  dropdownMenu: `import { DropdownMenu } from '@codearemo/instollar-sdk';
+  dropdownMenu: `import { DropdownMenu } from '@instollar-dev/instollar-sdk';
 
 <DropdownMenu
   items={[
@@ -224,7 +224,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 />`,
 
   table: `import { useRef, useState } from 'react';
-import { Table, type TableHandle } from '@codearemo/instollar-sdk';
+import { Table, type TableHandle } from '@instollar-dev/instollar-sdk';
 
 const tableRef = useRef<TableHandle>(null);
 const [rows, setRows] = useState(initialRows);
@@ -247,7 +247,7 @@ const data = tableRef.current?.getDataWithoutIds();`,
   modal: `import {
   ModalProvider,
   useModal,
-} from '@codearemo/instollar-sdk';
+} from '@instollar-dev/instollar-sdk';
 
 function CreateButton() {
   const { openModal, closeModal } = useModal();
@@ -268,7 +268,7 @@ function CreateButton() {
   drawer: `import {
   DrawerProvider,
   useDrawer,
-} from '@codearemo/instollar-sdk';
+} from '@instollar-dev/instollar-sdk';
 
 function EditButton() {
   const { openDrawer, closeDrawer } = useDrawer();
@@ -290,7 +290,7 @@ function EditButton() {
   <App />
 </DrawerProvider>`,
 
-  loadBoundary: `import { LoadBoundary, Text } from '@codearemo/instollar-sdk';
+  loadBoundary: `import { LoadBoundary, Text } from '@instollar-dev/instollar-sdk';
 
 <LoadBoundary
   isLoading={query.isPending}

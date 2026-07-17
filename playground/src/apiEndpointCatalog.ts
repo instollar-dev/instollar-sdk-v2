@@ -1,7 +1,7 @@
 export type { EndpointRow, EndpointSection, EndpointDomain } from './api/catalog';
 export { apiEndpointDomains, apiBaseUrls } from './api/catalog';
 
-export const apiSetupSnippet = `import { initInstollarSDK, authApi, companyApi } from '@codearemo/instollar-sdk';
+export const apiSetupSnippet = `import { initInstollarSDK, authApi, companyApi } from '@instollar-dev/instollar-sdk';
 
 initInstollarSDK({
   baseUrl: import.meta.env.VITE_API_BASE_URL,

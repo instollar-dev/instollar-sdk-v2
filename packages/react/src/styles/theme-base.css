@@ -1,5 +1,5 @@
-@import "@codearemo/instollar-tokens/tokens.css";
-@import "@codearemo/instollar-tokens/typography.css";
+@import "@instollar-dev/instollar-tokens/tokens.css";
+@import "@instollar-dev/instollar-tokens/typography.css";
 @import "tailwindcss";
 
 @theme {

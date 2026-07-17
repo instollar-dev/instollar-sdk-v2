@@ -1,5 +1,5 @@
 /**
  * Re-export the React package Tailwind theme entry for IntelliSense.
- * Prefer `@codearemo/instollar-react/theme.css` or this path equivalently.
+ * Prefer `@instollar-dev/instollar-react/theme.css` or this path equivalently.
  */
-@import '@codearemo/instollar-react/theme.css';
+@import '@instollar-dev/instollar-react/theme.css';

@@ -1,3 +1,3 @@
-export * from '@codearemo/instollar-react';
+export * from '@instollar-dev/instollar-react';
 export * from './core';
 export * from './utils';

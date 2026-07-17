@@ -23,7 +23,7 @@ importers:
 
   packages/react:
     dependencies:
-      '@codearemo/instollar-tokens':
+      '@instollar-dev/instollar-tokens':
         specifier: workspace:*
         version: link:../tokens
       clsx:
@@ -78,10 +78,10 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@codearemo/instollar-react':
+      '@instollar-dev/instollar-react':
         specifier: workspace:*
         version: link:../react
-      '@codearemo/instollar-tokens':
+      '@instollar-dev/instollar-tokens':
         specifier: workspace:*
         version: link:../tokens
       axios:
@@ -127,13 +127,13 @@ importers:
 
   playground:
     dependencies:
-      '@codearemo/instollar-react':
+      '@instollar-dev/instollar-react':
         specifier: workspace:*
         version: link:../packages/react
-      '@codearemo/instollar-sdk':
+      '@instollar-dev/instollar-sdk':
         specifier: workspace:*
         version: link:../packages/sdk
-      '@codearemo/instollar-tokens':
+      '@instollar-dev/instollar-tokens':
         specifier: workspace:*
         version: link:../packages/tokens
       react:

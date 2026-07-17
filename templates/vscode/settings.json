@@ -1,5 +1,5 @@
 {
-  "tailwindCSS.experimental.configFile": "./node_modules/@codearemo/instollar-react/theme.css",
+  "tailwindCSS.experimental.configFile": "./node_modules/@instollar-dev/instollar-react/theme.css",
   "editor.quickSuggestions": {
     "strings": true
   }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { cn, Text } from '@codearemo/instollar-sdk';
+import { cn, Text } from '@instollar-dev/instollar-sdk';
 import {
   Callout,
   CodeBlock,
@@ -77,7 +77,7 @@ function EndpointCatalog({ domain }: { domain: EndpointDomain }) {
           <EndpointTable rows={section.endpoints} />
         </div>
       ))}
-      <CodeBlock label="Usage">{`import { ${domain.sdkExport} } from '@codearemo/instollar-sdk';
+      <CodeBlock label="Usage">{`import { ${domain.sdkExport} } from '@instollar-dev/instollar-sdk';
 
 // Example — see tables above for full list
 const result = await ${domain.sdkExport}.${example?.fn.includes('.') ? example.fn.split('.')[1] : '…'}(/* … */);`}</CodeBlock>

@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { Text, cn } from '@codearemo/instollar-sdk';
+import { Text, cn } from '@instollar-dev/instollar-sdk';
 
 export type TocItem = { id: string; label: string };
 

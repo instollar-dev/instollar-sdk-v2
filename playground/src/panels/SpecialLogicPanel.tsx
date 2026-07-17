@@ -29,7 +29,7 @@ import {
   toastVariantFromApi,
   formFieldErrorClass,
   formFieldLabelClass,
-} from '@codearemo/instollar-sdk';
+} from '@instollar-dev/instollar-sdk';
 import {
   CodeBlock,
   DemoFrame,
@@ -140,7 +140,7 @@ export function SpecialLogicPanel() {
   sanitizeNumberInput,
   formatNumberInput,
   numberInputRawValue,
-} from '@codearemo/instollar-sdk';
+} from '@instollar-dev/instollar-sdk';
 
 formatNumberInput('250000'); // '250,000'
 numberInputRawValue('250,000'); // '250000'`}</CodeBlock>
@@ -169,7 +169,7 @@ numberInputRawValue('250,000'); // '250000'`}</CodeBlock>
   formatDateSmart,
   formatRelative,
   toDateInputValue,
-} from '@codearemo/instollar-sdk/utils/dateTime';
+} from '@instollar-dev/instollar-sdk/utils/dateTime';
 
 formatDate('2025-08-22'); // "Fri, 22nd Aug, 2025"
 toDateInputValue(apiDate); // "2025-08-22"`}</CodeBlock>
@@ -198,7 +198,7 @@ toDateInputValue(apiDate); // "2025-08-22"`}</CodeBlock>
   formatMoney,
   formatCurrencyLabel,
   formatCompactAmount,
-} from '@codearemo/instollar-sdk/utils/money';
+} from '@instollar-dev/instollar-sdk/utils/money';
 
 formatMoney(1500000, { currency: 'NGN' });
 formatCurrencyLabel(1500, 'NGN'); // "NGN 1,500"
@@ -232,7 +232,7 @@ formatCompactAmount(1200); // "1.2K"`}</CodeBlock>
   normalizeString,
   formatPhoneForApi,
   normalizePhoneForApi,
-} from '@codearemo/instollar-sdk';
+} from '@instollar-dev/instollar-sdk';
 
 formatAmountInput('1234.50'); // "1,234.50"
 parseAmountInput('1,234.50'); // 1234.5
@@ -270,7 +270,7 @@ import {
   validateForm,
   getApiErrorMessage,
   isNetworkDisconnectError,
-} from '@codearemo/instollar-sdk';
+} from '@instollar-dev/instollar-sdk';
 
 const schema = z.object({ email: z.string().email('Invalid email') });
 const result = validateForm(schema, formData);
@@ -399,7 +399,7 @@ isNetworkDisconnectError(query.error);`}</CodeBlock>
   FieldControl,
   formFieldLabelClass,
   formFieldErrorClass,
-} from '@codearemo/instollar-sdk';`}</CodeBlock>
+} from '@instollar-dev/instollar-sdk';`}</CodeBlock>
         </div>
       </Section>
 

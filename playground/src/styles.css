@@ -7,8 +7,8 @@
  * packages/react/src/styles/utilities-safelist.css — apps only need that
  * precompiled file. Arbitrary values still require this kind of local scan.
  */
-@import "@codearemo/instollar-tokens/tokens.css";
-@import "@codearemo/instollar-tokens/typography.css";
+@import "@instollar-dev/instollar-tokens/tokens.css";
+@import "@instollar-dev/instollar-tokens/typography.css";
 @import "tailwindcss";
 
 @source "./**/*.{tsx,ts}";

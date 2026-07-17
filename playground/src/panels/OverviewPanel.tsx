@@ -24,7 +24,7 @@ const pillars = [
     title: 'Style guide',
     status: 'shipped' as const,
     statusLabel: 'Live in 0.2.x',
-    body: 'Tokens, typography, and React UI — published as @codearemo/instollar-sdk with precompiled styles.css.',
+    body: 'Tokens, typography, and React UI — published as @instollar-dev/instollar-sdk with precompiled styles.css.',
   },
   {
     id: 'logic' as const,
@@ -87,19 +87,19 @@ export function OverviewPanel({ onNavigate }: { onNavigate: (id: PillarId) => vo
       </Section>
 
       <Section title="Install once">
-        <CodeBlock label="Terminal + React">{`npm install @codearemo/instollar-sdk@^0.2.5
-npm install -D tailwindcss@^4.1.0
+        <CodeBlock label="Terminal + React">{`pnpm add @instollar-dev/instollar-sdk@^0.3.0
+pnpm add -D tailwindcss@^4.1.0
 
-import '@codearemo/instollar-react/styles.css';
-import { Button, Text } from '@codearemo/instollar-sdk';`}</CodeBlock>
+import '@instollar-dev/instollar-react/styles.css';
+import { Button, Text } from '@instollar-dev/instollar-sdk';`}</CodeBlock>
         <Callout tone="note" title="Auth for GitHub Packages">
-          Create a root <strong>.npmrc</strong> pointing <strong>@codearemo</strong> at{' '}
+          Create a root <strong>.npmrc</strong> pointing <strong>@instollar-dev</strong> at{' '}
           <strong>npm.pkg.github.com</strong>, with <strong>NODE_AUTH_TOKEN</strong> that has{' '}
           <strong>read:packages</strong>.
         </Callout>
         <Callout tone="note" title="Tailwind class autocomplete">
           Install the <strong>Tailwind CSS IntelliSense</strong> extension, then point it at{' '}
-          <code>node_modules/@codearemo/instollar-react/theme.css</code> via{' '}
+          <code>node_modules/@instollar-dev/instollar-react/theme.css</code> via{' '}
           <code>tailwindCSS.experimental.configFile</code> (copy{' '}
           <code>templates/vscode/</code> from the SDK repo). That unlocks suggestions for{' '}
           <code>bg-primary</code>, <code>text-spline-bold-h4</code>, and standard utilities.

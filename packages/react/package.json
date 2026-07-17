@@ -1,6 +1,6 @@
 {
-  "name": "@codearemo/instollar-react",
-  "version": "0.2.5",
+  "name": "@instollar-dev/instollar-react",
+  "version": "0.3.0",
   "description": "Instollar React web UI components",
   "type": "module",
   "main": "./dist/index.js",
@@ -39,7 +39,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@codearemo/instollar-tokens": "workspace:*",
+    "@instollar-dev/instollar-tokens": "workspace:*",
     "clsx": "^2.1.1",
     "iconsax-react": "^0.0.8",
     "tailwind-merge": "^3.0.0"
@@ -74,6 +74,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/codearemo/instollar-sdk-v2.git"
+    "url": "https://github.com/instollar-dev/instollar-sdk-v2.git"
   }
 }

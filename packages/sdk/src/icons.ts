@@ -1,1 +1,1 @@
-export * from '@codearemo/instollar-react/icons';
+export * from '@instollar-dev/instollar-react/icons';

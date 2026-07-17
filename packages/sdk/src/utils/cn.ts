@@ -1,1 +1,1 @@
-export { cn } from '@codearemo/instollar-react';
+export { cn } from '@instollar-dev/instollar-react';
