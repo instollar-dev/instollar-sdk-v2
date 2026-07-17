@@ -20,7 +20,14 @@ describe('Button', () => {
     render(<Button variant="secondary">Secondary</Button>);
     const button = screen.getByRole('button', { name: 'Secondary' });
     expect(button.style.backgroundColor).toBe('var(--color-secondary, #effe3e)');
-    expect(button.style.color).toBe('var(--color-primary, #012b15)');
+    expect(button.style.color).toBe('var(--color-brand, #012b15)');
+  });
+
+  it('applies primary variant brand fill', () => {
+    render(<Button variant="primary">Primary</Button>);
+    expect(screen.getByRole('button', { name: 'Primary' }).style.backgroundColor).toBe(
+      'var(--color-brand, #012b15)',
+    );
   });
 
   it('applies ghost destructive tone color', () => {
@@ -34,10 +41,21 @@ describe('Button', () => {
     );
   });
 
-  it('aliases danger to destructive solid styling', () => {
-    render(<Button variant="danger">Danger</Button>);
-    const button = screen.getByRole('button', { name: 'Danger' });
-    expect(button.style.backgroundColor).toBe('var(--color-destructive, #b42318)');
-    expect(button.style.color).toBe('rgb(255, 255, 255)');
+  it('applies underline variant text styles', () => {
+    render(<Button variant="underline">Learn more</Button>);
+    const button = screen.getByRole('button', { name: 'Learn more' });
+    expect(button.style.color).toBe('var(--color-fg, var(--color-brand, #012b15))');
+    expect(button.className).toContain('underline');
+  });
+
+  it('applies underline destructive tone', () => {
+    render(
+      <Button variant="underline" tone="destructive">
+        Remove
+      </Button>,
+    );
+    expect(screen.getByRole('button', { name: 'Remove' }).style.color).toBe(
+      'var(--color-destructive, #b42318)',
+    );
   });
 });

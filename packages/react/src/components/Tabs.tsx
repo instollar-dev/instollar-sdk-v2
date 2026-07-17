@@ -250,14 +250,14 @@ export function Tabs({
           {canScrollLeft && (
             <>
               <div
-                className="pointer-events-none absolute inset-y-0 left-0 z-5 w-10 bg-linear-to-r from-white to-transparent"
+                className="pointer-events-none absolute inset-y-0 left-0 z-5 w-10 bg-linear-to-r from-background to-transparent"
                 aria-hidden
               />
               <button
                 type="button"
                 aria-label="Scroll tabs left"
                 onClick={() => scrollStrip(-1)}
-                className="absolute left-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer rounded-full bg-white p-1 shadow-md transition-colors hover:bg-gray-50"
+                className="absolute left-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer rounded-full bg-background p-1 shadow-md transition-colors hover:bg-foreground/5"
               >
                 <ArrowLeft2 size={16} color={iconPaint.foreground} aria-hidden />
               </button>
@@ -296,7 +296,7 @@ export function Tabs({
                     aria-hidden
                     className={cn(
                       'absolute bottom-0 left-0 right-0 h-1.5 rounded-t-lg transition-colors duration-200',
-                      isActive ? activeBarColor : 'bg-gray-500/20',
+                      isActive ? activeBarColor : 'bg-border',
                     )}
                   />
                 </button>
@@ -306,14 +306,14 @@ export function Tabs({
           {canScrollRight && (
             <>
               <div
-                className="pointer-events-none absolute inset-y-0 right-0 z-5 w-10 bg-linear-to-l from-white to-transparent"
+                className="pointer-events-none absolute inset-y-0 right-0 z-5 w-10 bg-linear-to-l from-background to-transparent"
                 aria-hidden
               />
               <button
                 type="button"
                 aria-label="Scroll tabs right"
                 onClick={() => scrollStrip(1)}
-                className="absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer rounded-full bg-white p-1 shadow-md transition-colors hover:bg-gray-50"
+                className="absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer rounded-full bg-background p-1 shadow-md transition-colors hover:bg-foreground/5"
               >
                 <ArrowRight2 size={16} color={iconPaint.foreground} aria-hidden />
               </button>

@@ -87,7 +87,7 @@ export function OverviewPanel({ onNavigate }: { onNavigate: (id: PillarId) => vo
       </Section>
 
       <Section title="Install once">
-        <CodeBlock label="Terminal + React">{`pnpm add @instollar-dev/instollar-sdk@^0.3.0
+        <CodeBlock label="Terminal + React">{`pnpm add @instollar-dev/instollar-sdk@^0.4.0
 pnpm add -D tailwindcss@^4.1.0
 
 import '@instollar-dev/instollar-react/styles.css';
@@ -97,13 +97,10 @@ import { Button, Text } from '@instollar-dev/instollar-sdk';`}</CodeBlock>
           <strong>npm.pkg.github.com</strong>, with <strong>NODE_AUTH_TOKEN</strong> that has{' '}
           <strong>read:packages</strong>.
         </Callout>
-        <Callout tone="note" title="Tailwind class autocomplete">
-          Install the <strong>Tailwind CSS IntelliSense</strong> extension, then point it at{' '}
-          <code>node_modules/@instollar-dev/instollar-react/theme.css</code> via{' '}
-          <code>tailwindCSS.experimental.configFile</code> (copy{' '}
-          <code>templates/vscode/</code> from the SDK repo). That unlocks suggestions for{' '}
-          <code>bg-primary</code>, <code>text-spline-bold-h4</code>, and standard utilities.
-          Runtime styles still come from <code>styles.css</code> alone.
+        <Callout tone="note" title="Light / dark theme">
+          Wrap the app in <code>ThemeProvider</code> and toggle with <code>useTheme()</code>. Prefer{' '}
+          <code>bg-background</code>, <code>text-foreground</code>, and <code>bg-brand</code> so UI
+          follows the theme. Try the Dark / Light control in the playground sidebar.
         </Callout>
       </Section>
     </div>

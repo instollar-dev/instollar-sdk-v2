@@ -32,7 +32,7 @@ const apiNav = [
 
 function EndpointTable({ rows }: { rows: EndpointRow[] }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-border bg-white">
+    <div className="overflow-x-auto rounded-xl border border-border bg-background">
       <table className="w-full min-w-[40rem] text-left text-open-regular-tiny">
         <thead className="border-b border-border bg-[#fafbfa] text-muted">
           <tr>
@@ -171,8 +171,8 @@ export function ApiPanel() {
                   className={cn(
                     'docs-focus-ring rounded-lg border px-3 py-2 text-left transition-colors',
                     activeDomain === domain.id
-                      ? 'border-primary/25 bg-primary text-white'
-                      : 'border-border bg-white hover:border-primary/20',
+                      ? 'border-primary/25 bg-[var(--color-brand,#012b15)] text-white'
+                      : 'border-border bg-background hover:border-primary/20',
                   )}
                 >
                   <span className="block text-open-regular-label font-medium">{domain.title}</span>

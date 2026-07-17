@@ -5,10 +5,10 @@ export { Button } from './components/Button';
 export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize } from './components/Button';
 
 export { Input } from './components/Input';
-export type { InputProps, InputVariant } from './components/Input';
+export type { InputProps } from './components/Input';
 
 export { Textarea } from './components/Textarea';
-export type { TextareaProps, TextareaVariant } from './components/Textarea';
+export type { TextareaProps } from './components/Textarea';
 
 export { Checkbox } from './components/Checkbox';
 export type { CheckboxProps } from './components/Checkbox';
@@ -41,12 +41,11 @@ export { FieldControl } from './components/FieldControl';
 export type { FieldControlProps } from './components/FieldControl';
 
 export {
-  formControlVariantClasses,
+  formControlSurfaceClass,
   formFieldLabelClass,
   formFieldErrorClass,
   formFieldDescriptionClass,
 } from './components/formVariants';
-export type { FieldSurface } from './components/formVariants';
 
 export {
   sanitizeNumberInput,
@@ -179,8 +178,13 @@ export type { DrawerConfig, DrawerContextValue } from './components/DrawerProvid
 export { DropdownMenu } from './components/DropdownMenu';
 export type { DropdownMenuItem, DropdownMenuProps } from './components/DropdownMenu';
 
-export { DateInput, TimeInput } from './components/DateInput';
-export type { DateInputProps, DateInputType, TimeInputProps } from './components/DateInput';
+export { DateInput, TimeInput, DateTimeInput } from './components/DateInput';
+export type {
+  DateInputProps,
+  DateInputType,
+  TimeInputProps,
+  DateTimeInputProps,
+} from './components/DateInput';
 
 export { OtpInput, VerificationInput } from './components/OtpInput';
 export type { OtpInputProps, VerificationInputProps } from './components/OtpInput';
@@ -190,6 +194,9 @@ export { useOnClickOutside } from './hooks/useOnClickOutside';
 export { useFloatingPosition } from './hooks/useFloatingPosition';
 export type { FloatingPlacement, FloatingPosition } from './hooks/useFloatingPosition';
 export { useMediaQuery } from './hooks/useMediaQuery';
+
+export { ThemeProvider, useTheme } from './theme/ThemeProvider';
+export type { Theme, ResolvedTheme, ThemeProviderProps } from './theme/ThemeProvider';
 
 export { cn } from './utils/cn';
 export { toSelectOptions } from './utils/toSelectOptions';

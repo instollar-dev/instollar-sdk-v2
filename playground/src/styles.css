@@ -25,6 +25,7 @@
   --font-inter: var(--font-inter);
   --font-open: var(--font-open-sans);
 
+  --color-brand: var(--color-brand);
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
   --color-background: var(--color-bg);

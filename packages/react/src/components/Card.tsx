@@ -7,7 +7,7 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: CardVariant;
 }
 
-const cardSurfaceClass = 'bg-white border border-border rounded-2xl p-5 shadow-sm';
+const cardSurfaceClass = 'bg-background border border-border rounded-2xl p-5 shadow-sm';
 
 export function Card({ variant: _variant, className, children, ...props }: CardProps) {
   return (

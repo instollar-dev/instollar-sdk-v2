@@ -6,7 +6,6 @@ import {
   type ReactNode,
 } from 'react';
 import { cn } from '../utils/cn';
-import type { FieldSurface } from './formVariants';
 import {
   formFieldDescriptionClass,
   formFieldErrorClass,
@@ -17,7 +16,6 @@ interface RadioGroupContextValue {
   name: string;
   value?: string;
   onValueChange?: (value: string) => void;
-  variant: FieldSurface;
   disabled?: boolean;
 }
 
@@ -31,7 +29,6 @@ export interface RadioGroupProps {
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
-  variant?: FieldSurface;
   disabled?: boolean;
   className?: string;
   children: ReactNode;
@@ -45,12 +42,10 @@ export function RadioGroup({
   value,
   defaultValue,
   onValueChange,
-  variant,
   disabled,
   className,
   children,
 }: RadioGroupProps) {
-  const resolvedVariant = variant ?? 'light';
   const generatedName = useId();
   const name = nameProp ?? generatedName;
   const groupId = useId();
@@ -61,7 +56,6 @@ export function RadioGroup({
         name,
         value: value ?? defaultValue,
         onValueChange,
-        variant: resolvedVariant,
         disabled,
       }}
     >
@@ -97,14 +91,12 @@ export interface RadioProps
   value: string;
   label?: ReactNode;
   description?: string;
-  variant?: FieldSurface;
 }
 
 export function Radio({
   value,
   label,
   description,
-  variant,
   className,
   id,
   disabled,
@@ -113,7 +105,6 @@ export function Radio({
   ...props
 }: RadioProps) {
   const ctx = useContext(RadioGroupContext);
-  const resolvedVariant = variant ?? ctx?.variant ?? 'light';
   const inputId = id ?? `${ctx?.name ?? 'radio'}-${value}`;
   const isDisabled = disabled ?? ctx?.disabled;
   const isChecked = checkedProp ?? (ctx?.value !== undefined ? ctx.value === value : undefined);
@@ -148,13 +139,10 @@ export function Radio({
         />
         <span
           className={cn(
-            'flex size-4 items-center justify-center rounded-full border-2 transition-colors duration-150 outline-none',
+            'flex size-4 items-center justify-center rounded-full border-2 border-border bg-background transition-colors duration-150 outline-none',
             'peer-checked:border-primary',
             '[&>span]:opacity-0 peer-checked:[&>span]:opacity-100',
             'peer-disabled:opacity-50',
-            resolvedVariant === 'light'
-              ? 'border-border bg-white'
-              : 'border-white/14 bg-primary/35',
           )}
         >
           <span className="size-2 rounded-full bg-primary transition-opacity" />

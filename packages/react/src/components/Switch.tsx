@@ -1,6 +1,5 @@
 import { useState, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { cn } from '../utils/cn';
-import type { FieldSurface } from './formVariants';
 import {
   formFieldDescriptionClass,
   formFieldErrorClass,
@@ -14,7 +13,6 @@ export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   label?: ReactNode;
   description?: string;
   error?: string;
-  variant?: FieldSurface;
 }
 
 export function Switch({
@@ -24,14 +22,12 @@ export function Switch({
   label,
   description,
   error,
-  variant,
   className,
   id,
   disabled,
   onClick,
   ...props
 }: SwitchProps) {
-  const resolvedVariant = variant ?? 'light';
   const switchId =
     id ?? (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
   const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
@@ -70,9 +66,7 @@ export function Switch({
             'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
             isChecked
               ? 'border-primary bg-primary'
-              : resolvedVariant === 'light'
-                ? 'border-border bg-[rgba(1,43,21,0.12)]'
-                : 'border-white/14 bg-primary/35',
+              : 'border-border bg-[color-mix(in_srgb,var(--color-brand,#012b15)_12%,transparent)]',
             error && 'border-destructive',
           )}
           {...props}

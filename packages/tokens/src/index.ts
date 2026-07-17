@@ -1,4 +1,4 @@
-/** Instollar brand anchors from the style guide. */
+/** Instollar brand anchors from the style guide (stable across themes). */
 export const brand = {
   primary: '#012b15',
   secondary: '#effe3e',
@@ -10,10 +10,22 @@ export const fonts = {
   openSans: '"Open Sans", sans-serif',
 } as const;
 
+/** Light theme semantic colors (matches `:root` in tokens.css). */
 export const colors = {
+  brand: brand.primary,
   primary: brand.primary,
   secondary: brand.secondary,
   bg: '#ffffff',
   fg: brand.primary,
   destructive: '#b42318',
+} as const;
+
+/** Dark theme semantic colors (matches `[data-theme="dark"]` in tokens.css). */
+export const darkColors = {
+  brand: brand.primary,
+  primary: '#8fc9a5',
+  secondary: brand.secondary,
+  bg: '#24382f',
+  fg: '#edf6f0',
+  destructive: '#f97066',
 } as const;

@@ -2,7 +2,6 @@ import type { InputHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../utils/cn';
 import { iconPaint } from '../utils/iconPaint';
 import { CheckmarkIcon } from './CheckmarkIcon';
-import type { FieldSurface } from './formVariants';
 import {
   formFieldDescriptionClass,
   formFieldErrorClass,
@@ -13,24 +12,19 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
   label?: ReactNode;
   description?: string;
   error?: string;
-  variant?: FieldSurface;
 }
 
 export function Checkbox({
   label,
   description,
   error,
-  variant,
   className,
   id,
   disabled,
   ...props
 }: CheckboxProps) {
-  const resolvedVariant = variant ?? 'light';
   const inputId =
     id ?? (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
-  const checkColor =
-    resolvedVariant === 'light' ? iconPaint.inverse : iconPaint.secondary;
 
   return (
     <div className="flex flex-col gap-1">
@@ -61,16 +55,14 @@ export function Checkbox({
           <span
             className={cn(
               'flex size-4 items-center justify-center rounded border-2 transition-colors duration-150 outline-none',
+              'border-border bg-background',
               'peer-checked:border-primary peer-checked:bg-primary',
               '[&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100',
               'peer-disabled:opacity-50',
-              resolvedVariant === 'light'
-                ? 'border-border bg-white'
-                : 'border-white/14 bg-primary/35',
               error && 'border-destructive',
             )}
           >
-            <CheckmarkIcon color={checkColor} />
+            <CheckmarkIcon color={iconPaint.inverse} />
           </span>
         </span>
         {(label || description) && (

@@ -11,7 +11,7 @@ import {
 import { cn } from '../utils/cn';
 import { iconPaint } from '../utils/iconPaint';
 
-export type DateInputType = 'date' | 'time';
+export type DateInputType = 'date' | 'time' | 'datetime-local';
 
 export interface DateInputProps
   extends Omit<
@@ -34,6 +34,7 @@ export interface DateInputProps
 }
 
 export type TimeInputProps = Omit<DateInputProps, 'type'>;
+export type DateTimeInputProps = Omit<DateInputProps, 'type'>;
 
 /** Local YMD coerce — matches SDK `toDateInputValue` for form fields without pulling date-fns into react. */
 function toDateInputValue(input: string | Date | number | null | undefined): string {
@@ -54,6 +55,44 @@ function formatLocalYmd(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
+}
+
+function pad2(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+/** Local `YYYY-MM-DDTHH:mm` for `<input type="datetime-local">`. */
+function toDateTimeLocalValue(input: string | Date | number | null | undefined): string {
+  if (input == null || input === '') return '';
+  if (typeof input === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(input)) return input.slice(0, 16);
+    if (/^\d{4}-\d{2}-\d{2}/.test(input) && !input.includes('T')) return `${input.slice(0, 10)}T00:00`;
+    const parsed = new Date(input);
+    if (Number.isNaN(parsed.getTime())) return '';
+    return formatLocalDateTime(parsed);
+  }
+  const date = input instanceof Date ? input : new Date(input);
+  if (Number.isNaN(date.getTime())) return '';
+  return formatLocalDateTime(date);
+}
+
+function formatLocalDateTime(date: Date): string {
+  return `${formatLocalYmd(date)}T${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+}
+
+function resolveDisplayValue(
+  type: DateInputType,
+  value: string | Date | number | null | undefined,
+): string {
+  if (type === 'date') {
+    return typeof value === 'string' ? value : toDateInputValue(value ?? undefined);
+  }
+  if (type === 'datetime-local') {
+    return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)
+      ? value.slice(0, 16)
+      : toDateTimeLocalValue(value ?? undefined);
+  }
+  return (value as string | null | undefined) ?? '';
 }
 
 export const DateInput: FC<DateInputProps> = ({
@@ -80,12 +119,7 @@ export const DateInput: FC<DateInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isControlled = value !== undefined;
-  const displayValue =
-    type === 'date'
-      ? typeof value === 'string'
-        ? value
-        : toDateInputValue(value ?? undefined)
-      : ((value as string | null | undefined) ?? '');
+  const displayValue = resolveDisplayValue(type, value);
 
   const openPicker = () => {
     const el = inputRef.current;
@@ -110,21 +144,24 @@ export const DateInput: FC<DateInputProps> = ({
     variant === 'inline'
       ? 'w-full rounded bg-transparent px-2 py-1 text-spline-regular-p text-foreground focus:outline-none'
       : cn(
-          'w-full rounded-[4px] border-[0.5px] bg-white px-4 py-3 transition-shadow',
+          'w-full rounded-[4px] border-[0.5px] bg-background px-4 py-3 text-foreground transition-shadow',
           'focus:outline-none focus:ring-1 focus:ring-primary',
-          'disabled:cursor-not-allowed disabled:border-gray-500/50 disabled:bg-gray-50 disabled:text-gray-500',
-          error ? 'border-red-500 focus:ring-red-500' : 'border-border',
+          'disabled:cursor-not-allowed disabled:border-border/50 disabled:bg-foreground/5 disabled:text-muted',
+          error ? 'border-destructive focus:ring-destructive' : 'border-border',
           'pr-13',
         );
 
   const webkitPicker =
     '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0';
 
+  const pickerLabel =
+    type === 'time' ? 'Choose time' : type === 'datetime-local' ? 'Choose date and time' : 'Choose date';
+
   const defaultIcon =
-    type === 'date' ? (
-      <Calendar size={18} variant="Linear" color={iconPaint.muted} aria-hidden />
-    ) : (
+    type === 'time' ? (
       <Clock size={18} variant="Linear" color={iconPaint.muted} aria-hidden />
+    ) : (
+      <Calendar size={18} variant="Linear" color={iconPaint.muted} aria-hidden />
     );
 
   return (
@@ -160,8 +197,8 @@ export const DateInput: FC<DateInputProps> = ({
         {variant === 'default' && rightElement === undefined ? (
           <button
             type="button"
-            className="absolute top-1/2 right-3 z-10 -translate-y-1/2 text-gray-400 hover:text-foreground focus:outline-none"
-            aria-label={type === 'date' ? 'Choose date' : 'Choose time'}
+            className="absolute top-1/2 right-3 z-10 -translate-y-1/2 text-muted hover:text-foreground focus:outline-none"
+            aria-label={pickerLabel}
             onClick={openPicker}
             disabled={disabled}
           >
@@ -174,11 +211,17 @@ export const DateInput: FC<DateInputProps> = ({
         ) : null}
       </div>
 
-      {showErrorMessage && error ? <p className="mt-1 text-sm text-red-500">{error}</p> : null}
+      {showErrorMessage && error ? (
+        <p className="mt-1 text-sm text-destructive">{error}</p>
+      ) : null}
     </div>
   );
 };
 
 export const TimeInput: FC<TimeInputProps> = (props) => <DateInput type="time" {...props} />;
+
+export const DateTimeInput: FC<DateTimeInputProps> = (props) => (
+  <DateInput type="datetime-local" {...props} />
+);
 
 export default DateInput;

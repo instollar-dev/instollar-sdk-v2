@@ -32,13 +32,13 @@ export function dismissibleAlertProps(
 
 const variantClasses: Record<AlertVariant, string> = {
   error:
-    'text-[var(--sdk-alert-text-error-text,#B91C1C)] bg-[var(--sdk-alert-text-error-bg,#FEF2F2)] border-l-[var(--sdk-alert-text-error-border,#EF4444)]',
+    'text-[var(--sdk-alert-text-error-text,var(--color-destructive))] bg-[var(--sdk-alert-text-error-bg,color-mix(in_srgb,var(--color-destructive)_12%,var(--color-bg)))] border-l-[var(--sdk-alert-text-error-border,var(--color-destructive))]',
   success:
-    'text-[var(--sdk-alert-text-success-text,#15803D)] bg-[var(--sdk-alert-text-success-bg,#F0FDF4)] border-l-[var(--sdk-alert-text-success-border,#22C55E)]',
+    'text-[var(--sdk-alert-text-success-text,var(--color-primary))] bg-[var(--sdk-alert-text-success-bg,color-mix(in_srgb,var(--color-primary)_12%,var(--color-bg)))] border-l-[var(--sdk-alert-text-success-border,var(--color-primary))]',
   pending:
-    'text-[var(--sdk-alert-text-pending-text,#B45309)] bg-[var(--sdk-alert-text-pending-bg,#FFFBEB)] border-l-[var(--sdk-alert-text-pending-border,#F59E0B)]',
+    'text-[var(--sdk-alert-text-pending-text,var(--color-fg))] bg-[var(--sdk-alert-text-pending-bg,color-mix(in_srgb,var(--color-secondary)_28%,var(--color-bg)))] border-l-[var(--sdk-alert-text-pending-border,var(--color-secondary))]',
   info:
-    'text-[var(--sdk-alert-text-info-text,#1D4ED8)] bg-[var(--sdk-alert-text-info-bg,#EFF6FF)] border-l-[var(--sdk-alert-text-info-border,#3B82F6)]',
+    'text-[var(--sdk-alert-text-info-text,var(--color-primary))] bg-[var(--sdk-alert-text-info-bg,color-mix(in_srgb,var(--color-primary)_10%,var(--color-bg)))] border-l-[var(--sdk-alert-text-info-border,var(--color-primary))]',
 };
 
 function CloseIcon() {

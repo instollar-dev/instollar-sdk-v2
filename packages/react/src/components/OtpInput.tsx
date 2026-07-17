@@ -155,7 +155,7 @@ export const OtpInput: FC<OtpInputProps> = ({
                   inputs.current[idx] = el;
                 }}
                 className={cn(
-                  'aspect-square min-w-0 flex-1 rounded-lg border-[0.5px] border-border text-center text-lg font-bold transition-all md:h-[60px] md:w-[60px] md:flex-none md:text-xl',
+                  'aspect-square min-w-0 flex-1 rounded-lg border-[0.5px] border-border bg-background text-center text-lg font-bold text-foreground transition-all md:h-[60px] md:w-[60px] md:flex-none md:text-xl',
                   'focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none',
                   'disabled:cursor-not-allowed disabled:opacity-50',
                   inputClassName,

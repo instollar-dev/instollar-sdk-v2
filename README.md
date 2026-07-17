@@ -27,7 +27,7 @@ In the consuming app, create `.npmrc` (exact name):
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token
-pnpm add @instollar-dev/instollar-sdk@^0.3.0
+pnpm add @instollar-dev/instollar-sdk@^0.4.0
 ```
 
 `NODE_AUTH_TOKEN` must be a GitHub personal access token (or fine-grained token) with `read:packages` on the **instollar-dev** org. Use the same token in CI for installs.
@@ -98,6 +98,42 @@ import '@instollar-dev/instollar-react/styles.css';
 
 Without that app-side build, prefer named utilities from `styles.css`, inline styles, or CSS variables for one-offs.
 
+## Light / dark theme
+
+Tokens ship light (default) and dark themes. Dark activates when `<html>` has `data-theme="dark"` or a `.dark` class.
+
+| Token | Light | Dark |
+|-------|-------|------|
+| `--color-brand` | `#012b15` | `#012b15` (stable fills) |
+| `--color-primary` | `#012b15` | `#8fc9a5` (accents / text) |
+| `--color-secondary` | `#effe3e` | `#effe3e` |
+| `--color-bg` | `#ffffff` | `#24382f` |
+| `--color-fg` | brand green | `#edf6f0` |
+| `--color-destructive` | `#b42318` | `#f97066` |
+
+```tsx
+import { ThemeProvider, useTheme } from '@instollar-dev/instollar-sdk';
+
+function App() {
+  return (
+    <ThemeProvider defaultTheme="system">
+      <Shell />
+    </ThemeProvider>
+  );
+}
+
+function ThemeToggle() {
+  const { resolvedTheme, toggleTheme } = useTheme();
+  return (
+    <button type="button" onClick={toggleTheme}>
+      {resolvedTheme === 'dark' ? 'Light' : 'Dark'}
+    </button>
+  );
+}
+```
+
+Prefer semantic classes (`bg-background`, `text-foreground`, `border-border`, `bg-brand`) so surfaces follow the theme. Solid primary buttons use `--color-brand` so they stay forest green in both modes.
+
 ## Local development (this repo)
 
 ```bash
@@ -109,12 +145,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.3.0` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.4.0` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.3.0
-git push origin v0.3.0
+git tag v0.4.0
+git push origin v0.4.0
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.

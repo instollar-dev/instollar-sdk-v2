@@ -132,7 +132,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
         {trigger ?? (
           <button
             type="button"
-            className="rounded-md px-2 py-1 transition-colors hover:bg-gray-50"
+            className="rounded-md px-2 py-1 transition-colors hover:bg-foreground/5"
             aria-haspopup="menu"
             aria-expanded={open}
           >
@@ -147,7 +147,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
               ref={menuRef}
               role="menu"
               className={cn(
-                'fixed z-[100] max-w-xs min-w-[180px] w-max overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg',
+                'fixed z-[100] max-w-xs min-w-[180px] w-max overflow-hidden rounded-lg border border-border bg-background text-foreground shadow-lg',
                 menuClassName,
               )}
               style={
@@ -172,7 +172,7 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
                       'flex w-full items-center justify-between gap-2 px-4 py-3 text-sm text-foreground transition-colors',
                       item.disabled
                         ? 'cursor-not-allowed opacity-50 grayscale'
-                        : 'hover:bg-gray-50',
+                        : 'hover:bg-foreground/5',
                       item.className,
                     )}
                     onClick={(event) => {

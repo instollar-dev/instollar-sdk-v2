@@ -4,6 +4,17 @@
   --docs-rail: 15.5rem;
   --docs-wide: 72rem;
   --docs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --docs-canvas: #f3f5f2;
+  --docs-glow-brand: color-mix(in srgb, var(--color-brand, #012b15) 7%, transparent);
+  --docs-glow-accent: color-mix(in srgb, var(--color-secondary, #effe3e) 18%, transparent);
+  --docs-header: color-mix(in srgb, var(--color-bg, #ffffff) 90%, #f7f8f6);
+}
+
+:root[data-theme='dark'] {
+  --docs-canvas: #1a2822;
+  --docs-glow-brand: color-mix(in srgb, var(--color-primary, #8fc9a5) 14%, transparent);
+  --docs-glow-accent: color-mix(in srgb, var(--color-secondary, #effe3e) 11%, transparent);
+  --docs-header: color-mix(in srgb, var(--color-bg, #24382f) 92%, #15201b);
 }
 
 html {
@@ -13,10 +24,10 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f3f5f2;
+  background-color: var(--docs-canvas);
   background-image:
-    radial-gradient(ellipse 900px 520px at 12% -8%, color-mix(in srgb, #012b15 7%, transparent), transparent 70%),
-    radial-gradient(ellipse 700px 400px at 100% 0%, color-mix(in srgb, #effe3e 18%, transparent), transparent 55%);
+    radial-gradient(ellipse 900px 520px at 12% -8%, var(--docs-glow-brand), transparent 70%),
+    radial-gradient(ellipse 700px 400px at 100% 0%, var(--docs-glow-accent), transparent 55%);
   color: var(--color-fg, #012b15);
 }
 

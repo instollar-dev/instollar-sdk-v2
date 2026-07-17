@@ -102,7 +102,7 @@ function ModalShell({ config, zIndex, isTopmost, onClose }: ModalShellProps) {
         aria-modal="true"
         onClick={(event) => event.stopPropagation()}
         className={cn(
-          'relative flex max-h-[90vh] w-full flex-col overflow-hidden rounded-2xl bg-white shadow-xl',
+          'relative flex max-h-[90vh] w-full flex-col overflow-hidden rounded-2xl bg-background text-foreground shadow-xl',
           sizeClasses[size],
           className,
         )}
@@ -113,7 +113,7 @@ function ModalShell({ config, zIndex, isTopmost, onClose }: ModalShellProps) {
               type="button"
               aria-label="Close modal"
               onClick={onClose}
-              className="cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-black/5 hover:text-foreground"
+              className="cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-foreground/5 hover:text-foreground"
             >
               <CloseCircle size={20} variant="Linear" color={iconPaint.muted} aria-hidden />
             </button>

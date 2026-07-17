@@ -68,8 +68,8 @@ function TocCategoryJump({
             className={cn(
               'docs-focus-ring inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-left transition-colors',
               isActive
-                ? 'border-primary/25 bg-primary text-white'
-                : 'border-border bg-white text-foreground hover:border-primary/20 hover:bg-primary/[0.03]',
+                ? 'border-primary/25 bg-[var(--color-brand,#012b15)] text-white'
+                : 'border-border bg-background text-foreground hover:border-primary/20 hover:bg-primary/[0.03]',
             )}
           >
             <span className="text-open-regular-label font-medium">{group.title}</span>
@@ -103,7 +103,7 @@ function TocJumpSelect({
       <select
         value={activeId}
         onChange={(event) => scrollToSection(event.target.value)}
-        className="docs-focus-ring w-full rounded-xl border border-border bg-white px-3 py-2.5 text-open-regular-p text-foreground"
+        className="docs-focus-ring w-full rounded-xl border border-border bg-background px-3 py-2.5 text-open-regular-p text-foreground"
       >
         {groups.map((group) => (
           <optgroup key={group.title} label={group.title}>
@@ -366,7 +366,7 @@ export function StatusMark({
   } as const;
 
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-2.5 py-1 text-open-regular-tiny text-foreground">
+    <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-2.5 py-1 text-open-regular-tiny text-foreground">
       <span className={cn('size-1.5 rounded-full', dot[status])} aria-hidden />
       {children}
     </span>
@@ -464,11 +464,11 @@ export function DemoFrame({
   const [view, setView] = useState<'preview' | 'code'>('preview');
 
   return (
-    <div className={cn('overflow-hidden rounded-xl border border-border bg-white shadow-sm', wide && 'w-full')}>
-      <div className="flex items-center justify-between gap-3 border-b border-border bg-[#fafbfa] px-3 py-2">
+    <div className={cn('overflow-hidden rounded-xl border border-border bg-background shadow-sm', wide && 'w-full')}>
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-background px-3 py-2">
         <span className="text-open-regular-tiny text-muted">{label}</span>
         {code ? (
-          <div className="flex rounded-lg border border-border bg-white p-0.5">
+          <div className="flex rounded-lg border border-border bg-background p-0.5">
             {(['preview', 'code'] as const).map((tab) => (
               <button
                 key={tab}
@@ -476,7 +476,7 @@ export function DemoFrame({
                 onClick={() => setView(tab)}
                 className={cn(
                   'docs-focus-ring rounded-md px-2.5 py-1 text-[11px] font-medium capitalize transition-colors',
-                  view === tab ? 'bg-primary text-white' : 'text-muted hover:text-foreground',
+                  view === tab ? 'bg-[var(--color-brand,#012b15)] text-white' : 'text-muted hover:text-foreground',
                 )}
               >
                 {tab}
@@ -527,7 +527,7 @@ export function InPageNav({
   return (
     <nav
       aria-label="On this page"
-      className="sticky top-[4.5rem] z-[5] -mx-1 mb-8 overflow-x-auto border-b border-border/70 bg-[#f7f8f6]/95 px-1 py-2 backdrop-blur md:top-0"
+      className="sticky top-[4.5rem] z-[5] -mx-1 mb-8 overflow-x-auto border-b border-border/70 bg-background/95 px-1 py-2 backdrop-blur md:top-0"
     >
       <ul className="flex min-w-max gap-1">
         {items.map((item) => (
@@ -537,7 +537,7 @@ export function InPageNav({
               className={cn(
                 'docs-focus-ring inline-flex rounded-full px-3 py-1.5 text-open-regular-tiny transition-colors',
                 active === item.id
-                  ? 'bg-primary text-white'
+                  ? 'bg-[var(--color-brand,#012b15)] text-white'
                   : 'text-muted hover:bg-primary/5 hover:text-foreground',
               )}
             >
@@ -555,7 +555,7 @@ export function StepList({ steps }: { steps: { title: string; body: string }[] }
     <ol className="flex flex-col gap-0 border-l border-border">
       {steps.map((step, index) => (
         <li key={step.title} className="relative flex gap-4 py-4 pl-6">
-          <span className="absolute top-5 -left-[9px] flex size-[17px] items-center justify-center rounded-full border border-border bg-white text-[10px] font-semibold text-primary">
+          <span className="absolute top-5 -left-[9px] flex size-[17px] items-center justify-center rounded-full border border-border bg-background text-[10px] font-semibold text-primary">
             {index + 1}
           </span>
           <div className="flex flex-col gap-1 pt-0.5">
@@ -596,7 +596,7 @@ export function PillarCard({
           onNavigate();
         }
       }}
-      className="docs-focus-ring group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-white p-6 transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_12px_40px_-24px_rgba(1,43,21,0.45)]"
+      className="docs-focus-ring group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-border bg-background p-6 transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_12px_40px_-24px_rgba(1,43,21,0.45)]"
     >
       <div className="flex items-start justify-between gap-3">
         <span className="text-open-regular-tiny font-medium text-muted">{index}</span>

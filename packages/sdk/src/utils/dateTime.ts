@@ -7,9 +7,12 @@ import {
   parseISO,
 } from 'date-fns';
 
-export type DateTimeInput = Date | string | number;
+export type DateLike = Date | string | number;
 
-export function toDate(input: DateTimeInput): Date {
+/** @deprecated Use {@link DateLike}. Renamed so it does not clash with the DateTimeInput component. */
+export type DateInputLike = DateLike;
+
+export function toDate(input: DateLike): Date {
   if (input instanceof Date) return input;
   if (typeof input === 'number') return new Date(input);
   if (typeof input === 'string') {
@@ -19,7 +22,7 @@ export function toDate(input: DateTimeInput): Date {
   return new Date(Number.NaN);
 }
 
-export function toDateInputValue(input: DateTimeInput | null | undefined): string {
+export function toDateInputValue(input: DateLike | null | undefined): string {
   if (input == null) return '';
   const raw = String(input).trim();
   if (!raw) return '';
@@ -41,14 +44,14 @@ export const dateTimeFormats = {
 } as const;
 
 export function formatDate(
-  input: DateTimeInput,
+  input: DateLike,
   formatStr: string = dateTimeFormats.display,
 ): string {
   const date = toDate(input);
   return isValid(date) ? format(date, formatStr) : '';
 }
 
-export function formatTime(input: DateTimeInput, use24h = false): string {
+export function formatTime(input: DateLike, use24h = false): string {
   const date = toDate(input);
   return isValid(date)
     ? format(date, use24h ? dateTimeFormats.time24 : dateTimeFormats.time12)
@@ -56,20 +59,20 @@ export function formatTime(input: DateTimeInput, use24h = false): string {
 }
 
 export function formatDateTime(
-  input: DateTimeInput,
+  input: DateLike,
   formatStr: string = dateTimeFormats.dateTimeShort,
 ): string {
   const date = toDate(input);
   return isValid(date) ? format(date, formatStr) : '';
 }
 
-export function formatRelative(input: DateTimeInput): string {
+export function formatRelative(input: DateLike): string {
   const date = toDate(input);
   return isValid(date) ? formatDistanceToNow(date, { addSuffix: true }) : '';
 }
 
 export function formatDateSmart(
-  input: DateTimeInput,
+  input: DateLike,
   formatStr: string = dateTimeFormats.short,
 ): string {
   const date = toDate(input);
@@ -79,12 +82,12 @@ export function formatDateSmart(
   return format(date, formatStr);
 }
 
-export function formatISO(input: DateTimeInput): string {
+export function formatISO(input: DateLike): string {
   const date = toDate(input);
   return isValid(date) ? date.toISOString() : '';
 }
 
-export function formatDateOnly(input: DateTimeInput): string {
+export function formatDateOnly(input: DateLike): string {
   const date = toDate(input);
   return isValid(date) ? format(date, 'yyyy-MM-dd') : '';
 }

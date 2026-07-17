@@ -1,10 +1,30 @@
 import { useEffect, useState } from 'react';
-import { cn } from '@instollar-dev/instollar-sdk';
+import { Icon, Moon, Sun1, cn, useTheme } from '@instollar-dev/instollar-sdk';
 import { nav, resolvePillar, type PillarId } from './nav';
 import { OverviewPanel } from './panels/OverviewPanel';
 import { ApiPanel } from './panels/ApiPanel';
 import { StyleGuidePanel } from './panels/StyleGuidePanel';
 import { SpecialLogicPanel } from './panels/SpecialLogicPanel';
+
+function ThemeToggle({ className }: { className?: string }) {
+  const { resolvedTheme, toggleTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className={cn(
+        'docs-focus-ring inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-open-regular-tiny font-medium text-foreground transition-colors hover:border-primary/30',
+        className,
+      )}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      <Icon icon={isDark ? Sun1 : Moon} size="sm" color="primary" />
+      {isDark ? 'Light' : 'Dark'}
+    </button>
+  );
+}
 
 export function App() {
   const [pillar, setPillar] = useState<PillarId>(() =>
@@ -32,14 +52,14 @@ export function App() {
   const idx = nav.findIndex((n) => n.id === pillar);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-transparent text-foreground">
       <div className="mx-auto flex min-h-screen max-w-[90rem]">
-        <aside className="sticky top-0 hidden h-screen w-[var(--docs-rail)] shrink-0 flex-col border-r border-border/80 bg-white/70 px-4 py-7 backdrop-blur-md lg:flex">
+        <aside className="sticky top-0 hidden h-screen w-[var(--docs-rail)] shrink-0 flex-col border-r border-border/80 bg-background/70 px-4 py-7 backdrop-blur-md lg:flex">
           <div className="mb-10 px-2">
-            <p className="font-spline text-[1.35rem] font-bold tracking-tight text-primary">
+            <p className="font-spline text-[1.35rem] font-bold tracking-tight text-foreground">
               Instollar
             </p>
-            <p className="mt-1 text-open-regular-tiny text-muted">SDK docs · v0.3.0</p>
+            <p className="mt-1 text-open-regular-tiny text-muted">SDK docs · v0.4.0</p>
           </div>
 
           <nav className="flex flex-1 flex-col gap-0.5" aria-label="SDK chapters">
@@ -52,7 +72,9 @@ export function App() {
                   onClick={() => go(item.id)}
                   className={cn(
                     'docs-focus-ring group flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors',
-                    active ? 'bg-primary text-white' : 'hover:bg-primary/4',
+                    active
+                      ? 'bg-[var(--color-brand,#012b15)] text-white'
+                      : 'text-foreground hover:bg-primary/10',
                   )}
                 >
                   <span
@@ -76,7 +98,8 @@ export function App() {
             })}
           </nav>
 
-          <div className="mt-6 border-t border-border/70 px-2 pt-5">
+          <div className="mt-6 space-y-4 border-t border-border/70 px-2 pt-5">
+            <ThemeToggle className="w-full justify-center" />
             <p className="text-open-regular-tiny leading-relaxed text-muted">
               Style guide groups components by category — use the right rail or jump menu to navigate.
             </p>
@@ -84,10 +107,13 @@ export function App() {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <div className="sticky top-0 z-20 border-b border-border/80 bg-[#f7f8f6]/90 px-4 pt-4 pb-3 backdrop-blur-md lg:hidden">
-            <div className="mb-3 flex items-baseline justify-between gap-3">
-              <p className="font-spline text-lg font-bold text-primary">Instollar</p>
-              <span className="text-open-regular-tiny text-muted">v0.3.0</span>
+          <div className="sticky top-0 z-20 border-b border-border/80 bg-[var(--docs-header)] px-4 pt-4 pb-3 backdrop-blur-md lg:hidden">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="font-spline text-lg font-bold text-foreground">Instollar</p>
+              <div className="flex items-center gap-2">
+                <span className="text-open-regular-tiny text-muted">v0.4.0</span>
+                <ThemeToggle />
+              </div>
             </div>
             <div className="-mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
               {nav.map((item) => (
@@ -98,8 +124,8 @@ export function App() {
                   className={cn(
                     'docs-focus-ring shrink-0 rounded-full px-3.5 py-1.5 text-open-regular-tiny font-medium transition-colors',
                     pillar === item.id
-                      ? 'bg-primary text-white'
-                      : 'bg-white text-foreground ring-1 ring-border',
+                      ? 'bg-[var(--color-brand,#012b15)] text-white'
+                      : 'bg-background text-foreground ring-1 ring-border',
                   )}
                 >
                   {item.label}

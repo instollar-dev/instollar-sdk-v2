@@ -1,15 +1,11 @@
 import type { ReactNode, TextareaHTMLAttributes } from 'react';
 import { cn } from '../utils/cn';
 import { FieldControl } from './FieldControl';
-import type { FieldSurface } from './formVariants';
 import { formFieldErrorClass, formFieldLabelClass } from './formVariants';
-
-export type TextareaVariant = FieldSurface;
 
 export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'prefix'> {
   label?: string;
   error?: string;
-  variant?: TextareaVariant;
   prefix?: ReactNode;
   suffix?: ReactNode;
 }
@@ -17,7 +13,6 @@ export interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaE
 export function Textarea({
   label,
   error,
-  variant,
   prefix,
   suffix,
   className,
@@ -25,7 +20,6 @@ export function Textarea({
   disabled,
   ...props
 }: TextareaProps) {
-  const resolvedVariant = variant ?? 'light';
   const textareaId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
   return (
@@ -36,7 +30,6 @@ export function Textarea({
         </label>
       ) : null}
       <FieldControl
-        variant={resolvedVariant}
         error={!!error}
         disabled={disabled}
         prefix={prefix}
@@ -48,7 +41,6 @@ export function Textarea({
           disabled={disabled}
           className={cn(
             'min-h-[80px] w-full resize-y border-0 bg-transparent px-3 py-2 text-open-regular-p outline-none placeholder:text-muted',
-            resolvedVariant === 'dark' && 'placeholder:text-white/45',
             className,
           )}
           aria-invalid={error ? true : undefined}

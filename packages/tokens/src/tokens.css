@@ -1,5 +1,9 @@
 /**
  * Instollar Design System — Design Tokens
+ *
+ * Light is default on `:root`. Dark activates via `data-theme="dark"` on
+ * `<html>` (or a `.dark` ancestor). Keep `--color-brand` stable for solid
+ * fills; `--color-primary` may lift in dark for readable text/accents.
  */
 
 :root {
@@ -7,16 +11,36 @@
   --font-inter: "Inter", sans-serif;
   --font-open-sans: "Open Sans", sans-serif;
 
+  --color-brand: #012b15;
   --color-primary: #012b15;
   --color-secondary: #effe3e;
 
   --color-bg: #ffffff;
-  --color-fg: var(--color-primary);
-  --color-muted: color-mix(in srgb, var(--color-primary) 55%, white);
-  --color-border: color-mix(in srgb, var(--color-primary) 12%, white);
+  --color-fg: var(--color-brand);
+  --color-muted: color-mix(in srgb, var(--color-brand) 55%, white);
+  --color-border: color-mix(in srgb, var(--color-brand) 12%, white);
   --color-destructive: #b42318;
 
+  color-scheme: light;
   font-family: var(--font-spline);
   line-height: 1.5;
   font-weight: 400;
+}
+
+:root[data-theme='dark'],
+.dark {
+  /* Brand stays deep forest for solid fills — surfaces sit clearly above it. */
+  --color-brand: #012b15;
+  /* Soft mint accents: readable on the dark canvas, distinct from brand fills. */
+  --color-primary: #8fc9a5;
+  --color-secondary: #effe3e;
+
+  /* Muted charcoal-green canvas (lower chroma than brand) so primary & brand separate cleanly. */
+  --color-bg: #24382f;
+  --color-fg: #edf6f0;
+  --color-muted: color-mix(in srgb, var(--color-fg) 52%, var(--color-bg));
+  --color-border: color-mix(in srgb, var(--color-fg) 18%, var(--color-bg));
+  --color-destructive: #f97066;
+
+  color-scheme: dark;
 }

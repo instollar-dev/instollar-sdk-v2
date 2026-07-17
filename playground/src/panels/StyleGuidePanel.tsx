@@ -8,6 +8,7 @@ import {
   Checkbox,
   Chip,
   DateInput,
+  DateTimeInput,
   DrawerProvider,
   DropdownMenu,
   Home2,
@@ -29,7 +30,6 @@ import {
   Text,
   Textarea,
   TimeInput,
-  User,
   createStatusResolver,
   dismissibleAlertProps,
   useDrawer,
@@ -37,7 +37,7 @@ import {
   type StatusVariant,
   type TableHandle,
 } from '@instollar-dev/instollar-sdk';
-import { brand, colors, fonts } from '@instollar-dev/instollar-tokens';
+import { brand, colors, darkColors, fonts } from '@instollar-dev/instollar-tokens';
 import {
   DemoFrame,
   PageHeader,
@@ -65,10 +65,17 @@ const textVariants = [
 ] as const;
 
 const iconSizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
-const iconColors = ['current', 'primary', 'secondary', 'muted', 'inverse', 'destructive'] as const;
+const iconColors = ['current', 'brand', 'primary', 'secondary', 'muted', 'inverse', 'destructive'] as const;
 const iconStyles = ['Linear', 'Outline', 'Broken', 'Bold', 'Bulk', 'TwoTone'] as const;
 
-const buttonVariants = ['primary', 'secondary', 'ghost', 'destructive', 'danger'] as const;
+const buttonVariants = [
+  'primary',
+  'secondary',
+  'ghost',
+  'underline',
+  'destructive',
+  'danger',
+] as const;
 const alertVariants = ['success', 'error', 'destructive', 'warning', 'info'] as const;
 const statusVariants: StatusVariant[] = [
   'success',
@@ -85,15 +92,24 @@ const statusVariants: StatusVariant[] = [
   'muted',
   'neutral',
 ];
-const fieldSurfaces = ['light', 'dark'] as const;
 
 const colorSwatches = [
+  { name: 'brand', value: colors.brand, className: 'bg-brand' },
   { name: 'primary', value: colors.primary, className: 'bg-primary' },
   { name: 'secondary', value: colors.secondary, className: 'bg-secondary' },
   { name: 'background', value: colors.bg, className: 'bg-background border border-border' },
   { name: 'foreground', value: colors.fg, className: 'bg-foreground' },
   { name: 'destructive', value: colors.destructive, className: 'bg-destructive' },
   { name: 'muted', value: 'var(--color-muted)', className: 'bg-muted' },
+] as const;
+
+const darkColorSwatches = [
+  { name: 'brand', value: darkColors.brand, className: 'bg-brand' },
+  { name: 'primary', value: darkColors.primary, className: 'bg-primary' },
+  { name: 'secondary', value: darkColors.secondary, className: 'bg-secondary' },
+  { name: 'background', value: darkColors.bg, className: 'bg-background border border-border' },
+  { name: 'foreground', value: darkColors.fg, className: 'bg-foreground' },
+  { name: 'destructive', value: darkColors.destructive, className: 'bg-destructive' },
 ] as const;
 
 const { StatusBadge: ResolvedStatusBadge } = createStatusResolver({
@@ -171,28 +187,16 @@ function VariantRow({
   label,
   hint,
   children,
-  dark,
 }: {
   label: string;
   hint?: string;
   children: ReactNode;
-  dark?: boolean;
 }) {
   return (
-    <div
-      className={
-        dark
-          ? 'flex flex-col gap-3 rounded-xl bg-primary px-4 py-4 text-white sm:flex-row sm:items-center'
-          : 'flex flex-col gap-3 border-b border-border py-4 last:border-0 sm:flex-row sm:items-center'
-      }
-    >
+    <div className="flex flex-col gap-3 border-b border-border py-4 last:border-0 sm:flex-row sm:items-center">
       <div className="w-full shrink-0 sm:w-44">
-        <code className={dark ? 'text-[12px] text-white/80' : 'text-[12px] text-muted'}>{label}</code>
-        {hint ? (
-          <p className={dark ? 'mt-0.5 text-open-regular-tiny text-white/55' : 'mt-0.5 text-open-regular-tiny text-muted'}>
-            {hint}
-          </p>
-        ) : null}
+        <code className="text-[12px] text-muted">{label}</code>
+        {hint ? <p className="mt-0.5 text-open-regular-tiny text-muted">{hint}</p> : null}
       </div>
       <div className="min-w-0 flex-1">{children}</div>
     </div>
@@ -207,6 +211,7 @@ export function StyleGuidePanel() {
   const [switchOn, setSwitchOn] = useState(true);
   const [inlineError, setInlineError] = useState<string | null>('Email address is required.');
   const [interviewDate, setInterviewDate] = useState('2025-08-22');
+  const [scheduledAt, setScheduledAt] = useState('2025-08-22T14:30');
   const [otpCode, setOtpCode] = useState('');
   const [loadMode, setLoadMode] = useState<'content' | 'loading' | 'error' | 'forbidden' | 'stale'>(
     'content',
@@ -241,22 +246,48 @@ export function StyleGuidePanel() {
       </Section>
 
       <Section id="sg-colors" title="Colors" code={snippets.colors}>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {colorSwatches.map((swatch) => (
-            <div
-              key={swatch.name}
-              className="flex items-center gap-3 rounded-xl border border-border bg-white p-3"
-            >
-              <span className={`size-12 shrink-0 rounded-lg ${swatch.className}`} />
-              <div className="min-w-0">
-                <Text variant="open-bold-p">{swatch.name}</Text>
-                <Text variant="open-regular-tiny" className="truncate text-muted">
-                  {swatch.value}
-                </Text>
+        <SubSection title="Light">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {colorSwatches.map((swatch) => (
+              <div
+                key={swatch.name}
+                className="flex items-center gap-3 rounded-xl border border-border bg-background p-3"
+              >
+                <span className={`size-12 shrink-0 rounded-lg ${swatch.className}`} />
+                <div className="min-w-0">
+                  <Text variant="open-bold-p">{swatch.name}</Text>
+                  <Text variant="open-regular-tiny" className="truncate text-muted">
+                    {swatch.value}
+                  </Text>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </SubSection>
+        <SubSection title="Dark (data-theme=&quot;dark&quot;)">
+          <p className="mb-3 max-w-xl text-open-regular-tiny text-muted">
+            Brand stays forest green for solid fills. Primary lifts to mint for readable accents;
+            canvas, text, borders, and destructive shift with the theme. Toggle from the sidebar.
+          </p>
+          <div className="dark grid gap-3 rounded-2xl border border-border bg-background p-4 sm:grid-cols-2 lg:grid-cols-3">
+            {darkColorSwatches.map((swatch) => (
+              <div
+                key={swatch.name}
+                className="flex items-center gap-3 rounded-xl border border-border bg-background p-3"
+              >
+                <span className={`size-12 shrink-0 rounded-lg ${swatch.className}`} />
+                <div className="min-w-0">
+                  <Text variant="open-bold-p" className="text-foreground">
+                    {swatch.name}
+                  </Text>
+                  <Text variant="open-regular-tiny" className="truncate text-muted">
+                    {swatch.value}
+                  </Text>
+                </div>
+              </div>
+            ))}
+          </div>
+        </SubSection>
         <p className="text-open-regular-tiny text-muted">
           brand {brand.primary} / {brand.secondary} · {fonts.spline.split(',')[0]}, Inter, Open Sans
         </p>
@@ -348,7 +379,7 @@ export function StyleGuidePanel() {
       <Section
         id="sg-button"
         title="Button"
-        description="variant · tone (ghost) · size · loading · prefix / suffix · disabled"
+        description="variant · tone (ghost / underline) · size · loading · prefix / suffix · disabled"
         code={snippets.button}
       >
         <DemoFrame label="variant" className="!p-0">
@@ -360,21 +391,26 @@ export function StyleGuidePanel() {
             ))}
           </div>
         </DemoFrame>
-        <DemoFrame label="tone (ghost only)" className="!p-0">
+        <DemoFrame label="tone (ghost / underline)" className="!p-0">
           <div className="px-4">
-            <VariantRow label='tone="default"'>
+            <VariantRow label='ghost · tone="default"'>
               <Button variant="ghost" tone="default">
                 Ghost default
               </Button>
             </VariantRow>
-            <VariantRow label='tone="destructive"'>
+            <VariantRow label='ghost · tone="destructive"'>
               <Button variant="ghost" tone="destructive">
                 Ghost destructive
               </Button>
             </VariantRow>
-            <VariantRow label='tone="danger"'>
-              <Button variant="ghost" tone="danger">
-                Ghost danger
+            <VariantRow label='underline · tone="default"'>
+              <Button variant="underline" tone="default">
+                Underline default
+              </Button>
+            </VariantRow>
+            <VariantRow label='underline · tone="destructive"'>
+              <Button variant="underline" tone="destructive">
+                Underline destructive
               </Button>
             </VariantRow>
           </div>
@@ -594,10 +630,10 @@ export function StyleGuidePanel() {
       <Section
         id="sg-input"
         title="Input"
-        description="variant (FieldSurface) · type password/number · prefix · error · disabled"
+        description="type password/number · prefix · error · disabled"
         code={snippets.input}
       >
-        <DemoFrame label='variant="light"' className="max-w-xl space-y-4">
+        <DemoFrame label="Preview" className="max-w-xl space-y-4">
           <Input label="Default" placeholder="you@example.com" />
           <Input label="With error" error="Required" placeholder="…" />
           <Input
@@ -609,22 +645,13 @@ export function StyleGuidePanel() {
           <Input label="Number" type="number" placeholder="1,000" defaultValue="2500" />
           <Input label="Disabled" disabled placeholder="Unavailable" />
         </DemoFrame>
-        <DemoFrame label='variant="dark"' className="max-w-xl space-y-4 !bg-primary">
-          <Input variant="dark" label="Dark surface" placeholder="Search…" />
-          <Input
-            variant="dark"
-            label="Dark + prefix"
-            placeholder="Find"
-            prefix={<Icon icon={User} size="sm" color="inverse" />}
-          />
-        </DemoFrame>
       </Section>
 
       {/* ——— DateInput ——— */}
       <Section
         id="sg-date-input"
-        title="DateInput / TimeInput"
-        description="native date/time picker · default or inline · Calendar/Clock affordance"
+        title="DateInput / TimeInput / DateTimeInput"
+        description="native date · time · datetime-local · default or inline · Calendar/Clock affordance"
         code={snippets.dateInput}
       >
         <DemoFrame className="max-w-xl space-y-4">
@@ -634,6 +661,11 @@ export function StyleGuidePanel() {
             onChange={(event) => setInterviewDate(event.target.value)}
           />
           <TimeInput label="Start time" defaultValue="14:30" />
+          <DateTimeInput
+            label="Scheduled at"
+            value={scheduledAt}
+            onChange={(event) => setScheduledAt(event.target.value)}
+          />
           <DateInput label="With error" error="Pick a date" value="" onChange={() => undefined} />
           <DateInput
             label="Inline (table cell style)"
@@ -665,29 +697,17 @@ export function StyleGuidePanel() {
       </Section>
 
       {/* ——— Textarea ——— */}
-      <Section id="sg-textarea" title="Textarea" description="variant · error · disabled" code={snippets.textarea}>
-        {fieldSurfaces.map((surface) => (
-          <DemoFrame
-            key={surface}
-            label={`variant="${surface}"`}
-            className={surface === 'dark' ? 'max-w-xl !bg-primary' : 'max-w-xl'}
-          >
-            <div className="space-y-4">
-              <Textarea variant={surface} label="Notes" placeholder="Optional" rows={3} />
-              <Textarea
-                variant={surface}
-                label="With error"
-                error="Too short"
-                placeholder="…"
-                rows={2}
-              />
-            </div>
-          </DemoFrame>
-        ))}
+      <Section id="sg-textarea" title="Textarea" description="error · disabled" code={snippets.textarea}>
+        <DemoFrame label="Preview" className="max-w-xl">
+          <div className="space-y-4">
+            <Textarea label="Notes" placeholder="Optional" rows={3} />
+            <Textarea label="With error" error="Too short" placeholder="…" rows={2} />
+          </div>
+        </DemoFrame>
       </Section>
 
       {/* ——— Checkbox ——— */}
-      <Section id="sg-checkbox" title="Checkbox" description="checked · description · error · variant · disabled" code={snippets.checkbox}>
+      <Section id="sg-checkbox" title="Checkbox" description="checked · description · error · disabled" code={snippets.checkbox}>
         <DemoFrame className="!p-0">
           <div className="px-4">
             <VariantRow label="unchecked">
@@ -709,26 +729,17 @@ export function StyleGuidePanel() {
             <VariantRow label="disabled">
               <Checkbox label="Disabled" disabled defaultChecked />
             </VariantRow>
-            <VariantRow label='variant="dark"' dark>
-              <Checkbox variant="dark" label="Dark surface" defaultChecked />
-            </VariantRow>
           </div>
         </DemoFrame>
       </Section>
 
       {/* ——— Radio ——— */}
-      <Section id="sg-radio" title="Radio / RadioGroup" description="value · description · variant · disabled" code={snippets.radio}>
-        <DemoFrame label="default (light)">
+      <Section id="sg-radio" title="Radio / RadioGroup" description="value · description · disabled" code={snippets.radio}>
+        <DemoFrame label="default">
           <RadioGroup label="Plan" defaultValue="pro" description="Pick a billing plan">
             <Radio value="starter" label="Starter" />
             <Radio value="pro" label="Pro" description="Most popular" />
             <Radio value="enterprise" label="Enterprise" disabled />
-          </RadioGroup>
-        </DemoFrame>
-        <DemoFrame label='variant="dark"' className="!bg-primary">
-          <RadioGroup variant="dark" label="Plan" defaultValue="pro">
-            <Radio value="starter" label="Starter" />
-            <Radio value="pro" label="Pro" description="Most popular" />
           </RadioGroup>
         </DemoFrame>
         <DemoFrame label="error">
@@ -740,7 +751,7 @@ export function StyleGuidePanel() {
       </Section>
 
       {/* ——— Switch ——— */}
-      <Section id="sg-switch" title="Switch" description="checked · description · error · variant · disabled" code={snippets.switch}>
+      <Section id="sg-switch" title="Switch" description="checked · description · error · disabled" code={snippets.switch}>
         <DemoFrame className="!p-0">
           <div className="px-4">
             <VariantRow label="off">
@@ -760,9 +771,6 @@ export function StyleGuidePanel() {
             <VariantRow label="disabled">
               <Switch label="Disabled" disabled defaultChecked />
             </VariantRow>
-            <VariantRow label='variant="dark"' dark>
-              <Switch variant="dark" label="Dark surface" defaultChecked />
-            </VariantRow>
           </div>
         </DemoFrame>
       </Section>
@@ -771,7 +779,7 @@ export function StyleGuidePanel() {
       <Section
         id="sg-select"
         title="Select"
-        description="single · multiple · searchable · creatable · add new · loading · error · variant"
+        description="single · multiple · searchable · creatable · add new · loading · error · inline"
         code={snippets.select}
       >
         <DemoFrame className="max-w-xl space-y-4">
@@ -862,19 +870,6 @@ export function StyleGuidePanel() {
           <Select
             label="With prefix"
             prefix={<Icon icon={Lock} size="sm" color="muted" />}
-            value={role}
-            onValueChange={(v) => setRole(v as string)}
-            options={[
-              { value: 'admin', label: 'Admin' },
-              { value: 'installer', label: 'Installer' },
-            ]}
-          />
-        </DemoFrame>
-        <DemoFrame label='variant="dark"' className="max-w-xl !bg-primary">
-          <Select
-            variant="dark"
-            label="Dark surface"
-            searchable
             value={role}
             onValueChange={(v) => setRole(v as string)}
             options={[

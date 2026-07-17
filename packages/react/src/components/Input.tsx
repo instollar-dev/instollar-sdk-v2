@@ -9,7 +9,6 @@ import {
 import { cn } from '../utils/cn';
 import { iconPaint } from '../utils/iconPaint';
 import { FieldControl } from './FieldControl';
-import type { FieldSurface } from './formVariants';
 import { formFieldErrorClass, formFieldLabelClass } from './formVariants';
 import {
   formatNumberInput,
@@ -17,20 +16,12 @@ import {
   sanitizeNumberInput,
 } from './numberInputUtils';
 
-export type InputVariant = FieldSurface;
-
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
   label?: string;
   error?: string;
-  variant?: InputVariant;
   prefix?: ReactNode;
   suffix?: ReactNode;
 }
-
-const variantClasses: Record<InputVariant, string> = {
-  light: 'placeholder:text-muted',
-  dark: 'placeholder:text-white/45',
-};
 
 function createNumberChangeEvent(
   event: ChangeEvent<HTMLInputElement>,
@@ -46,7 +37,6 @@ function createNumberChangeEvent(
 export function Input({
   label,
   error,
-  variant,
   prefix,
   suffix,
   className,
@@ -58,7 +48,6 @@ export function Input({
   onChange,
   ...props
 }: InputProps) {
-  const resolvedVariant = variant ?? 'light';
   const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
   const isPassword = type === 'password';
   const isNumber = type === 'number';
@@ -126,21 +115,14 @@ export function Input({
           {label}
         </label>
       ) : null}
-      <FieldControl
-        variant={resolvedVariant}
-        error={!!error}
-        disabled={disabled}
-        prefix={prefix}
-        suffix={resolvedSuffix}
-      >
+      <FieldControl error={!!error} disabled={disabled} prefix={prefix} suffix={resolvedSuffix}>
         <input
           id={inputId}
           disabled={disabled}
           type={inputType}
           inputMode={isNumber ? 'decimal' : props.inputMode}
           className={cn(
-            'w-full border-0 bg-transparent px-3 py-2 text-open-regular-p outline-none',
-            variantClasses[resolvedVariant],
+            'w-full border-0 bg-transparent px-3 py-2 text-open-regular-p outline-none placeholder:text-muted',
             isNumber && 'instollar-number-input',
             className,
           )}

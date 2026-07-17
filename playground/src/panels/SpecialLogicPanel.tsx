@@ -120,7 +120,7 @@ export function SpecialLogicPanel() {
           <DemoFrame label="Live">
             <div className="flex flex-col gap-3">
               <label className={formFieldLabelClass}>Amount</label>
-              <FieldControl variant="light">
+              <FieldControl>
                 <input
                   className="w-full bg-transparent px-3 py-2 text-open-regular-p outline-none"
                   value={amountDisplay}
@@ -386,7 +386,7 @@ isNetworkDisconnectError(query.error);`}</CodeBlock>
           <DemoFrame>
             <div className="flex flex-col gap-2">
               <label className={formFieldLabelClass}>Custom field</label>
-              <FieldControl variant="light">
+              <FieldControl>
                 <input
                   className="w-full bg-transparent px-3 py-2 text-open-regular-p outline-none"
                   placeholder="Compose with FieldControl"

@@ -2,10 +2,13 @@ export const styleGuideSnippets = {
   setup: `import '@instollar-dev/instollar-react/styles.css';
 import { Button, Text } from '@instollar-dev/instollar-sdk';`,
 
-  colors: `import { colors, brand, fonts } from '@instollar-dev/instollar-tokens';
+  colors: `import { colors, darkColors, brand } from '@instollar-dev/instollar-tokens';
+import { ThemeProvider, useTheme } from '@instollar-dev/instollar-sdk';
 
-// CSS variables are also available via styles.css:
-// bg-primary · text-muted · border-border · etc.`,
+// Toggle: document.documentElement.dataset.theme = 'dark'
+// Or wrap the app in <ThemeProvider> and call useTheme().
+
+// CSS: bg-background · text-foreground · bg-brand · text-primary`,
 
   text: `import { Text } from '@instollar-dev/instollar-sdk';
 
@@ -27,6 +30,7 @@ import { Button, Text } from '@instollar-dev/instollar-sdk';`,
   button: `import { Button, Icon, Home2, ArrowRight2 } from '@instollar-dev/instollar-sdk';
 
 <Button variant="primary">Save</Button>
+<Button variant="underline">Learn more</Button>
 <Button variant="ghost" tone="destructive">Cancel</Button>
 <Button size="sm" loading>Saving…</Button>
 <Button
@@ -112,24 +116,21 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   <Button size="sm" className="mt-3 w-fit">Pay</Button>
 </Card>`,
 
-  input: `import { Input, Icon, SearchNormal1, User } from '@instollar-dev/instollar-sdk';
+  input: `import { Input, Icon, SearchNormal1 } from '@instollar-dev/instollar-sdk';
 
 <Input label="Email" placeholder="you@example.com" />
 <Input label="Search" prefix={<Icon icon={SearchNormal1} size="sm" color="muted" />} />
-<Input label="Password" type="password" error="Required" />
-
-<Input variant="dark" label="Dark surface" placeholder="Search…" />`,
+<Input label="Password" type="password" error="Required" />`,
 
   textarea: `import { Textarea } from '@instollar-dev/instollar-sdk';
 
 <Textarea label="Notes" placeholder="Optional" rows={3} />
-<Textarea variant="dark" label="Notes" error="Too short" rows={2} />`,
+<Textarea label="Notes" error="Too short" rows={2} />`,
 
   checkbox: `import { Checkbox } from '@instollar-dev/instollar-sdk';
 
 <Checkbox label="I agree" description="Required to continue" />
-<Checkbox label="Must accept" error="Required" defaultChecked />
-<Checkbox variant="dark" label="Dark surface" defaultChecked />`,
+<Checkbox label="Must accept" error="Required" defaultChecked />`,
 
   radio: `import { Radio, RadioGroup } from '@instollar-dev/instollar-sdk';
 
@@ -182,7 +183,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   options={roles}
 />`,
 
-  dateInput: `import { DateInput, TimeInput } from '@instollar-dev/instollar-sdk';
+  dateInput: `import { DateInput, TimeInput, DateTimeInput } from '@instollar-dev/instollar-sdk';
 
 <DateInput
   label="Interview date"
@@ -190,6 +191,11 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   onChange={(e) => setDate(e.target.value)}
 />
 <TimeInput label="Start time" value={time} onChange={(e) => setTime(e.target.value)} />
+<DateTimeInput
+  label="Scheduled at"
+  value={when}
+  onChange={(e) => setWhen(e.target.value)}
+/>
 <DateInput variant="inline" value={date} onChange={(e) => setDate(e.target.value)} />`,
 
   otpInput: `import { OtpInput, VerificationInput } from '@instollar-dev/instollar-sdk';

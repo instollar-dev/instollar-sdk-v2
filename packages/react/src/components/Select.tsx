@@ -16,7 +16,6 @@ import { iconPaint } from '../utils/iconPaint';
 import { Button } from './Button';
 import { CheckmarkIcon } from './CheckmarkIcon';
 import { FieldControl } from './FieldControl';
-import type { FieldSurface } from './formVariants';
 import { formFieldErrorClass, formFieldLabelClass } from './formVariants';
 import { Spinner } from './Spinner';
 import {
@@ -36,7 +35,7 @@ import {
 } from './selectUtils';
 
 export type { SelectOption };
-export type SelectVariant = FieldSurface | 'default' | 'inline';
+export type SelectVariant = 'default' | 'inline';
 export { selectOptionsPropsFromQuery } from './selectUtils';
 
 const PORTAL_ROOT_ID = 'instollar-select-portal-root';
@@ -179,8 +178,6 @@ export function Select<T = string>({
   className,
   id,
 }: SelectProps<T>) {
-  const resolvedVariant: FieldSurface =
-    variant === 'dark' ? 'dark' : 'light';
   const isInline = variant === 'inline';
   const selectId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
   const listboxId = useId();
@@ -401,9 +398,7 @@ export function Select<T = string>({
         style={dropdownStyle}
         className={cn(
           'overflow-hidden rounded-lg border shadow-lg',
-          resolvedVariant === 'light'
-            ? 'border-border bg-white'
-            : 'border-white/14 bg-primary',
+          'border-border bg-background',
           dropdownClassName,
         )}
       >
@@ -411,7 +406,7 @@ export function Select<T = string>({
           <div
             className={cn(
               'flex items-center gap-2 border-b px-3 py-2',
-              resolvedVariant === 'light' ? 'border-border' : 'border-white/14',
+              'border-border',
             )}
           >
             <SearchNormal1 size={16} className="shrink-0" color={iconPaint.muted} aria-hidden />
@@ -428,7 +423,6 @@ export function Select<T = string>({
               placeholder={creatable ? 'Search or add…' : 'Search…'}
               className={cn(
                 'w-full bg-transparent text-open-regular-p outline-none placeholder:text-muted',
-                resolvedVariant === 'dark' && 'text-white',
               )}
               autoFocus
             />
@@ -439,7 +433,7 @@ export function Select<T = string>({
           <div
             className={cn(
               'border-b px-2 py-2',
-              resolvedVariant === 'light' ? 'border-border bg-white' : 'border-white/14 bg-primary',
+              'border-border bg-background',
             )}
           >
             <Button
@@ -509,8 +503,7 @@ export function Select<T = string>({
                           selectedOption
                             ? 'bg-primary/14 text-foreground'
                             : 'text-foreground hover:bg-primary/5',
-                          resolvedVariant === 'dark' && 'text-white',
-                        )}
+                                  )}
                       >
                         {multiple && (
                           <span
@@ -518,17 +511,13 @@ export function Select<T = string>({
                               'flex size-4 shrink-0 items-center justify-center rounded border-2 transition-colors duration-150',
                               selectedOption
                                 ? 'border-primary bg-primary'
-                                : resolvedVariant === 'light'
-                                  ? 'border-border bg-white'
-                                  : 'border-white/14 bg-transparent',
+                                : 'border-border bg-background',
                             )}
                           >
                             {selectedOption ? (
                               <CheckmarkIcon
                                 color={
-                                  resolvedVariant === 'light'
-                                    ? iconPaint.inverse
-                                    : iconPaint.secondary
+                                  iconPaint.inverse
                                 }
                               />
                             ) : null}
@@ -567,7 +556,7 @@ export function Select<T = string>({
           <div
             className={cn(
               'flex items-center gap-2 border-t px-3 py-2',
-              resolvedVariant === 'light' ? 'border-border' : 'border-white/14',
+              'border-border',
             )}
           >
             <input
@@ -583,7 +572,6 @@ export function Select<T = string>({
               placeholder={customInputPlaceholder}
               className={cn(
                 'min-w-0 flex-1 bg-transparent text-open-regular-p outline-none placeholder:text-muted',
-                resolvedVariant === 'dark' && 'text-white',
               )}
             />
             <Button
@@ -618,7 +606,6 @@ export function Select<T = string>({
 
       <FieldControl
         ref={anchorRef}
-        variant={resolvedVariant}
         error={fieldError}
         disabled={disabled || optionsLoading}
         prefix={prefix}

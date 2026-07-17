@@ -1,11 +1,10 @@
 import { forwardRef, type ReactNode } from 'react';
 import { cn } from '../utils/cn';
-import { formControlVariantClasses, type FieldSurface } from './formVariants';
+import { formControlSurfaceClass } from './formVariants';
 
 export interface FieldControlProps {
   prefix?: ReactNode;
   suffix?: ReactNode;
-  variant: FieldSurface;
   error?: boolean;
   disabled?: boolean;
   className?: string;
@@ -13,7 +12,7 @@ export interface FieldControlProps {
 }
 
 export const FieldControl = forwardRef<HTMLDivElement, FieldControlProps>(function FieldControl(
-  { prefix, suffix, variant, error, disabled, className, children },
+  { prefix, suffix, error, disabled, className, children },
   ref,
 ) {
   return (
@@ -21,7 +20,7 @@ export const FieldControl = forwardRef<HTMLDivElement, FieldControlProps>(functi
       ref={ref}
       className={cn(
         'flex w-full items-center rounded-lg border transition-colors duration-200',
-        formControlVariantClasses[variant],
+        formControlSurfaceClass,
         error && 'border-destructive',
         disabled && 'opacity-50',
         className,

@@ -135,7 +135,7 @@ function DrawerShell({ config, zIndex, isTopmost, isClosing, onClose }: DrawerSh
         aria-modal="true"
         onClick={(event) => event.stopPropagation()}
         className={cn(
-          'relative flex h-full w-full flex-col overflow-hidden bg-white shadow-2xl transition-transform duration-300 ease-out',
+          'relative flex h-full w-full flex-col overflow-hidden bg-background text-foreground shadow-2xl transition-transform duration-300 ease-out',
           'md:my-4 md:h-[calc(100dvh-2rem)] md:rounded-3xl',
           side === 'right' ? 'md:mr-4' : 'md:ml-4',
           open ? 'translate-x-0' : hiddenTransform,
@@ -144,7 +144,7 @@ function DrawerShell({ config, zIndex, isTopmost, isClosing, onClose }: DrawerSh
         )}
       >
         {title || header || showCloseButton ? (
-          <div className="border-b border-black/10 px-6 pb-4 pt-5">
+          <div className="border-b border-border px-6 pb-4 pt-5">
             <div className="flex items-start justify-between gap-4">
               {title ? <h2 className="text-xl font-bold text-foreground">{title}</h2> : <span />}
               {showCloseButton ? (
@@ -152,7 +152,7 @@ function DrawerShell({ config, zIndex, isTopmost, isClosing, onClose }: DrawerSh
                   type="button"
                   aria-label="Close drawer"
                   onClick={onClose}
-                  className="cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-black/5 hover:text-foreground"
+                  className="cursor-pointer rounded-md p-1 text-muted transition-colors hover:bg-foreground/5 hover:text-foreground"
                 >
                   <CloseCircle size={20} variant="Linear" color={iconPaint.muted} aria-hidden />
                 </button>
@@ -162,7 +162,7 @@ function DrawerShell({ config, zIndex, isTopmost, isClosing, onClose }: DrawerSh
           </div>
         ) : null}
         <div className="min-h-0 flex-1 overflow-y-auto p-6">{config.content}</div>
-        {footer ? <div className="border-t border-black/10 bg-white p-4">{footer}</div> : null}
+        {footer ? <div className="border-t border-border bg-background p-4">{footer}</div> : null}
       </div>
     </div>,
     document.body,

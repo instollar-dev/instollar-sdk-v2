@@ -17,6 +17,7 @@ export type IconColor = Exclude<IconPaint, 'foreground'>;
 
 const colorValues: Record<IconColor, string> = {
   current: iconPaint.current,
+  brand: iconPaint.brand,
   primary: iconPaint.primary,
   secondary: iconPaint.secondary,
   muted: iconPaint.muted,

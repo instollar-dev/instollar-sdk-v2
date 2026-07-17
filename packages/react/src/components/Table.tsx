@@ -241,10 +241,10 @@ function TableDetailModal({
       <div
         role="dialog"
         aria-modal="true"
-        className="relative flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white shadow-xl"
+        className="relative flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-background shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <span className="text-open-bold-p text-foreground">{title}</span>
           <button
             type="button"
@@ -296,7 +296,7 @@ function RowsPerPageDropdown({
             ? { top: position.top }
             : { bottom: position.bottom }),
         }}
-        className="overflow-hidden rounded-lg border border-gray-100 bg-white py-1 shadow-lg"
+        className="overflow-hidden rounded-lg border border-border bg-background py-1 shadow-lg"
       >
         {ROWS_PER_PAGE_OPTIONS.map((option) => (
           <button
@@ -307,7 +307,7 @@ function RowsPerPageDropdown({
               setOpen(false);
             }}
             className={cn(
-              'block w-full cursor-pointer px-3 py-2 text-left text-open-regular-tiny transition-colors hover:bg-gray-50',
+              'block w-full cursor-pointer px-3 py-2 text-left text-open-regular-tiny transition-colors hover:bg-foreground/5',
               option === rowsPerPage ? 'font-semibold text-primary' : 'text-foreground',
             )}
           >
@@ -325,7 +325,7 @@ function RowsPerPageDropdown({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className="flex cursor-pointer items-center gap-1.5 rounded-md border border-gray-100 px-3 py-1.5 text-open-regular-tiny text-foreground transition-colors hover:bg-gray-50"
+        className="flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-open-regular-tiny text-foreground transition-colors hover:bg-foreground/5"
       >
         <span>
           {rowsLabel}: {rowsPerPage} rows
@@ -647,7 +647,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
     isLastRow?: boolean;
   }) =>
     cn(
-      'border-gray-100',
+      'border-border',
       !hideHorizontalBorders && !(options.isLastRow && hideBottomBorder) && 'border-b',
       !hideVerticalBorders && 'border-r',
       !hideVerticalBorders && options.isFirstColumn && 'border-l',
@@ -758,7 +758,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
                 style={columnStyle(column)}
                 className={cn(
                   'px-6 py-4',
-                  'border-b border-r border-gray-100',
+                  'border-b border-r border-border',
                   columnIndex === firstContentIndex && 'border-l',
                   alignClass(extraCell.align ?? column.align),
                   extraCell.className,
@@ -784,7 +784,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
     const pages = Array.from({ length: Math.max(1, totalPages) }, (_, i) => i + 1);
 
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white px-6 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-background px-6 py-4">
         <span className="text-open-regular-tiny text-muted">
           {pageOfLabel(currentPage, totalPages)}
         </span>
@@ -795,7 +795,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
             aria-label="Previous page"
             disabled={currentPage <= 1}
             onClick={() => onPageChange?.(currentPage - 1)}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-foreground transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-foreground transition-colors hover:bg-foreground/5 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ArrowLeft2 size={16} color={iconPaint.current} aria-hidden />
           </button>
@@ -809,8 +809,8 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
               className={cn(
                 'flex size-8 cursor-pointer items-center justify-center rounded-md text-open-regular-tiny transition-colors',
                 page === currentPage
-                  ? 'bg-secondary font-semibold text-primary'
-                  : 'text-muted hover:bg-gray-50 hover:text-foreground',
+                  ? 'bg-secondary font-semibold text-brand'
+                  : 'text-muted hover:bg-foreground/5 hover:text-foreground',
               )}
             >
               {page}
@@ -822,7 +822,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
             aria-label="Next page"
             disabled={currentPage >= totalPages}
             onClick={() => onPageChange?.(currentPage + 1)}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-foreground transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-foreground transition-colors hover:bg-foreground/5 disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ArrowRight2 size={16} color={iconPaint.current} aria-hidden />
           </button>
@@ -850,7 +850,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
         >
           <thead
             className={cn(
-              'sticky top-0 z-10 bg-white shadow-[0_1px_0_0_#f3f4f6]',
+              'sticky top-0 z-10 bg-background shadow-[0_1px_0_0_var(--color-border)]',
               theadClassName,
             )}
           >
@@ -939,7 +939,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
                   <tr
                     key={row.id ?? rowIndex}
                     className={cn(
-                      'transition-colors hover:bg-gray-50',
+                      'transition-colors hover:bg-foreground/5',
                       getRowClassName?.(row, rowIndex),
                       trClassName,
                     )}
@@ -1029,9 +1029,9 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
       </div>
 
       {footer ? (
-        <div className="bg-white px-6 py-4">{footer}</div>
+        <div className="bg-background px-6 py-4">{footer}</div>
       ) : editable ? (
-        <div className="bg-white">
+        <div className="bg-background">
           <button
             type="button"
             onClick={addRow}
@@ -1052,7 +1052,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
               <span className="text-open-bold-tiny text-muted">{column.label}</span>
               <div
                 className={cn(
-                  'rounded-lg border border-gray-100 px-3 py-2',
+                  'rounded-lg border border-border px-3 py-2',
                   cellErrors[detailRowIndex!]?.[column.key] && 'border-red-500',
                 )}
               >
