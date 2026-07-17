@@ -4,7 +4,7 @@ Design-system SDK for Instollar — tokens, React components, and a precompiled 
 
 **Walkthrough:** `pnpm playground` — Overview · API · Style guide · Special logic.
 
-`styles.css` ships the **standard Tailwind utility set** (flex, grid, spacing, object-fit, responsive `sm:`/`md:`/`lg:` variants, theme colors, etc.) so app layouts can use those classes without a local Tailwind build. **Arbitrary values** (`w-[37px]`, `grid-cols-[200px_1fr]`) are not pre-generated — use inline styles or add an app-side Tailwind pipeline for those.
+`styles.css` ships the **standard Tailwind utility set** (flex, grid, spacing, object-fit, responsive `sm:`/`md:`/`lg:` variants, theme colors, etc.) so app layouts can use those classes without a local Tailwind build. Arbitrary values (`w-[37px]`, …) need an optional app-side Tailwind setup — see [Arbitrary values](#arbitrary-values-optional).
 
 The playground still runs its **own Tailwind** build (Vite plugin) so docs-only classes and arbitrary values work during development.
 
@@ -69,7 +69,34 @@ If IntelliSense can’t resolve that path under pnpm’s layout, point at the um
 
 Reload the editor window after changing settings.
 
-**What you get:** standard Tailwind utilities, Instollar `@theme` colors/fonts, and typography `@utility` classes from `@instollar-dev/instollar-tokens`. Arbitrary values still need an app-side Tailwind build if you want them at runtime.
+**What you get:** standard Tailwind utilities, Instollar `@theme` colors/fonts, and typography `@utility` classes from `@instollar-dev/instollar-tokens`. Installing `tailwindcss` for IntelliSense alone does **not** generate arbitrary classes at runtime — see below.
+
+## Arbitrary values (optional)
+
+Most apps only need `styles.css`. Classes like `w-[37px]`, `grid-cols-[200px_1fr]`, or `bg-[#1a2b3c]` are **not** in that prebuilt file (Tailwind generates them from your source).
+
+To use arbitrary values at runtime in a consuming product:
+
+1. Install Tailwind in **that** app and wire it into the bundler (Vite plugin / PostCSS / etc.):
+
+```bash
+pnpm add -D tailwindcss@^4.1.0
+```
+
+2. In the app’s main CSS (processed by Tailwind), add:
+
+```css
+@import "tailwindcss";
+@import "@instollar-dev/instollar-react/theme.css";
+```
+
+3. Keep importing `styles.css` for Instollar components and the prebuilt utility set:
+
+```tsx
+import '@instollar-dev/instollar-react/styles.css';
+```
+
+Without that app-side build, prefer named utilities from `styles.css`, inline styles, or CSS variables for one-offs.
 
 ## Local development (this repo)
 
