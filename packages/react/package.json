@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-react",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Instollar React web UI components",
   "type": "module",
   "main": "./dist/index.js",

@@ -111,6 +111,12 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   Something went wrong.
 </Alert>`,
 
+  toast: `import { toast } from '@instollar-dev/instollar-sdk';
+
+toast.success('Saved');
+toast.error('Something went wrong', { title: 'Error' });
+toast.show({ type: 'info', title: 'Update', description: '…', position: 'bottom-right' });`,
+
   alertText: `import {
   AlertText,
   dismissibleAlertProps,

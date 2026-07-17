@@ -34,6 +34,7 @@ import {
   VerificationInput,
   createStatusResolver,
   dismissibleAlertProps,
+  toast,
   useDrawer,
   useModal,
   useTheme,
@@ -617,6 +618,11 @@ export function StyleGuidePanel() {
           </div>
         </SubSection>
         <SubSection title='appearance="toast"'>
+          <p className="mb-3 max-w-2xl text-open-regular-tiny text-muted">
+            In-app toast <em>styling</em> for React trees. To fire real stacked toasts on{' '}
+            <code>document.body</code>, use the imperative <code>toast.*</code> API — see{' '}
+            <strong>Feedback → toast (live)</strong> below or Special logic → Toasts.
+          </p>
           <div className="flex flex-col gap-3">
             {alertVariants.map((variant) => (
               <Alert
@@ -1065,7 +1071,7 @@ export function StyleGuidePanel() {
         </div>
       </Section>
 
-      <TocGroupDivider title="Feedback" description="Loading and permission states" />
+      <TocGroupDivider title="Feedback" description="Overlays, toasts, and loading states" />
 
       {/* ——— ModalProvider / useModal ——— */}
       <Section
@@ -1092,6 +1098,55 @@ export function StyleGuidePanel() {
           <DrawerProvider>
             <DrawerDemo />
           </DrawerProvider>
+        </DemoFrame>
+      </Section>
+
+      {/* ——— toast (imperative) ——— */}
+      <Section
+        id="sg-toast"
+        title="toast (live)"
+        description="imperative SDK toasts · fixed stack on document.body · theme-aware via styles.css"
+        code={snippets.toast}
+      >
+        <DemoFrame label="Click to fire — look top-right (or bottom per option)">
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" onClick={() => toast.success('Changes saved successfully.')}>
+              success
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => toast.error('Could not save profile.', { title: 'Request failed' })}
+            >
+              error
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => toast.warning('Review required before publish.')}
+            >
+              warning
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => toast.info('New catalog items are available.')}
+            >
+              info
+            </Button>
+            <Button
+              size="sm"
+              variant="underline"
+              onClick={() =>
+                toast.message('Maintenance window tonight 11pm–1am.', {
+                  title: 'Scheduled',
+                  autoClose: 10000,
+                })
+              }
+            >
+              message
+            </Button>
+          </div>
         </DemoFrame>
       </Section>
 

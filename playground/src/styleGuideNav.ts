@@ -65,6 +65,7 @@ export const styleGuideNav: TocGroup[] = [
     items: [
       { id: 'sg-modal', label: 'ModalProvider / useModal' },
       { id: 'sg-drawer', label: 'DrawerProvider / useDrawer' },
+      { id: 'sg-toast', label: 'toast (live)' },
       { id: 'sg-load', label: 'LoadBoundary' },
     ],
   },

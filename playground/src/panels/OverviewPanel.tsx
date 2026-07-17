@@ -50,10 +50,11 @@ const styleGuideHighlights: { id: string; label: string; note?: string }[] = [
   { id: 'sg-drawer', label: 'DrawerProvider' },
   { id: 'sg-load', label: 'LoadBoundary' },
   { id: 'sg-alert', label: 'Alert', note: 'toast appearance' },
+  { id: 'sg-toast', label: 'toast (live triggers)', note: 'imperative API' },
 ];
 
 const logicHighlights: { id: PillarId; section: string; label: string }[] = [
-  { id: 'logic', section: 'lg-toast', label: 'Toasts (imperative + axios)' },
+  { id: 'logic', section: 'lg-toast', label: 'Toasts (axios metadata)' },
   { id: 'logic', section: 'lg-places', label: 'Address autocomplete setup' },
   { id: 'logic', section: 'lg-async', label: 'Query adapters (Select / LoadBoundary)' },
 ];
@@ -160,7 +161,7 @@ export function OverviewPanel({
       </Section>
 
       <Section title="Install once">
-        <CodeBlock label="Terminal + React">{`pnpm add @instollar-dev/instollar-sdk@^0.4.1
+        <CodeBlock label="Terminal + React">{`pnpm add @instollar-dev/instollar-sdk@^0.4.2
 pnpm add -D tailwindcss@^4.1.0
 
 import '@instollar-dev/instollar-react/styles.css';
