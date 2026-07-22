@@ -94,6 +94,43 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
   Filter
 </Chip>`,
 
+  segments: `import { Segments, Icon, Element3, TextalignLeft } from '@instollar-dev/instollar-sdk';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+const [view, setView] = useState('table');
+
+<Segments
+  value={view}
+  onChange={setView}
+  options={[
+    {
+      value: 'pipeline',
+      label: 'Pipeline',
+      icon: <Icon icon={Element3} size="sm" />,
+    },
+    {
+      value: 'table',
+      label: 'Table',
+      icon: <Icon icon={TextalignLeft} size="sm" />,
+    },
+  ]}
+/>
+
+// Router mode (same adapter shape as Tabs):
+const location = useLocation();
+const navigate = useNavigate();
+
+<Segments
+  useRoutes
+  basePath="/leads"
+  defaultValue="pipeline"
+  router={{ pathname: location.pathname, navigate }}
+  options={[
+    { value: 'pipeline', label: 'Pipeline', path: 'pipeline', icon: <Icon icon={Element3} size="sm" /> },
+    { value: 'table', label: 'Table', path: 'table', icon: <Icon icon={TextalignLeft} size="sm" /> },
+  ]}
+/>`,
+
   unifiedTabs: `import { Tabs } from '@instollar-dev/instollar-sdk';
 
 // Active underline is #F49E0C by default; variant="green" uses #002816.
@@ -150,6 +187,12 @@ toast.show({ type: 'info', title: 'Update', description: '…', position: 'botto
   </Text>
   <Button size="sm" className="mt-3 w-fit">Pay</Button>
 </Card>`,
+
+  avatar: `import { Avatar } from '@instollar-dev/instollar-sdk';
+
+<Avatar src={user.avatarUrl} initials="Sarah Adams" />
+<Avatar src={null} initials="SA" size="lg" onClick={() => openProfile()} />
+<Avatar src="" initials="JD" size="sm" />`,
 
   settingsItem: `import {
   SettingsItem,

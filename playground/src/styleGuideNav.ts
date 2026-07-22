@@ -25,6 +25,7 @@ export const styleGuideNav: TocGroup[] = [
     items: [
       { id: 'sg-button', label: 'Button' },
       { id: 'sg-chip', label: 'Chip' },
+      { id: 'sg-segments', label: 'Segments' },
       { id: 'sg-unified-tabs', label: 'Tabs' },
     ],
   },
@@ -36,6 +37,7 @@ export const styleGuideNav: TocGroup[] = [
       { id: 'sg-alert', label: 'Alert' },
       { id: 'sg-alert-text', label: 'AlertText' },
       { id: 'sg-card', label: 'Card' },
+      { id: 'sg-avatar', label: 'Avatar' },
       { id: 'sg-settings-item', label: 'SettingsItem' },
     ],
   },

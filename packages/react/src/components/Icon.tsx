@@ -124,6 +124,8 @@ export {
   Setting2,
   Setting4,
   Category,
+  Element3,
+  TextalignLeft,
   Menu,
   Sun,
   Sun1,

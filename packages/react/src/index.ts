@@ -137,6 +137,8 @@ export {
   Setting2,
   Setting4,
   Category,
+  Element3,
+  TextalignLeft,
   Menu,
   Sun,
   Sun1,
@@ -170,6 +172,16 @@ export { SettingsItem } from './components/SettingsItem';
 export type { SettingsItemProps } from './components/SettingsItem';
 export { useSettingsAccordion } from './hooks/useSettingsAccordion';
 
+export { Avatar, getAvatarInitials } from './components/Avatar';
+export type { AvatarProps, AvatarSize } from './components/Avatar';
+
+export { Segments } from './components/Segments';
+export type {
+  SegmentsProps,
+  SegmentOption,
+  SegmentsRouterAdapter,
+} from './components/Segments';
+
 export { Chip } from './components/Chip';
 export type { ChipProps } from './components/Chip';
 
@@ -193,6 +205,7 @@ export type {
   TabsProps,
   TabsRouterAdapter,
 } from './components/Tabs';
+export type { RouteSegmentAdapter } from './utils/routeSegmentMatch';
 
 export { ModalProvider, useModal } from './components/ModalProvider';
 export type { ModalConfig, ModalContextValue } from './components/ModalProvider';

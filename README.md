@@ -27,7 +27,7 @@ In the consuming app, create `.npmrc` (exact name):
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token
-pnpm add @instollar-dev/instollar-sdk@^0.4.4
+pnpm add @instollar-dev/instollar-sdk@^0.4.5
 ```
 
 `NODE_AUTH_TOKEN` must be a GitHub personal access token (or fine-grained token) with `read:packages` on the **instollar-dev** org. Use the same token in CI for installs.
@@ -272,6 +272,43 @@ const { isSectionOpen, toggleSection } = useSettingsAccordion();
 
 Header is a real `<button>` with `aria-expanded` (improves on the app-local `div` pattern).
 
+## Avatar
+
+Shows an image when `src` is set; otherwise (or if the image fails) shows initials.
+
+```tsx
+import { Avatar } from '@instollar-dev/instollar-sdk';
+
+<Avatar src={user.avatarUrl} initials="Sarah Adams" />
+<Avatar src={null} initials="SA" size="lg" />
+```
+
+`initials` accepts a short code (`"SA"`) or a full name (`"Sarah Adams"` → `SA`). Sizes: `sm` | `md` | `lg`. Pass `onClick` to render a focusable button.
+
+## Segments
+
+Pill-track view switcher (icon + label). Controlled via `value` / `onChange`, or route-driven like Tabs:
+
+```tsx
+import { Segments, Icon, Element3, TextalignLeft } from '@instollar-dev/instollar-sdk';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+const location = useLocation();
+const navigate = useNavigate();
+
+<Segments
+  useRoutes
+  basePath="/leads"
+  defaultValue="pipeline"
+  router={{ pathname: location.pathname, navigate }}
+  options={[
+    { value: 'pipeline', label: 'Pipeline', path: 'pipeline', icon: <Icon icon={Element3} size="sm" /> },
+    { value: 'table', label: 'Table', path: 'table', icon: <Icon icon={TextalignLeft} size="sm" /> },
+  ]}
+/>
+```
+
+Clicks use `navigate(..., { replace: true })` so segment switches do not stack history.
 ## Local development (this repo)
 
 ```bash
@@ -283,12 +320,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.4.4` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.4.5` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.4.4
-git push origin v0.4.4
+git tag v0.4.5
+git push origin v0.4.5
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.

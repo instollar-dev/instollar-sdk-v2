@@ -4,6 +4,7 @@ import {
   Alert,
   AlertText,
   ArrowRight2,
+  Avatar,
   Button,
   Card,
   Checkbox,
@@ -13,6 +14,7 @@ import {
   DocumentText,
   DrawerProvider,
   DropdownMenu,
+  Element3,
   FileUpload,
   Home2,
   Icon,
@@ -26,6 +28,7 @@ import {
   NotificationBing,
   SearchNormal1,
   SecuritySafe,
+  Segments,
   Select,
   Setting2,
   SettingsItem,
@@ -35,6 +38,7 @@ import {
   Table,
   Tabs,
   Text,
+  TextalignLeft,
   Textarea,
   TimeInput,
   VerificationInput,
@@ -257,6 +261,7 @@ export function StyleGuidePanel() {
   const [skills, setSkills] = useState<string[]>(['wiring']);
   const [addNewHint, setAddNewHint] = useState(false);
   const [chipOn, setChipOn] = useState(true);
+  const [viewSegment, setViewSegment] = useState('table');
   const [switchOn, setSwitchOn] = useState(true);
   const [inlineError, setInlineError] = useState<string | null>('Email address is required.');
   const [interviewDate, setInterviewDate] = useState('2025-08-22');
@@ -598,6 +603,89 @@ export function StyleGuidePanel() {
         </DemoFrame>
       </Section>
 
+      <Section
+        id="sg-segments"
+        title="Segments"
+        description="pill track · icon + label · controlled or useRoutes · size sm/md"
+        code={snippets.segments}
+      >
+        <DemoFrame label="Pipeline / Table">
+          <Segments
+            value={viewSegment}
+            onChange={setViewSegment}
+            options={[
+              {
+                value: 'pipeline',
+                label: 'Pipeline',
+                icon: <Icon icon={Element3} size="sm" />,
+              },
+              {
+                value: 'table',
+                label: 'Table',
+                icon: <Icon icon={TextalignLeft} size="sm" />,
+              },
+            ]}
+          />
+          <Text variant="open-regular-tiny" className="mt-3 text-muted">
+            Selected: {viewSegment}
+          </Text>
+        </DemoFrame>
+        <DemoFrame label="router mode (simulated)">
+          <Segments
+            useRoutes
+            basePath="/demo/leads"
+            defaultValue="pipeline"
+            router={{
+              pathname: `/demo/leads/${viewSegment}`,
+              navigate: (path) => {
+                const next = path.split('/').pop() || 'pipeline';
+                setViewSegment(next);
+              },
+            }}
+            onChange={setViewSegment}
+            options={[
+              {
+                value: 'pipeline',
+                label: 'Pipeline',
+                path: 'pipeline',
+                icon: <Icon icon={Element3} size="sm" />,
+              },
+              {
+                value: 'table',
+                label: 'Table',
+                path: 'table',
+                icon: <Icon icon={TextalignLeft} size="sm" />,
+              },
+            ]}
+          />
+          <Text variant="open-regular-tiny" className="mt-3 text-muted">
+            Simulated path: /demo/leads/{viewSegment}
+          </Text>
+        </DemoFrame>
+        <DemoFrame label="size" className="!pb-2">
+          <div className="flex flex-wrap items-center gap-4">
+            <Segments
+              size="sm"
+              defaultValue="a"
+              options={[
+                { value: 'a', label: 'Day' },
+                { value: 'b', label: 'Week' },
+                { value: 'c', label: 'Month' },
+              ]}
+            />
+            <Segments
+              size="md"
+              defaultValue="a"
+              options={[
+                { value: 'a', label: 'Day' },
+                { value: 'b', label: 'Week' },
+                { value: 'c', label: 'Month' },
+              ]}
+            />
+          </div>
+        </DemoFrame>
+      </Section>
+
       {/* ——— Tabs ——— */}
       <Section
         id="sg-unified-tabs"
@@ -719,6 +807,57 @@ export function StyleGuidePanel() {
               Pay
             </Button>
           </Card>
+        </DemoFrame>
+      </Section>
+
+      <Section
+        id="sg-avatar"
+        title="Avatar"
+        description="src image · initials fallback · size · onClick · broken image falls back"
+        code={snippets.avatar}
+      >
+        <DemoFrame label="with image" className="!p-0">
+          <div className="px-4">
+            <VariantRow label='src="…" · initials="SA"'>
+              <Avatar
+                src="https://i.pravatar.cc/80?u=instollar-sarah"
+                initials="Sarah Adams"
+                alt="Sarah Adams"
+              />
+            </VariantRow>
+          </div>
+        </DemoFrame>
+        <DemoFrame label="initials fallback" className="!p-0">
+          <div className="px-4">
+            <VariantRow label="src={null}">
+              <Avatar src={null} initials="Sarah Adams" />
+            </VariantRow>
+            <VariantRow label='src=""'>
+              <Avatar src="" initials="JD" />
+            </VariantRow>
+            <VariantRow label="broken src → initials">
+              <Avatar src="https://example.invalid/missing.png" initials="BO" />
+            </VariantRow>
+            <VariantRow label="onClick">
+              <Avatar
+                src={null}
+                initials="SA"
+                onClick={() => {
+                  window.alert('Avatar clicked');
+                }}
+              />
+            </VariantRow>
+          </div>
+        </DemoFrame>
+        <DemoFrame label="size" className="!pb-2">
+          <div className="flex flex-wrap items-end gap-6">
+            {(['sm', 'md', 'lg'] as const).map((size) => (
+              <div key={size} className="flex flex-col items-center gap-2">
+                <Avatar src={null} initials="SA" size={size} />
+                <code className="text-[11px] text-muted">{size}</code>
+              </div>
+            ))}
+          </div>
         </DemoFrame>
       </Section>
 

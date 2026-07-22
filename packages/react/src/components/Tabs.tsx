@@ -9,6 +9,12 @@ import {
 } from 'react';
 import { cn } from '../utils/cn';
 import { iconPaint } from '../utils/iconPaint';
+import {
+  getRelativePath,
+  getRouteTargetPath,
+  matchesRelativePath,
+  type RouteSegmentAdapter,
+} from '../utils/routeSegmentMatch';
 
 export interface TabModel {
   label: ReactNode;
@@ -22,11 +28,8 @@ export interface TabModel {
 /** Alias kept for painless find/replace when migrating old `TabsV2` call sites. */
 export type TabV2Model = TabModel;
 
-export interface TabsRouterAdapter {
-  /** Current location.pathname */
-  pathname: string;
-  navigate: (path: string, opts?: { replace?: boolean }) => void;
-}
+/** Same shape as `RouteSegmentAdapter` — kept for existing Tabs call sites. */
+export type TabsRouterAdapter = RouteSegmentAdapter;
 
 export interface TabsProps {
   /** Rich models, or plain strings (each string becomes value AND label). */
@@ -51,37 +54,13 @@ export interface TabsProps {
   useRoutes?: boolean;
   basePath?: string;
   /** REQUIRED when useRoutes is true. */
-  router?: TabsRouterAdapter;
+  router?: RouteSegmentAdapter;
 }
 
 function normalizeTabs(tabs: TabModel[] | string[]): TabModel[] {
   return tabs.map((tab) =>
     typeof tab === 'string' ? { label: tab, value: tab } : tab,
   );
-}
-
-function normalizeBasePath(basePath: string): string {
-  return basePath.replace(/\/+$/, '');
-}
-
-/** Pathname relative to basePath, or null when the pathname is outside basePath entirely. */
-function getRelativePath(pathname: string, basePath: string): string | null {
-  const base = normalizeBasePath(basePath);
-  if (pathname === base) return '';
-  if (pathname.startsWith(`${base}/`)) return pathname.slice(base.length).replace(/^\/+/, '');
-  return null;
-}
-
-function matchesRelativePath(tab: TabModel, relativePath: string): boolean {
-  if (tab.path === undefined) return tab.value === relativePath;
-  if (tab.path === '') return relativePath === '';
-  return relativePath === tab.path || relativePath.startsWith(`${tab.path}/`);
-}
-
-function getTabTargetPath(tab: TabModel, basePath: string): string {
-  const base = normalizeBasePath(basePath);
-  const segment = tab.path ?? tab.value;
-  return segment === '' ? base : `${base}/${segment}`;
 }
 
 const SCROLL_EDGE_THRESHOLD = 5;
@@ -136,7 +115,7 @@ export function Tabs({
     if (routerRelativePath === '' && defaultTab) {
       const defaultModel = normalizedTabs.find((tab) => tab.value === defaultTab);
       if (defaultModel) {
-        router.navigate(getTabTargetPath(defaultModel, basePath), { replace: true });
+        router.navigate(getRouteTargetPath(defaultModel, basePath), { replace: true });
       }
     }
   }, [
@@ -164,7 +143,7 @@ export function Tabs({
   const handleTabClick = (tab: TabModel) => {
     if (isRouterMode) {
       // Tab switches must not create history entries.
-      router.navigate(getTabTargetPath(tab, basePath), { replace: true });
+      router.navigate(getRouteTargetPath(tab, basePath), { replace: true });
       return;
     }
     if (activeTab !== undefined) {
