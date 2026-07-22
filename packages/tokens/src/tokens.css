@@ -19,7 +19,8 @@
   --color-fg: var(--color-brand);
   --color-muted: color-mix(in srgb, var(--color-brand) 55%, white);
   --color-border: color-mix(in srgb, var(--color-brand) 12%, white);
-  --color-destructive: #b42318;
+  --color-destructive: #f49e0c;
+  --color-danger: #dc2626;
 
   color-scheme: light;
   font-family: var(--font-spline);
@@ -40,7 +41,8 @@
   --color-fg: #edf6f0;
   --color-muted: color-mix(in srgb, var(--color-fg) 52%, var(--color-bg));
   --color-border: color-mix(in srgb, var(--color-fg) 18%, var(--color-bg));
-  --color-destructive: #f97066;
+  --color-destructive: #fbbf24;
+  --color-danger: #ef4444;
 
   color-scheme: dark;
 }

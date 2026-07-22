@@ -27,7 +27,7 @@ In the consuming app, create `.npmrc` (exact name):
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token
-pnpm add @instollar-dev/instollar-sdk@^0.4.3
+pnpm add @instollar-dev/instollar-sdk@^0.4.4
 ```
 
 `NODE_AUTH_TOKEN` must be a GitHub personal access token (or fine-grained token) with `read:packages` on the **instollar-dev** org. Use the same token in CI for installs.
@@ -109,7 +109,8 @@ Tokens ship light (default) and dark themes. Dark activates when `<html>` has `d
 | `--color-secondary` | `#effe3e` | `#effe3e` |
 | `--color-bg` | `#ffffff` | `#24382f` |
 | `--color-fg` | brand green | `#edf6f0` |
-| `--color-destructive` | `#b42318` | `#f97066` |
+| `--color-destructive` | `#f49e0c` | `#fbbf24` |
+| `--color-danger` | `#dc2626` | `#ef4444` |
 
 ```tsx
 import { ThemeProvider, useTheme } from '@instollar-dev/instollar-sdk';
@@ -244,6 +245,33 @@ import {
 
 Export `ALL_DOCUMENT_UPLOAD_ACCEPT` (`*/*`) for workflow screens that accept any document type.
 
+## Settings accordion
+
+`SettingsItem` is a controlled collapsible settings row (header + unmounted body when closed). Use **stable English section keys** with `useSettingsAccordion` for single-open behaviour:
+
+```tsx
+import {
+  SettingsItem,
+  useSettingsAccordion,
+  Icon,
+  SecuritySafe,
+} from '@instollar-dev/instollar-sdk';
+
+const { isSectionOpen, toggleSection } = useSettingsAccordion();
+
+<SettingsItem
+  icon={<Icon icon={SecuritySafe} size="lg" color="primary" />}
+  title={t('settings.sections.account.title')}
+  description={t('settings.sections.account.desc')}
+  isOpen={isSectionOpen('Account & Security')}
+  onClick={() => toggleSection('Account & Security')}
+>
+  {/* forms, switches, links */}
+</SettingsItem>
+```
+
+Header is a real `<button>` with `aria-expanded` (improves on the app-local `div` pattern).
+
 ## Local development (this repo)
 
 ```bash
@@ -255,12 +283,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.4.3` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.4.4` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.4.3
-git push origin v0.4.3
+git tag v0.4.4
+git push origin v0.4.4
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.

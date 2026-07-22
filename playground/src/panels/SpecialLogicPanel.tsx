@@ -53,6 +53,7 @@ const logicNav = [
       { id: 'lg-async', label: 'Async' },
       { id: 'lg-toast', label: 'Toasts' },
       { id: 'lg-places', label: 'Address autocomplete' },
+      { id: 'lg-settings', label: 'Settings accordion' },
       { id: 'lg-field', label: 'Fields' },
       { id: 'lg-more', label: 'Also exported' },
     ],
@@ -351,8 +352,9 @@ isNetworkDisconnectError(query.error);`}</CodeBlock>
         <SubSection title="toast (SDK core)">
           <p className="mb-3 max-w-2xl text-open-regular-tiny text-muted">
             Import <code>styles.css</code> so CSS variables resolve — toasts read{' '}
-            <code>--color-bg</code>, <code>--color-primary</code>, <code>--color-destructive</code>, etc.
-            and follow light/dark theme. On mobile (Expo/RN) the same calls log to the console.
+            <code>--color-bg</code>, <code>--color-primary</code>, <code>--color-danger</code>{' '}
+            (errors), <code>--color-destructive</code> (warnings), etc. and follow light/dark theme.
+            On mobile (Expo/RN) the same calls log to the console.
           </p>
           <div className="mb-4 flex flex-wrap gap-2">
             <Button
@@ -363,7 +365,7 @@ isNetworkDisconnectError(query.error);`}</CodeBlock>
             </Button>
             <Button
               size="sm"
-              variant="destructive"
+              variant="danger"
               onClick={() =>
                 toast.error('Could not save profile.', { title: 'Request failed' })
               }
@@ -372,7 +374,7 @@ isNetworkDisconnectError(query.error);`}</CodeBlock>
             </Button>
             <Button
               size="sm"
-              variant="ghost"
+              variant="destructive"
               onClick={() => toast.warning('Review required before publish.')}
             >
               warning
@@ -415,7 +417,7 @@ toast.show({ type: 'info', title: 'Update', description: '…', position: 'botto
             </Button>
             <Button
               size="sm"
-              variant={apiToast === 'error' ? 'destructive' : 'ghost'}
+              variant={apiToast === 'error' ? 'danger' : 'ghost'}
               onClick={() => setApiToast('error')}
             >
               API error
@@ -483,6 +485,41 @@ const [query, setQuery] = useState('');
       </Section>
 
       <Section
+        id="lg-settings"
+        title="Settings accordion"
+        description="Controlled single-open sections — page owns openSection; SettingsItem renders the row."
+      >
+        <div className="grid gap-4 lg:grid-cols-2">
+          <DemoFrame label="Pattern">
+            <Text variant="open-regular-p" className="text-muted">
+              Stable English keys (e.g. <code>Account &amp; Security</code>) for comparison; i18n
+              only on title/description. Body unmounts when closed. Live demo:{' '}
+              <a href="#style/sg-settings-item" className="text-primary hover:underline">
+                Style guide → SettingsItem
+              </a>
+              .
+            </Text>
+          </DemoFrame>
+          <CodeBlock>{`import {
+  SettingsItem,
+  useSettingsAccordion,
+} from '@instollar-dev/instollar-sdk';
+
+const { isSectionOpen, toggleSection } = useSettingsAccordion();
+
+<SettingsItem
+  isOpen={isSectionOpen('Account & Security')}
+  onClick={() => toggleSection('Account & Security')}
+  icon={…}
+  title={t('…')}
+  description={t('…')}
+>
+  {/* forms / switches / links */}
+</SettingsItem>`}</CodeBlock>
+        </div>
+      </Section>
+
+      <Section
         id="lg-field"
         title="Field chrome"
         description="Compose custom controls with the same look as Input / Select."
@@ -519,6 +556,7 @@ const [query, setQuery] = useState('');
               ['useClickOutside / useOnClickOutside', 'Close popovers when pointer leaves'],
               ['useFloatingPosition', 'Flip / clamp dropdowns (powers Select)'],
               ['useMediaQuery', 'Match CSS media queries (powers Table breakpoints)'],
+              ['useSettingsAccordion', 'Single-open section state for SettingsItem'],
               ['AddressAutocomplete + Places client', 'REST autocomplete — see Style guide'],
               ['configureGooglePlacesApiKey', 'Set via initInstollarSDK or apiKey prop'],
               ['cn', 'clsx + tailwind-merge'],

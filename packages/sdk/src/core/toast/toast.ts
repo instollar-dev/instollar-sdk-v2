@@ -11,7 +11,8 @@ const FALLBACK = {
   brand: '#012b15',
   primary: '#012b15',
   secondary: '#effe3e',
-  destructive: '#b42318',
+  destructive: '#f49e0c',
+  danger: '#dc2626',
   font: '"Spline Sans", ui-sans-serif, system-ui, -apple-system, sans-serif',
 } as const;
 
@@ -48,12 +49,13 @@ function getToastPalette(type: ToastType): ToastPalette {
   const primary = readCssVar('--color-primary', FALLBACK.primary);
   const secondary = readCssVar('--color-secondary', FALLBACK.secondary);
   const destructive = readCssVar('--color-destructive', FALLBACK.destructive);
+  const danger = readCssVar('--color-danger', FALLBACK.danger);
   const fontFamily = readCssVar('--font-spline', FALLBACK.font);
 
   const accentByType: Record<ToastType, string> = {
     success: primary,
-    error: destructive,
-    warning: brand,
+    error: danger,
+    warning: destructive,
     info: primary,
     message: brand,
     default: muted,
@@ -68,7 +70,7 @@ function getToastPalette(type: ToastType): ToastPalette {
     titleColor: fg,
     descColor: muted,
     borderColor: border,
-    iconColor: type === 'warning' ? brand : accent,
+    iconColor: accent,
     closeStroke: muted,
     fontFamily,
   };

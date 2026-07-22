@@ -41,11 +41,11 @@ const solidVariantStyles: Record<SolidVariant, CSSProperties> = {
     color: 'var(--color-brand, #012b15)',
   },
   destructive: {
-    backgroundColor: 'var(--color-destructive, #b42318)',
+    backgroundColor: 'var(--color-destructive, #f49e0c)',
     color: '#ffffff',
   },
   danger: {
-    backgroundColor: 'var(--color-destructive, #b42318)',
+    backgroundColor: 'var(--color-danger, #dc2626)',
     color: '#ffffff',
   },
 };
@@ -70,21 +70,21 @@ const softToneStyles: Record<ButtonTone, CSSProperties> = {
     borderColor: 'var(--color-border, #d6ddd9)',
   },
   destructive: {
-    color: 'var(--color-destructive, #b42318)',
-    borderColor: 'color-mix(in srgb, var(--color-destructive, #b42318) 40%, transparent)',
+    color: 'var(--color-destructive, #f49e0c)',
+    borderColor: 'color-mix(in srgb, var(--color-destructive, #f49e0c) 45%, transparent)',
   },
   danger: {
-    color: 'var(--color-destructive, #b42318)',
-    borderColor: 'color-mix(in srgb, var(--color-destructive, #b42318) 40%, transparent)',
+    color: 'var(--color-danger, #dc2626)',
+    borderColor: 'color-mix(in srgb, var(--color-danger, #dc2626) 40%, transparent)',
   },
 };
 
 const softToneClasses: Record<ButtonTone, string> = {
   default: '[&_svg]:text-current',
   destructive:
-    'hover:bg-[color-mix(in_srgb,var(--color-destructive,#b42318)_10%,transparent)] [&_svg]:text-[var(--color-destructive,#b42318)]',
+    'hover:bg-[color-mix(in_srgb,var(--color-destructive,#f49e0c)_12%,transparent)] [&_svg]:text-[var(--color-destructive,#f49e0c)]',
   danger:
-    'hover:bg-[color-mix(in_srgb,var(--color-destructive,#b42318)_10%,transparent)] [&_svg]:text-[var(--color-destructive,#b42318)]',
+    'hover:bg-[color-mix(in_srgb,var(--color-danger,#dc2626)_10%,transparent)] [&_svg]:text-[var(--color-danger,#dc2626)]',
 };
 
 function getVariantClasses(variant: ButtonVariant, tone: ButtonTone): string {

@@ -41,7 +41,7 @@ export interface TabsProps {
   contentClassName?: string;
   /** Default false; true = tabs share width evenly. */
   fullWidth?: boolean;
-  /** Active underline color; default "green" (#002816), "yellow" = accent. */
+  /** Active underline color; default "yellow" (#F49E0C), "green" = #002816. */
   variant?: 'yellow' | 'green';
   /** Rendered after the tab strip (right side). */
   trailing?: ReactNode;
@@ -94,7 +94,7 @@ export function Tabs({
   className,
   contentClassName,
   fullWidth = false,
-  variant = 'green',
+  variant = 'yellow',
   trailing,
   betweenContent,
   useRoutes = false,
@@ -241,7 +241,7 @@ export function Tabs({
   const activeBarColor =
     variant === 'green'
       ? 'bg-[var(--sdk-tabs-active,#002816)]'
-      : 'bg-secondary';
+      : 'bg-[#F49E0C]';
 
   return (
     <div className="flex w-full flex-col gap-6">

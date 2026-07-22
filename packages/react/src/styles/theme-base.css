@@ -19,6 +19,7 @@
   --color-muted: var(--color-muted);
   --color-border: var(--color-border);
   --color-destructive: var(--color-destructive);
+  --color-danger: var(--color-danger);
 }
 
 /* Number inputs — hide native spin buttons (Input uses type=text + inputMode for formatted numbers) */

@@ -351,9 +351,9 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
     columns,
     rows,
     onRowsChange,
-    showSerialNumbers = true,
+    showSerialNumbers = false,
     showDeleteButton = false,
-    editable = true,
+    editable = false,
     showInlineDelete = false,
     addRowText = 'Add another row',
     emptyMessage,
@@ -659,10 +659,23 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
     minWidth: column.minWidth || column.width || '150px',
   });
 
-  const tdBaseClass =
-    'relative px-6 py-4 align-middle transition-colors focus-within:z-10 focus-within:[outline:1px_solid_var(--color-primary)] focus-within:[outline-offset:-1px]';
+  const tdBaseClass = 'relative px-6 py-4 align-middle transition-colors';
+  const editableCellFocusClass =
+    'focus-within:z-10 focus-within:[outline:1px_solid_var(--color-primary)] focus-within:[outline-offset:-1px]';
   const errorCellClass =
     'border-t border-t-red-500 [outline:1px_solid_#ef4444] [outline-offset:-1px]';
+
+  const isEditableColumn = (column: ColumnDef) => {
+    if (column.editable === false) return false;
+    if (
+      column.type === 'string' ||
+      column.type === 'display' ||
+      column.type === 'readonly'
+    ) {
+      return false;
+    }
+    return true;
+  };
 
   const totalColumnCount =
     visibleColumns.length +
@@ -700,6 +713,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
         onClick={hasExtendedCell && !column.extendedCellControlled ? onToggle : undefined}
         className={cn(
           tdBaseClass,
+          isEditableColumn(column) && editableCellFocusClass,
           cellBorders({ isFirstColumn: columnIndexInRow === 0, isLastRow }),
           alignClass(column.align),
           hasExtendedCell && !column.extendedCellControlled && 'cursor-pointer',
@@ -809,7 +823,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
               className={cn(
                 'flex size-8 cursor-pointer items-center justify-center rounded-md text-open-regular-tiny transition-colors',
                 page === currentPage
-                  ? 'bg-secondary font-semibold text-brand'
+                  ? 'bg-[#F49E0C] font-semibold text-white'
                   : 'text-muted hover:bg-foreground/5 hover:text-foreground',
               )}
             >

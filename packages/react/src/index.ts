@@ -166,6 +166,10 @@ export {
 export { Card } from './components/Card';
 export type { CardProps, CardVariant } from './components/Card';
 
+export { SettingsItem } from './components/SettingsItem';
+export type { SettingsItemProps } from './components/SettingsItem';
+export { useSettingsAccordion } from './hooks/useSettingsAccordion';
+
 export { Chip } from './components/Chip';
 export type { ChipProps } from './components/Chip';
 

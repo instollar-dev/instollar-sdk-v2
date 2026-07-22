@@ -37,7 +37,18 @@ describe('Button', () => {
       </Button>,
     );
     expect(screen.getByRole('button', { name: 'Delete' }).style.color).toBe(
-      'var(--color-destructive, #b42318)',
+      'var(--color-destructive, #f49e0c)',
+    );
+  });
+
+  it('applies ghost danger tone color', () => {
+    render(
+      <Button variant="ghost" tone="danger">
+        Ban
+      </Button>,
+    );
+    expect(screen.getByRole('button', { name: 'Ban' }).style.color).toBe(
+      'var(--color-danger, #dc2626)',
     );
   });
 
@@ -55,7 +66,21 @@ describe('Button', () => {
       </Button>,
     );
     expect(screen.getByRole('button', { name: 'Remove' }).style.color).toBe(
-      'var(--color-destructive, #b42318)',
+      'var(--color-destructive, #f49e0c)',
     );
+  });
+
+  it('applies danger solid fill', () => {
+    render(<Button variant="danger">Danger</Button>);
+    expect(screen.getByRole('button', { name: 'Danger' }).style.backgroundColor).toBe(
+      'var(--color-danger, #dc2626)',
+    );
+  });
+
+  it('applies destructive solid fill', () => {
+    render(<Button variant="destructive">Destructive</Button>);
+    const button = screen.getByRole('button', { name: 'Destructive' });
+    expect(button.style.backgroundColor).toBe('var(--color-destructive, #f49e0c)');
+    expect(button.style.color).toBe('rgb(255, 255, 255)');
   });
 });

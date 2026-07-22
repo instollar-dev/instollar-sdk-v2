@@ -39,14 +39,17 @@ const pillars = [
 /** Style guide sections — deep-link via #style/{id} */
 const styleGuideHighlights: { id: string; label: string; note?: string }[] = [
   { id: 'sg-theme', label: 'ThemeProvider', note: 'light / dark / system' },
-  { id: 'sg-button', label: 'Button', note: 'includes underline variant' },
+  { id: 'sg-unified-tabs', label: 'Tabs', note: 'default #F49E0C' },
+  { id: 'sg-table', label: 'Table', note: 'pagination · readonly cells' },
+  { id: 'sg-button', label: 'Button', note: 'destructive · danger' },
   { id: 'sg-address-autocomplete', label: 'AddressAutocomplete', note: 'Places API (New)' },
+  { id: 'sg-card', label: 'Card' },
+  { id: 'sg-settings-item', label: 'SettingsItem', note: 'settings accordion' },
   { id: 'sg-file-upload', label: 'FileUpload', note: 'uploadFn / offline hooks' },
   { id: 'sg-date-input', label: 'DateInput / TimeInput / DateTimeInput' },
   { id: 'sg-otp-input', label: 'OtpInput / VerificationInput' },
   { id: 'sg-dropdown-menu', label: 'DropdownMenu' },
   { id: 'sg-select', label: 'Select' },
-  { id: 'sg-table', label: 'Table' },
   { id: 'sg-modal', label: 'ModalProvider' },
   { id: 'sg-drawer', label: 'DrawerProvider' },
   { id: 'sg-load', label: 'LoadBoundary' },
@@ -57,6 +60,7 @@ const styleGuideHighlights: { id: string; label: string; note?: string }[] = [
 const logicHighlights: { id: PillarId; section: string; label: string }[] = [
   { id: 'logic', section: 'lg-toast', label: 'Toasts (axios metadata)' },
   { id: 'logic', section: 'lg-places', label: 'Address autocomplete setup' },
+  { id: 'logic', section: 'lg-settings', label: 'Settings accordion pattern' },
   { id: 'logic', section: 'lg-async', label: 'Query adapters (Select / LoadBoundary)' },
 ];
 

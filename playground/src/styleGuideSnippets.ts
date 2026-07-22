@@ -27,7 +27,9 @@ import { ThemeProvider, useTheme } from '@instollar-dev/instollar-sdk';
 // Toggle: document.documentElement.dataset.theme = 'dark'
 // Or wrap the app in <ThemeProvider> and call useTheme().
 
-// CSS: bg-background · text-foreground · bg-brand · text-primary`,
+// CSS: bg-background · text-foreground · bg-brand · text-primary
+// Destructive: bg-destructive · text-destructive
+// Danger: bg-danger · text-danger`,
 
   text: `import { Text } from '@instollar-dev/instollar-sdk';
 
@@ -44,13 +46,19 @@ import { ThemeProvider, useTheme } from '@instollar-dev/instollar-sdk';
   spinner: `import { Spinner } from '@instollar-dev/instollar-sdk';
 
 <Spinner size={24} className="text-primary" />
-<Spinner size={32} className="text-destructive" />`,
+<Spinner size={32} className="text-destructive" />
+<Spinner size={32} className="text-danger" />`,
 
   button: `import { Button, Icon, Home2, ArrowRight2 } from '@instollar-dev/instollar-sdk';
 
 <Button variant="primary">Save</Button>
 <Button variant="underline">Learn more</Button>
+{/* Caution */}
+<Button variant="destructive">Remove</Button>
 <Button variant="ghost" tone="destructive">Cancel</Button>
+{/* Critical */}
+<Button variant="danger">Delete forever</Button>
+<Button variant="ghost" tone="danger">Ban user</Button>
 <Button size="sm" loading>Saving…</Button>
 <Button
   prefix={<Icon icon={Home2} size="sm" />}
@@ -88,7 +96,7 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 
   unifiedTabs: `import { Tabs } from '@instollar-dev/instollar-sdk';
 
-// Active underline is #002816 by default; variant="yellow" uses the accent.
+// Active underline is #F49E0C by default; variant="green" uses #002816.
 <Tabs
   activeTab={activeTab}
   onTabChange={setActiveTab}
@@ -113,8 +121,10 @@ const { StatusBadge: AppStatusBadge, resolve } = createStatusResolver({
 
   toast: `import { toast } from '@instollar-dev/instollar-sdk';
 
+// error accents use --color-danger; warning uses --color-destructive
 toast.success('Saved');
 toast.error('Something went wrong', { title: 'Error' });
+toast.warning('Review before publish');
 toast.show({ type: 'info', title: 'Update', description: '…', position: 'bottom-right' });`,
 
   alertText: `import {
@@ -140,6 +150,29 @@ toast.show({ type: 'info', title: 'Update', description: '…', position: 'botto
   </Text>
   <Button size="sm" className="mt-3 w-fit">Pay</Button>
 </Card>`,
+
+  settingsItem: `import {
+  SettingsItem,
+  useSettingsAccordion,
+  Icon,
+  SecuritySafe,
+  Switch,
+} from '@instollar-dev/instollar-sdk';
+
+const { openSection, isSectionOpen, toggleSection } = useSettingsAccordion();
+
+// Stable English keys — not translated titles
+<div className="flex flex-col gap-4">
+  <SettingsItem
+    icon={<Icon icon={SecuritySafe} size="lg" color="primary" />}
+    title={t('settings.sections.account.title')}
+    description={t('settings.sections.account.desc')}
+    isOpen={isSectionOpen('Account & Security')}
+    onClick={() => toggleSection('Account & Security')}
+  >
+    <Switch label="Two-factor authentication" checked={twoFa} onCheckedChange={setTwoFa} />
+  </SettingsItem>
+</div>`,
 
   input: `import { Input, Icon, SearchNormal1 } from '@instollar-dev/instollar-sdk';
 
@@ -274,7 +307,7 @@ const [query, setQuery] = useState('');
 <DropdownMenu
   items={[
     { label: 'Edit', onClick: openEdit },
-    { label: 'Delete', onClick: onDelete, className: 'text-destructive' },
+    { label: 'Delete', onClick: onDelete, className: 'text-danger' },
   ]}
 />
 
@@ -294,21 +327,31 @@ import { Table, type TableHandle } from '@instollar-dev/instollar-sdk';
 
 const tableRef = useRef<TableHandle>(null);
 const [rows, setRows] = useState(initialRows);
+const [page, setPage] = useState(1);
 
+// Editable + readonly (no focus outline on readonly/display/string)
 <Table
   ref={tableRef}
   columns={[
     { key: 'item', label: 'Item', validate: (value) => value ? null : 'Required' },
     { key: 'quantity', label: 'Quantity', type: 'number' },
-    { key: 'category', label: 'Category', type: 'select', options: categories },
+    { key: 'status', label: 'Status', type: 'readonly' },
   ]}
   rows={rows}
   onRowsChange={setRows}
   showInlineDelete
 />
 
-const result = tableRef.current?.validate();
-const data = tableRef.current?.getDataWithoutIds();`,
+// Pagination — active page uses solid #F49E0C (caller slices rows)
+<Table
+  columns={displayColumns}
+  rows={pageRows}
+  editable={false}
+  paginated
+  currentPage={page}
+  totalPages={3}
+  onPageChange={setPage}
+/>`,
 
   modal: `import {
   ModalProvider,

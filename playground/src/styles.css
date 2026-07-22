@@ -33,6 +33,7 @@
   --color-muted: var(--color-muted);
   --color-border: var(--color-border);
   --color-destructive: var(--color-destructive);
+  --color-danger: var(--color-danger);
 }
 
 /* SDK extras the packaged theme-base ships */

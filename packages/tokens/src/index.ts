@@ -17,7 +17,8 @@ export const colors = {
   secondary: brand.secondary,
   bg: '#ffffff',
   fg: brand.primary,
-  destructive: '#b42318',
+  destructive: '#f49e0c',
+  danger: '#dc2626',
 } as const;
 
 /** Dark theme semantic colors (matches `[data-theme="dark"]` in tokens.css). */
@@ -27,5 +28,6 @@ export const darkColors = {
   secondary: brand.secondary,
   bg: '#24382f',
   fg: '#edf6f0',
-  destructive: '#f97066',
+  destructive: '#fbbf24',
+  danger: '#ef4444',
 } as const;

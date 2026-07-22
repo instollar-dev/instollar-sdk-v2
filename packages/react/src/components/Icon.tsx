@@ -23,6 +23,7 @@ const colorValues: Record<IconColor, string> = {
   muted: iconPaint.muted,
   inverse: iconPaint.inverse,
   destructive: iconPaint.destructive,
+  danger: iconPaint.danger,
 };
 
 type IconsaxProps = SVGProps<SVGSVGElement> & {

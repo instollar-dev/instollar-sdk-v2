@@ -10,6 +10,7 @@ import {
   Chip,
   DateInput,
   DateTimeInput,
+  DocumentText,
   DrawerProvider,
   DropdownMenu,
   FileUpload,
@@ -22,8 +23,12 @@ import {
   OtpInput,
   Radio,
   RadioGroup,
+  NotificationBing,
   SearchNormal1,
+  SecuritySafe,
   Select,
+  Setting2,
+  SettingsItem,
   Spinner,
   StatusBadge,
   Switch,
@@ -38,6 +43,7 @@ import {
   toast,
   useDrawer,
   useModal,
+  useSettingsAccordion,
   useTheme,
   Moon,
   Sun1,
@@ -73,7 +79,7 @@ const textVariants = [
 ] as const;
 
 const iconSizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
-const iconColors = ['current', 'brand', 'primary', 'secondary', 'muted', 'inverse', 'destructive'] as const;
+const iconColors = ['current', 'brand', 'primary', 'secondary', 'muted', 'inverse', 'destructive', 'danger'] as const;
 const iconStyles = ['Linear', 'Outline', 'Broken', 'Bold', 'Bulk', 'TwoTone'] as const;
 
 const playgroundGooglePlacesApiKey =
@@ -111,6 +117,7 @@ const colorSwatches = [
   { name: 'background', value: colors.bg, className: 'bg-background border border-border' },
   { name: 'foreground', value: colors.fg, className: 'bg-foreground' },
   { name: 'destructive', value: colors.destructive, className: 'bg-destructive' },
+  { name: 'danger', value: colors.danger, className: 'bg-danger' },
   { name: 'muted', value: 'var(--color-muted)', className: 'bg-muted' },
 ] as const;
 
@@ -121,6 +128,7 @@ const darkColorSwatches = [
   { name: 'background', value: darkColors.bg, className: 'bg-background border border-border' },
   { name: 'foreground', value: darkColors.fg, className: 'bg-foreground' },
   { name: 'destructive', value: darkColors.destructive, className: 'bg-destructive' },
+  { name: 'danger', value: darkColors.danger, className: 'bg-danger' },
 ] as const;
 
 const { StatusBadge: ResolvedStatusBadge } = createStatusResolver({
@@ -265,8 +273,18 @@ export function StyleGuidePanel() {
     { id: 1, item: 'Solar panels', quantity: 12, category: 'hardware', status: 'Ready' },
     { id: 2, item: 'Installation', quantity: 1, category: 'service', status: 'Scheduled' },
   ]);
+  const [tablePage, setTablePage] = useState(1);
+  const [tableRowsPerPage, setTableRowsPerPage] = useState(5);
+  const displayTableRows = [
+    { id: 1, project: 'Lagos HQ', owners: 3, status: 'Active' },
+    { id: 2, project: 'Abuja Mini-grid', owners: 1, status: 'Pending' },
+    { id: 3, project: 'Kano Depot', owners: 2, status: 'Active' },
+  ];
   const [tableResult, setTableResult] = useState('Use the buttons to inspect or validate the rows.');
   const tableRef = useRef<TableHandle>(null);
+  const settingsAccordion = useSettingsAccordion();
+  const [settingsNotify, setSettingsNotify] = useState(true);
+  const [settingsTwoFa, setSettingsTwoFa] = useState(false);
 
   return (
     <div className="flex flex-col gap-8">
@@ -301,6 +319,11 @@ export function StyleGuidePanel() {
       </Section>
 
       <Section id="sg-colors" title="Colors" code={snippets.colors}>
+        <p className="mb-4 max-w-2xl text-open-regular-tiny text-muted">
+          <code>destructive</code> (<code>#f49e0c</code>) for caution actions.{' '}
+          <code>danger</code> (<code>#dc2626</code>) for critical / irreversible actions.
+          Both shift in dark theme.
+        </p>
         <SubSection title="Light">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {colorSwatches.map((swatch) => (
@@ -322,7 +345,8 @@ export function StyleGuidePanel() {
         <SubSection title="Dark (data-theme=&quot;dark&quot;)">
           <p className="mb-3 max-w-xl text-open-regular-tiny text-muted">
             Brand stays forest green for solid fills. Primary lifts to mint for readable accents;
-            canvas, text, borders, and destructive shift with the theme. Toggle from the sidebar.
+            canvas, text, borders, destructive, and danger shift with the theme.
+            Toggle from the sidebar.
           </p>
           <div className="dark grid gap-3 rounded-2xl border border-border bg-background p-4 sm:grid-cols-2 lg:grid-cols-3">
             {darkColorSwatches.map((swatch) => (
@@ -424,6 +448,10 @@ export function StyleGuidePanel() {
               <Spinner size={24} className="text-destructive" />
               <code className="text-[11px] text-muted">text-destructive</code>
             </div>
+            <div className="flex flex-col items-center gap-2">
+              <Spinner size={24} className="text-danger" />
+              <code className="text-[11px] text-muted">text-danger</code>
+            </div>
           </div>
         </DemoFrame>
       </Section>
@@ -458,6 +486,11 @@ export function StyleGuidePanel() {
                 Ghost destructive
               </Button>
             </VariantRow>
+            <VariantRow label='ghost · tone="danger"'>
+              <Button variant="ghost" tone="danger">
+                Ghost danger
+              </Button>
+            </VariantRow>
             <VariantRow label='underline · tone="default"'>
               <Button variant="underline" tone="default">
                 Underline default
@@ -466,6 +499,11 @@ export function StyleGuidePanel() {
             <VariantRow label='underline · tone="destructive"'>
               <Button variant="underline" tone="destructive">
                 Underline destructive
+              </Button>
+            </VariantRow>
+            <VariantRow label='underline · tone="danger"'>
+              <Button variant="underline" tone="danger">
+                Underline danger
               </Button>
             </VariantRow>
           </div>
@@ -564,10 +602,10 @@ export function StyleGuidePanel() {
       <Section
         id="sg-unified-tabs"
         title="Tabs"
-        description="controlled or uncontrolled · header-only or content · overflow controls · router adapter"
+        description="default active underline #F49E0C · variant green · header-only or content · overflow"
         code={snippets.unifiedTabs}
       >
-        <DemoFrame label="rich controlled tabs">
+        <DemoFrame label="default (yellow / #F49E0C)">
           <Tabs
             activeTab={activeTab}
             onTabChange={setActiveTab}
@@ -590,12 +628,12 @@ export function StyleGuidePanel() {
             ]}
           />
         </DemoFrame>
-        <DemoFrame label='header-only string tabs · variant="yellow"'>
+        <DemoFrame label='opt-in variant="green" (#002816)'>
           <Tabs
             tabs={['Company', 'Team', 'Billing']}
             activeTab={headerTab}
             onTabChange={setHeaderTab}
-            variant="yellow"
+            variant="green"
             fullWidth
           />
         </DemoFrame>
@@ -681,6 +719,118 @@ export function StyleGuidePanel() {
               Pay
             </Button>
           </Card>
+        </DemoFrame>
+      </Section>
+
+      <Section
+        id="sg-settings-item"
+        title="SettingsItem"
+        description="settings accordion · single-open · body unmounts when closed · useSettingsAccordion"
+        code={snippets.settingsItem}
+      >
+        <DemoFrame label="Settings page shell" className="max-w-2xl !p-0 overflow-hidden">
+          <div className="border-b border-border bg-background px-5 py-4 md:px-6">
+            <Text variant="spline-bold-h5">Settings</Text>
+            <Text variant="open-regular-tiny" className="mt-1 text-muted">
+              Open section:{' '}
+              <span className="font-medium text-foreground">
+                {settingsAccordion.openSection ?? 'none'}
+              </span>
+            </Text>
+          </div>
+          <div className="flex flex-col gap-4 p-4 md:p-6">
+            <SettingsItem
+              id="account"
+              icon={<Icon icon={SecuritySafe} size="lg" color="primary" />}
+              title="Account & Security"
+              description="Password, 2FA, and session settings"
+              isOpen={settingsAccordion.isSectionOpen('Account & Security')}
+              onClick={() => settingsAccordion.toggleSection('Account & Security')}
+            >
+              <div className="flex flex-col gap-4">
+                <Switch
+                  label="Two-factor authentication"
+                  description="Require a code at sign-in"
+                  checked={settingsTwoFa}
+                  onCheckedChange={setSettingsTwoFa}
+                />
+                <button
+                  type="button"
+                  className="group flex w-full items-center justify-between border-0 bg-transparent py-2.5 text-left"
+                >
+                  <span className="text-open-regular-p text-foreground transition-colors group-hover:text-primary">
+                    Change password
+                  </span>
+                  <Icon icon={ArrowRight2} size="sm" color="muted" />
+                </button>
+              </div>
+            </SettingsItem>
+
+            <SettingsItem
+              id="notifications"
+              icon={<Icon icon={NotificationBing} size="lg" color="primary" />}
+              title="Notifications & Preferences"
+              description="Channels and quiet hours"
+              isOpen={settingsAccordion.isSectionOpen('Notifications & Preferences')}
+              onClick={() => settingsAccordion.toggleSection('Notifications & Preferences')}
+            >
+              <div className="flex flex-col gap-4">
+                <Switch
+                  label="Email digests"
+                  checked={settingsNotify}
+                  onCheckedChange={setSettingsNotify}
+                />
+                <Checkbox label="Push notifications" defaultChecked />
+                <Checkbox label="SMS alerts" />
+              </div>
+            </SettingsItem>
+
+            <SettingsItem
+              id="locale"
+              icon={<Icon icon={Setting2} size="lg" color="primary" />}
+              title="Language, Time Zone & Currency"
+              description="Display and regional preferences"
+              isOpen={settingsAccordion.isSectionOpen('Language, Time Zone & Currency')}
+              onClick={() => settingsAccordion.toggleSection('Language, Time Zone & Currency')}
+            >
+              <Select
+                label="Language"
+                value="en"
+                onValueChange={() => undefined}
+                options={[
+                  { value: 'en', label: 'English' },
+                  { value: 'fr', label: 'Français' },
+                ]}
+              />
+            </SettingsItem>
+
+            <SettingsItem
+              id="legal"
+              icon={<Icon icon={DocumentText} size="lg" color="primary" />}
+              title="Legal & About"
+              description="Policies and app version"
+              isOpen={settingsAccordion.isSectionOpen('Legal & About')}
+              onClick={() => settingsAccordion.toggleSection('Legal & About')}
+            >
+              <div className="flex flex-col gap-2">
+                <a
+                  href="#style/sg-settings-item"
+                  className="text-open-regular-p text-primary hover:underline"
+                >
+                  Privacy Policy
+                </a>
+                <a
+                  href="#style/sg-settings-item"
+                  className="text-open-regular-p text-primary hover:underline"
+                >
+                  Terms of Service
+                </a>
+                <Text variant="open-regular-tiny" className="text-muted">
+                  Section keys stay English; titles can be i18n strings.
+                </Text>
+              </div>
+            </SettingsItem>
+          </div>
         </DemoFrame>
       </Section>
 
@@ -992,7 +1142,7 @@ export function StyleGuidePanel() {
       <Section
         id="sg-dropdown-menu"
         title="DropdownMenu"
-        description="actions menu · portal positioning · custom trigger · permission gate hook"
+        description="actions menu · cursor-pointer trigger · portal positioning · permission gate hook"
         code={snippets.dropdownMenu}
       >
         <DemoFrame className="flex flex-wrap items-center gap-6">
@@ -1000,7 +1150,7 @@ export function StyleGuidePanel() {
             items={[
               { label: 'Edit', onClick: () => undefined },
               { label: 'Duplicate', onClick: () => undefined },
-              { label: 'Delete', onClick: () => undefined, className: 'text-destructive' },
+              { label: 'Delete', onClick: () => undefined, className: 'text-danger' },
             ]}
           />
           <DropdownMenu
@@ -1020,7 +1170,7 @@ export function StyleGuidePanel() {
       <Section
         id="sg-table"
         title="Table"
-        description="typed editable cells · controlled rows · validation · imperative ref · add and delete"
+        description="editable cells · readonly without focus outline · pagination (#F49E0C active page) · validation"
         code={snippets.table}
       >
         <DemoFrame label="editable line items" wide className="!p-0">
@@ -1059,7 +1209,7 @@ export function StyleGuidePanel() {
             minWidth="780px"
           />
         </DemoFrame>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="mb-6 flex flex-wrap items-center gap-3">
           <Button
             size="sm"
             onClick={() => {
@@ -1086,6 +1236,53 @@ export function StyleGuidePanel() {
             {tableResult}
           </pre>
         </div>
+
+        <DemoFrame
+          label="display-only · click cells — no focus outline on readonly"
+          wide
+          className="!p-0"
+        >
+          <Table
+            columns={[
+              { key: 'project', label: 'Project', type: 'display', minWidth: '200px' },
+              { key: 'owners', label: 'Owners', type: 'readonly', align: 'center', width: '100px' },
+              { key: 'status', label: 'Status', type: 'string' },
+            ]}
+            rows={displayTableRows}
+            showSerialNumbers
+            showDeleteButton={false}
+            editable={false}
+            minWidth="560px"
+          />
+        </DemoFrame>
+
+        <DemoFrame label="pagination · active page #F49E0C" wide className="!p-0 mt-6">
+          <Table
+            columns={[
+              { key: 'project', label: 'Project', type: 'display', minWidth: '200px' },
+              { key: 'owners', label: 'Owners', type: 'readonly', align: 'center', width: '100px' },
+              { key: 'status', label: 'Status', type: 'string' },
+            ]}
+            rows={Array.from({ length: 12 }, (_, i) => ({
+              id: i + 1,
+              project: `Site ${i + 1}`,
+              owners: (i % 4) + 1,
+              status: i % 2 === 0 ? 'Active' : 'Pending',
+            })).slice((tablePage - 1) * tableRowsPerPage, tablePage * tableRowsPerPage)}
+            showSerialNumbers
+            editable={false}
+            paginated
+            currentPage={tablePage}
+            totalPages={Math.ceil(12 / tableRowsPerPage)}
+            rowsPerPage={tableRowsPerPage}
+            onPageChange={setTablePage}
+            onRowsPerPageChange={(next) => {
+              setTableRowsPerPage(next);
+              setTablePage(1);
+            }}
+            minWidth="560px"
+          />
+        </DemoFrame>
       </Section>
 
       <TocGroupDivider title="Feedback" description="Overlays, toasts, and loading states" />
@@ -1122,7 +1319,7 @@ export function StyleGuidePanel() {
       <Section
         id="sg-toast"
         title="toast (live)"
-        description="imperative SDK toasts · fixed stack on document.body · theme-aware via styles.css"
+        description="imperative SDK toasts · error = danger · warning = destructive · theme-aware via styles.css"
         code={snippets.toast}
       >
         <DemoFrame label="Click to fire — look top-right (or bottom per option)">
@@ -1132,14 +1329,14 @@ export function StyleGuidePanel() {
             </Button>
             <Button
               size="sm"
-              variant="destructive"
+              variant="danger"
               onClick={() => toast.error('Could not save profile.', { title: 'Request failed' })}
             >
               error
             </Button>
             <Button
               size="sm"
-              variant="ghost"
+              variant="destructive"
               onClick={() => toast.warning('Review required before publish.')}
             >
               warning
