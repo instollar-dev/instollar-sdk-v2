@@ -1,7 +1,7 @@
 {
-  "name": "@instollar-dev/instollar-sdk",
+  "name": "@instollar-dev/instollar-core",
   "version": "0.5.0",
-  "description": "Instollar SDK — React web UI, HTTP client, storage, and shared app data",
+  "description": "Instollar SDK core — HTTP client, storage, domains, utils (no UI)",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -12,23 +12,6 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./core": {
-      "types": "./dist/core.d.ts",
-      "import": "./dist/core.js",
-      "require": "./dist/core.cjs"
-    },
-    "./icons": {
-      "types": "./dist/icons.d.ts",
-      "import": "./dist/icons.js",
-      "require": "./dist/icons.cjs"
-    },
-    "./alert-text": {
-      "types": "./dist/alert-text.d.ts",
-      "import": "./dist/alert-text.js",
-      "require": "./dist/alert-text.cjs"
-    },
-    "./styles.css": "./dist/styles.css",
-    "./theme.css": "./theme.css",
     "./countries": {
       "types": "./dist/countries.d.ts",
       "import": "./dist/countries.js",
@@ -46,26 +29,21 @@
     }
   },
   "files": [
-    "dist",
-    "theme.css"
+    "dist"
   ],
   "scripts": {
-    "build": "tsup && pnpm build:assets",
-    "build:assets": "cp ../react/dist/styles.css dist/styles.css",
+    "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run",
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@instollar-dev/instollar-core": "workspace:*",
-    "@instollar-dev/instollar-react": "workspace:*",
-    "@instollar-dev/instollar-tokens": "workspace:*"
+    "axios": "^1.9.0",
+    "date-fns": "^4.4.0"
   },
   "peerDependencies": {
     "expo-secure-store": "*",
-    "react": ">=18",
-    "react-dom": ">=18",
     "zod": "^4.4.3"
   },
   "peerDependenciesMeta": {
@@ -74,8 +52,6 @@
     }
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "react": "^19.0.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.7",

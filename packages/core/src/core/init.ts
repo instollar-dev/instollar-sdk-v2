@@ -1,4 +1,4 @@
-import { configureGooglePlacesApiKey } from '@instollar-dev/instollar-react';
+import { configureGooglePlacesApiKey } from '../places/config';
 import { initAxios } from './api';
 import type { InstollarSDKConfig } from './types';
 import {

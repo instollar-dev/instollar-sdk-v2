@@ -12,9 +12,12 @@ The playground still runs its **own Tailwind** build (Vite plugin) so docs-only 
 
 | Package | Description |
 |---------|-------------|
-| `@instollar-dev/instollar-sdk` | Umbrella re-exports (preferred install) |
-| `@instollar-dev/instollar-react` | React components + `styles.css` + `theme.css` (IntelliSense) |
-| `@instollar-dev/instollar-tokens` | CSS variables + typography utilities |
+| `@instollar-dev/instollar-sdk` | Web umbrella (core + React UI + styles) |
+| `@instollar-dev/instollar-sdk/core` | Headless re-export of core (no UI) |
+| `@instollar-dev/instollar-core` | HTTP, storage, domains, utils, Places helpers |
+| `@instollar-dev/instollar-react` | React **web** UI + `styles.css` + `theme.css` |
+| `@instollar-dev/instollar-react-native` | React **Native** UI (Theme, Text, Button, Modal, Toast) |
+| `@instollar-dev/instollar-tokens` | CSS variables + JS theme colors (web + native) |
 
 ## Quick start
 
@@ -27,7 +30,7 @@ In the consuming app, create `.npmrc` (exact name):
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token
-pnpm add @instollar-dev/instollar-sdk@^0.4.7
+pnpm add @instollar-dev/instollar-sdk@^0.5.0
 ```
 
 `NODE_AUTH_TOKEN` must be a GitHub personal access token (or fine-grained token) with `read:packages` on the **instollar-dev** org. Use the same token in CI for installs.
@@ -38,6 +41,45 @@ import { Button, Text, Icon, Home2 } from '@instollar-dev/instollar-sdk';
 ```
 
 Load Spline Sans / Inter / Open Sans once (CSS `@import` or HTML `<link>`). Explore the live SDK surface with `pnpm playground`.
+
+### React Native
+
+Install core + the native UI package (do **not** use `@instollar-dev/instollar-react` or the web umbrella for RN apps):
+
+```bash
+pnpm add @instollar-dev/instollar-core @instollar-dev/instollar-react-native
+```
+
+```tsx
+import {
+  ThemeProvider,
+  ToastProvider,
+  Button,
+  Text,
+  initInstollarSDK,
+  toast,
+} from '@instollar-dev/instollar-react-native';
+
+initInstollarSDK({
+  baseUrls: { /* … */ },
+  autoStorage: true, // Expo SecureStore when available
+});
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <ToastProvider>
+        <Button variant="primary" onPress={() => toast.success('Saved')}>
+          Save
+        </Button>
+        <Text variant="open-regular-p">Hello</Text>
+      </ToastProvider>
+    </ThemeProvider>
+  );
+}
+```
+
+Load Spline Sans / Open Sans as custom fonts in the host Expo/RN app so `nativeFonts` resolve. Headless-only apps can import `@instollar-dev/instollar-core` or `@instollar-dev/instollar-sdk/core`.
 
 ## Tailwind IntelliSense (class autocomplete)
 
@@ -347,12 +389,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.4.7` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.5.0` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.4.7
-git push origin v0.4.7
+git tag v0.5.0
+git push origin v0.5.0
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.

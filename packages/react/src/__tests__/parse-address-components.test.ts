@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseAddressComponents } from '../places/parse-address-components';
-import type { PlaceDetailsResult } from '../places/types';
+import { parseAddressComponents, type PlaceDetailsResult } from '../places';
 
 describe('parseAddressComponents', () => {
   it('maps Google address component types to AddressComponents', () => {

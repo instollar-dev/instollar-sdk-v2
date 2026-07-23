@@ -1,1 +1,1 @@
-export * from './core/app/countries';
+export * from '@instollar-dev/instollar-core/countries';

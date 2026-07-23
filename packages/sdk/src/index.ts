@@ -21,5 +21,5 @@ export type {
   SuccessModalProps,
 } from '@instollar-dev/instollar-react';
 
-export * from './core';
-export * from './utils';
+export * from '@instollar-dev/instollar-core';
+export { cn } from './utils/cn';

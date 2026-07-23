@@ -9,9 +9,10 @@ import {
 import {
   fetchPlaceAutocompleteSuggestions,
   fetchPlaceDetailsAsAddress,
-} from '../places/google-places-client';
-import { resolveGooglePlacesApiKey } from '../places/config';
-import type { AddressComponents, PlaceAutocompleteSuggestion } from '../places/types';
+  resolveGooglePlacesApiKey,
+  type AddressComponents,
+  type PlaceAutocompleteSuggestion,
+} from '../places';
 import { cn } from '../utils/cn';
 import { FieldControl } from './FieldControl';
 import { Spinner } from './Spinner';

@@ -76,7 +76,20 @@ function getToastPalette(type: ToastType): ToastPalette {
   };
 }
 
-const showMobileToast = (options: ToastOptions): void => {
+export type ToastHandler = (options: ToastOptions) => void;
+
+let customToastHandler: ToastHandler | undefined;
+
+/** Register a platform toast UI (e.g. React Native ToastProvider). */
+export function setToastHandler(handler: ToastHandler): void {
+  customToastHandler = handler;
+}
+
+export function clearToastHandler(): void {
+  customToastHandler = undefined;
+}
+
+const showConsoleToast = (options: ToastOptions): void => {
   const { message, title, description, type = 'default' } = options;
   const content = description || message || '';
   const header = title ? `[${title}] ` : '';
@@ -86,6 +99,14 @@ const showMobileToast = (options: ToastOptions): void => {
   } else {
     console.log(`[Instollar SDK] ${emoji} ${header}${content}`);
   }
+};
+
+const showMobileToast = (options: ToastOptions): void => {
+  if (customToastHandler) {
+    customToastHandler(options);
+    return;
+  }
+  showConsoleToast(options);
 };
 
 const getIcons = (type: ToastType, color: string) => {
@@ -220,6 +241,10 @@ const showWebToast = (options: ToastOptions): void => {
 
 const showToast = (options: ToastOptions): void => {
   try {
+    if (customToastHandler) {
+      customToastHandler(options);
+      return;
+    }
     if (detectPlatform() === 'web') showWebToast(options);
     else showMobileToast(options);
   } catch {

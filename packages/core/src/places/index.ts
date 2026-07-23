@@ -3,12 +3,14 @@ export type {
   GoogleAddressComponent,
   PlaceAutocompleteSuggestion,
   PlaceDetailsResult,
-} from '@instollar-dev/instollar-core';
+} from './types';
+export { parseAddressComponents } from './parse-address-components';
 export {
-  parseAddressComponents,
   fetchPlaceAutocompleteSuggestions,
   fetchPlaceDetailsAsAddress,
+} from './google-places-client';
+export {
   configureGooglePlacesApiKey,
   getConfiguredGooglePlacesApiKey,
   resolveGooglePlacesApiKey,
-} from '@instollar-dev/instollar-core';
+} from './config';

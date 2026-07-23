@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-react",
-  "version": "0.4.7",
+  "version": "0.5.0",
   "description": "Instollar React web UI components",
   "type": "module",
   "main": "./dist/index.js",
@@ -39,6 +39,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@instollar-dev/instollar-core": "workspace:*",
     "@instollar-dev/instollar-tokens": "workspace:*",
     "clsx": "^2.1.1",
     "iconsax-react": "^0.0.8",

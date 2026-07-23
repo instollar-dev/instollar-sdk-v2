@@ -18,7 +18,7 @@ export type {
   UploadedFileAsset,
 } from './components/FileUpload.types';
 export { ALL_DOCUMENT_UPLOAD_ACCEPT } from './components/fileUploadUtils';
-export type { AddressComponents } from './places/types';
+export type { AddressComponents } from './places';
 export {
   parseAddressComponents,
   fetchPlaceAutocompleteSuggestions,

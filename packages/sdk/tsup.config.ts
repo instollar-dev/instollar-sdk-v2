@@ -3,6 +3,7 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: [
     'src/index.ts',
+    'src/core.ts',
     'src/icons.ts',
     'src/countries.ts',
     'src/alert-text.ts',
@@ -24,11 +25,19 @@ export default defineConfig({
     'react',
     'react-dom',
     'iconsax-react',
+    '@instollar-dev/instollar-core',
+    '@instollar-dev/instollar-core/countries',
+    '@instollar-dev/instollar-core/utils',
+    '@instollar-dev/instollar-core/utils/dateTime',
+    '@instollar-dev/instollar-core/utils/money',
+    '@instollar-dev/instollar-core/utils/number',
+    '@instollar-dev/instollar-core/utils/string',
+    '@instollar-dev/instollar-core/utils/phone',
+    '@instollar-dev/instollar-core/utils/validation',
+    '@instollar-dev/instollar-core/utils/errors',
     '@instollar-dev/instollar-react',
     '@instollar-dev/instollar-react/alert-text',
     '@instollar-dev/instollar-react/icons',
-    'date-fns',
     'expo-secure-store',
   ],
 });
-

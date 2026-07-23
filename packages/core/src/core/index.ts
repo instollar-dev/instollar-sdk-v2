@@ -22,7 +22,8 @@ export {
 } from './storage';
 export type { IStorage } from './storage';
 
-export { toast } from './toast';
+export { toast, setToastHandler, clearToastHandler } from './toast';
+export type { ToastHandler } from './toast';
 
 export {
   authApi,
