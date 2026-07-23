@@ -210,6 +210,15 @@ export type { RouteSegmentAdapter } from './utils/routeSegmentMatch';
 export { ModalProvider, useModal } from './components/ModalProvider';
 export type { ModalConfig, ModalContextValue } from './components/ModalProvider';
 
+export { SuccessModal } from './components/SuccessModal';
+export type { SuccessModalProps } from './components/SuccessModal';
+export { SuccessModalIcon } from './components/SuccessModalIcon';
+export { useSuccessModal } from './hooks/useSuccessModal';
+export type {
+  OpenSuccessModalOptions,
+  SuccessModalApi,
+} from './hooks/useSuccessModal';
+
 export { DrawerProvider, useDrawer } from './components/DrawerProvider';
 export type { DrawerConfig, DrawerContextValue } from './components/DrawerProvider';
 

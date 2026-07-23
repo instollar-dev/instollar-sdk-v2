@@ -48,6 +48,7 @@ import {
   useDrawer,
   useModal,
   useSettingsAccordion,
+  useSuccessModal,
   useTheme,
   Moon,
   Sun1,
@@ -146,28 +147,43 @@ const { StatusBadge: ResolvedStatusBadge } = createStatusResolver({
 
 function ModalDemo() {
   const { openModal, closeModal } = useModal();
+  const { openSuccessModal } = useSuccessModal();
 
   return (
-    <Button
-      onClick={() =>
-        openModal({
-          size: 'md',
-          content: (
-            <div className="flex flex-col gap-4">
-              <Text variant="spline-bold-h5">Programmatic modal</Text>
-              <Text variant="open-regular-p" className="text-muted">
-                Opened with useModal. Backdrop and Escape dismissal are disabled by default.
-              </Text>
-              <Button className="w-fit" onClick={closeModal}>
-                Close and continue
-              </Button>
-            </div>
-          ),
-        })
-      }
-    >
-      Open modal
-    </Button>
+    <div className="flex flex-wrap gap-2">
+      <Button
+        onClick={() =>
+          openModal({
+            size: 'md',
+            content: (
+              <div className="flex flex-col gap-4">
+                <Text variant="spline-bold-h5">Programmatic modal</Text>
+                <Text variant="open-regular-p" className="text-muted">
+                  Opened with useModal. Backdrop and Escape dismissal are disabled by default.
+                </Text>
+                <Button className="w-fit" onClick={closeModal}>
+                  Close and continue
+                </Button>
+              </div>
+            ),
+          })
+        }
+      >
+        Open modal
+      </Button>
+      <Button
+        variant="secondary"
+        onClick={() =>
+          openSuccessModal({
+            title: 'Order Created Successfully!',
+            description: 'You have successfully created an order from this lead interest.',
+            buttonLabel: 'View Order Details',
+          })
+        }
+      >
+        Open success modal
+      </Button>
+    </div>
   );
 }
 
@@ -1430,7 +1446,7 @@ export function StyleGuidePanel() {
       <Section
         id="sg-modal"
         title="ModalProvider / useModal"
-        description="programmatic content · stacking · topmost close semantics · safe dismissal defaults"
+        description="programmatic content · useSuccessModal · stacking · safe dismissal defaults"
         code={snippets.modal}
       >
         <DemoFrame>

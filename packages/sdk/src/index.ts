@@ -5,14 +5,20 @@ export {
   Avatar,
   getAvatarInitials,
   Segments,
+  SuccessModal,
+  SuccessModalIcon,
+  useSuccessModal,
 } from '@instollar-dev/instollar-react';
 export type {
   AvatarProps,
   AvatarSize,
+  OpenSuccessModalOptions,
   RouteSegmentAdapter,
   SegmentOption,
   SegmentsProps,
   SegmentsRouterAdapter,
+  SuccessModalApi,
+  SuccessModalProps,
 } from '@instollar-dev/instollar-react';
 
 export * from './core';

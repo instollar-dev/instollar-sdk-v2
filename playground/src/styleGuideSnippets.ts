@@ -399,6 +399,7 @@ const [page, setPage] = useState(1);
   modal: `import {
   ModalProvider,
   useModal,
+  useSuccessModal,
 } from '@instollar-dev/instollar-sdk';
 
 function CreateButton() {
@@ -411,6 +412,16 @@ function CreateButton() {
       Create
     </button>
   );
+}
+
+function AfterSave() {
+  const { openSuccessModal } = useSuccessModal();
+  openSuccessModal({
+    title: 'Order Created Successfully!',
+    description: 'You have successfully created an order from this lead interest.',
+    buttonLabel: 'View Order Details',
+    onButtonClick: () => navigate('/orders/1'),
+  });
 }
 
 <ModalProvider>

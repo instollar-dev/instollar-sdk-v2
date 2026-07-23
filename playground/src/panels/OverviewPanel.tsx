@@ -52,7 +52,7 @@ const styleGuideHighlights: { id: string; label: string; note?: string }[] = [
   { id: 'sg-otp-input', label: 'OtpInput / VerificationInput' },
   { id: 'sg-dropdown-menu', label: 'DropdownMenu' },
   { id: 'sg-select', label: 'Select' },
-  { id: 'sg-modal', label: 'ModalProvider' },
+  { id: 'sg-modal', label: 'ModalProvider', note: 'useSuccessModal' },
   { id: 'sg-drawer', label: 'DrawerProvider' },
   { id: 'sg-load', label: 'LoadBoundary' },
   { id: 'sg-alert', label: 'Alert', note: 'toast appearance' },

@@ -559,7 +559,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
     if (column.type === 'select') {
       const selectValue = value === '' || value === null || value === undefined ? undefined : String(value);
       return (
-        <div className="mx-0 -my-4 w-full min-w-[150px]">
+        <div className={cn('mx-0 -my-4 w-full', !isMobile && 'min-w-[150px]')}>
           <Select
             options={toSelectOptions(column.options ?? [])}
             value={selectValue}
@@ -656,7 +656,7 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
 
   const columnStyle = (column: ColumnDef): CSSProperties => ({
     width: column.width,
-    minWidth: column.minWidth || column.width || '150px',
+    minWidth: isMobile ? undefined : column.minWidth || column.width || '150px',
   });
 
   const tdBaseClass = 'relative px-6 py-4 align-middle transition-colors';
@@ -857,10 +857,10 @@ const Table = forwardRef<TableHandle, TableProps>(function Table(
 
   return (
     <div className="flex w-full flex-col">
-      <div className={cn('custom-scrollbar w-full overflow-auto', className)}>
+      <div className={cn('custom-scrollbar w-full overflow-x-auto', className)}>
         <table
           className={cn('w-full border-separate [border-spacing:1px]', tableClassName)}
-          style={{ minWidth }}
+          style={isMobile ? undefined : { minWidth }}
         >
           <thead
             className={cn(

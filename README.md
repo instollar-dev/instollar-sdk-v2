@@ -27,7 +27,7 @@ In the consuming app, create `.npmrc` (exact name):
 
 ```bash
 export NODE_AUTH_TOKEN=ghp_your_token
-pnpm add @instollar-dev/instollar-sdk@^0.4.6
+pnpm add @instollar-dev/instollar-sdk@^0.4.7
 ```
 
 `NODE_AUTH_TOKEN` must be a GitHub personal access token (or fine-grained token) with `read:packages` on the **instollar-dev** org. Use the same token in CI for installs.
@@ -309,6 +309,33 @@ const navigate = useNavigate();
 ```
 
 Clicks use `navigate(..., { replace: true })` so segment switches do not stack history.
+
+## Success modal
+
+Centered success dialog on top of `ModalProvider`. Defaults cover title, description, seal icon, and button:
+
+```tsx
+import { ModalProvider, useSuccessModal } from '@instollar-dev/instollar-sdk';
+
+function AfterCreate() {
+  const { openSuccessModal } = useSuccessModal();
+
+  openSuccessModal({
+    title: 'Order Created Successfully!',
+    description: 'You have successfully created an order from this lead interest.',
+    buttonLabel: 'View Order Details',
+    onButtonClick: () => navigate(`/orders/${id}`),
+  });
+}
+
+// App root
+<ModalProvider>
+  <App />
+</ModalProvider>
+```
+
+Or render `<SuccessModal … />` as `openModal({ content })` yourself.
+
 ## Local development (this repo)
 
 ```bash
@@ -320,12 +347,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.4.6` everywhere until you need otherwise).
+1. Keep package versions lockstep (`0.4.7` everywhere until you need otherwise).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.4.6
-git push origin v0.4.6
+git tag v0.4.7
+git push origin v0.4.7
 ```
 
 The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.

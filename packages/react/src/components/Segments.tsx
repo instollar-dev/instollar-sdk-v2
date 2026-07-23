@@ -133,52 +133,52 @@ export function Segments({
   const sizing = sizeClasses[size];
 
   return (
-    <div
-      role="radiogroup"
-      id={groupId}
-      className={cn(
-        'inline-flex max-w-full items-center rounded-full border border-border',
-        'bg-[color-mix(in_srgb,var(--color-border)_55%,var(--color-bg))]',
-        sizing.track,
-        className,
-      )}
-      {...props}
-    >
-      {options.map((option) => {
-        const isSelected = option.value === selected;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            role="radio"
-            aria-checked={isSelected}
-            disabled={option.disabled}
-            onClick={() => select(option)}
-            className={cn(
-              'inline-flex min-w-0 items-center justify-center rounded-full font-spline outline-none transition-all duration-150',
-              'cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-              'disabled:cursor-not-allowed disabled:opacity-50',
-              sizing.segment,
-              isSelected
-                ? 'bg-background text-brand shadow-sm'
-                : 'bg-transparent text-muted hover:text-foreground',
-            )}
-          >
-            {option.icon ? (
-              <span
-                className={cn(
-                  'inline-flex shrink-0 items-center [&_svg]:text-current',
-                  isSelected ? 'text-brand' : 'text-muted',
-                )}
-                aria-hidden
-              >
-                {option.icon}
-              </span>
-            ) : null}
-            <span className="truncate">{option.label}</span>
-          </button>
-        );
-      })}
+    <div className={cn('max-w-full overflow-x-auto', className)} {...props}>
+      <div
+        role="radiogroup"
+        id={groupId}
+        className={cn(
+          'inline-flex w-max max-w-none items-center rounded-full border border-border',
+          'bg-[color-mix(in_srgb,var(--color-border)_55%,var(--color-bg))]',
+          sizing.track,
+        )}
+      >
+        {options.map((option) => {
+          const isSelected = option.value === selected;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              role="radio"
+              aria-checked={isSelected}
+              disabled={option.disabled}
+              onClick={() => select(option)}
+              className={cn(
+                'inline-flex shrink-0 items-center justify-center rounded-full font-spline outline-none transition-all duration-150',
+                'cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                'disabled:cursor-not-allowed disabled:opacity-50',
+                sizing.segment,
+                isSelected
+                  ? 'bg-background text-brand shadow-sm'
+                  : 'bg-transparent text-muted hover:text-foreground',
+              )}
+            >
+              {option.icon ? (
+                <span
+                  className={cn(
+                    'inline-flex shrink-0 items-center [&_svg]:text-current',
+                    isSelected ? 'text-brand' : 'text-muted',
+                  )}
+                  aria-hidden
+                >
+                  {option.icon}
+                </span>
+              ) : null}
+              <span className="whitespace-nowrap">{option.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
