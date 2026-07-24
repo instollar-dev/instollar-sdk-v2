@@ -16,7 +16,7 @@ The playground still runs its **own Tailwind** build (Vite plugin) so docs-only 
 | `@instollar-dev/instollar-sdk/core` | Headless re-export of core (no UI) |
 | `@instollar-dev/instollar-core` | HTTP, storage, domains, utils, Places helpers |
 | `@instollar-dev/instollar-react` | React **web** UI + `styles.css` + `theme.css` |
-| `@instollar-dev/instollar-react-native` | React **Native** UI (Theme, Text, Button, Modal, Toast) |
+| `@instollar-dev/instollar-react-native` | React **Native** UI (Theme, forms, core components, Modal, Toast) |
 | `@instollar-dev/instollar-tokens` | CSS variables + JS theme colors (web + native) |
 
 ## Quick start
@@ -47,8 +47,12 @@ Load Spline Sans / Inter / Open Sans once (CSS `@import` or HTML `<link>`). Expl
 Install core + the native UI package (do **not** use `@instollar-dev/instollar-react` or the web umbrella for RN apps):
 
 ```bash
-pnpm add @instollar-dev/instollar-core @instollar-dev/instollar-react-native
+pnpm add @instollar-dev/instollar-core @instollar-dev/instollar-react-native react-native-svg
 ```
+
+`react-native-svg` is required for Iconsax icons.
+
+RN UI surface (v0.6): Theme, Text, Button, Spinner, Modal, Toast, FieldControl, Input, Textarea, Checkbox, Radio/RadioGroup, Switch, Select, OtpInput, Alert/AlertText, Icon, Card, Avatar, Chip, Tabs, Segments, StatusBadge, LoadBoundary, SettingsItem, SuccessModal.
 
 ```tsx
 import {
@@ -56,6 +60,7 @@ import {
   ToastProvider,
   Button,
   Text,
+  Input,
   initInstollarSDK,
   toast,
 } from '@instollar-dev/instollar-react-native';

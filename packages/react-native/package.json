@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-react-native",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Instollar React Native UI components",
   "type": "module",
   "main": "./dist/index.js",
@@ -25,20 +25,24 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@instollar-dev/instollar-core": "workspace:*",
-    "@instollar-dev/instollar-tokens": "workspace:*"
+    "@instollar-dev/instollar-core": "file:../core",
+    "@instollar-dev/instollar-tokens": "file:../tokens",
+    "iconsax-react-native": "^0.0.8"
   },
   "peerDependencies": {
     "react": ">=18",
-    "react-native": ">=0.73"
+    "react-native": ">=0.73",
+    "react-native-svg": ">=13"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-native": "^0.73.0",
     "react": "^19.0.0",
+    "react-native-svg": "^15.15.5",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
-  },  "publishConfig": {
+  },
+  "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
   "repository": {

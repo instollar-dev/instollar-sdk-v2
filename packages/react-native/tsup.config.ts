@@ -9,6 +9,8 @@ export default defineConfig({
   external: [
     'react',
     'react-native',
+    'react-native-svg',
+    'iconsax-react-native',
     '@instollar-dev/instollar-core',
     '@instollar-dev/instollar-tokens',
   ],

@@ -159,7 +159,7 @@ export function Segments({
                 'disabled:cursor-not-allowed disabled:opacity-50',
                 sizing.segment,
                 isSelected
-                  ? 'bg-background text-brand shadow-sm'
+                  ? 'bg-background text-foreground shadow-sm font-medium'
                   : 'bg-transparent text-muted hover:text-foreground',
               )}
             >
@@ -167,7 +167,7 @@ export function Segments({
                 <span
                   className={cn(
                     'inline-flex shrink-0 items-center [&_svg]:text-current',
-                    isSelected ? 'text-brand' : 'text-muted',
+                    isSelected ? 'text-foreground' : 'text-muted',
                   )}
                   aria-hidden
                 >

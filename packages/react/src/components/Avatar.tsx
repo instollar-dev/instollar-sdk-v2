@@ -69,7 +69,7 @@ export function Avatar({
 
   const sharedClassName = cn(
     'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border-0 p-0',
-    'bg-secondary text-brand font-spline select-none',
+    'bg-destructive text-white font-spline select-none',
     sizeClasses[size],
     interactive &&
       'cursor-pointer transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
