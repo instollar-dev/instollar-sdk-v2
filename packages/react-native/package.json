@@ -25,8 +25,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@instollar-dev/instollar-core": "file:../core",
-    "@instollar-dev/instollar-tokens": "file:../tokens",
+    "@instollar-dev/instollar-core": "workspace:*",
+    "@instollar-dev/instollar-tokens": "workspace:*",
     "iconsax-react-native": "^0.0.8"
   },
   "peerDependencies": {
