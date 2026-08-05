@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type ButtonVariant =
   | 'primary'
@@ -42,6 +43,7 @@ export function Button({
   suffix,
   children,
   style,
+  onPressIn,
   ...props
 }: ButtonProps) {
   const colors = useThemeColors();
@@ -78,6 +80,10 @@ export function Button({
     <Pressable
       accessibilityRole="button"
       disabled={isDisabled}
+      onPressIn={(event) => {
+        if (!isDisabled) triggerHapticFeedback('light');
+        onPressIn?.(event);
+      }}
       style={({ pressed }) => [
         styles.base,
         size === 'sm' ? styles.sm : styles.md,

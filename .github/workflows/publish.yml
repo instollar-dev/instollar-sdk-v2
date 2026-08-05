@@ -26,6 +26,28 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
 
-      - run: pnpm -r publish --no-git-checks
+      # Publish each package; skip versions that already exist on the registry.
+      - name: Publish packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          failed=0
+          for dir in packages/*; do
+            [ -f "$dir/package.json" ] || continue
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            echo "::group::Publish $name@$version"
+            if pnpm --filter "$name" publish --no-git-checks; then
+              echo "Published $name@$version"
+            else
+              echo "Publish skipped/failed for $name@$version (often already published)"
+              # Only soft-fail duplicate publishes; unexpected failures still mark the job.
+              if ! pnpm view "$name@$version" version >/dev/null 2>&1; then
+                echo "::error::$name@$version is not on the registry and publish failed"
+                failed=1
+              fi
+            fi
+            echo "::endgroup::"
+          done
+          exit "$failed"

@@ -3,6 +3,7 @@ import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { CloseCircle } from './Icon';
 import { useThemeColors } from '../theme/ThemeProvider';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type AlertTextVariant = 'error' | 'success' | 'pending' | 'info';
 
@@ -62,6 +63,7 @@ export function AlertText({
           accessibilityRole="button"
           accessibilityLabel="Dismiss"
           onPress={() => {
+            triggerHapticFeedback('light');
             setDismissed(true);
             onDismiss?.();
           }}

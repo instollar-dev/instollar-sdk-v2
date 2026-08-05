@@ -3,6 +3,7 @@ import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import type { TabsRouterAdapter } from './Tabs';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type SegmentOption = {
   value: string;
@@ -45,6 +46,7 @@ export function Segments({
 
   const select = (option: SegmentOption) => {
     if (option.disabled) return;
+    if (option.value !== current) triggerHapticFeedback('selection');
     if (!controlled) setInternal(option.value);
     onChange?.(option.value);
     if (useRoutes && router) {

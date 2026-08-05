@@ -47,12 +47,61 @@ Load Spline Sans / Inter / Open Sans once (CSS `@import` or HTML `<link>`). Expl
 Install core + the native UI package (do **not** use `@instollar-dev/instollar-react` or the web umbrella for RN apps):
 
 ```bash
-pnpm add @instollar-dev/instollar-core @instollar-dev/instollar-react-native react-native-svg
+pnpm add @instollar-dev/instollar-core @instollar-dev/instollar-react-native react-native-svg expo-haptics @gorhom/bottom-sheet
 ```
 
-`react-native-svg` is required for Iconsax icons.
+`react-native-svg` is required for Iconsax icons. `expo-haptics` enables tap feedback on buttons, toggles, tabs, and toasts (optional but recommended for Expo apps).
 
-RN UI surface (v0.6): Theme, Text, Button, Spinner, Modal, Toast, FieldControl, Input, Textarea, Checkbox, Radio/RadioGroup, Switch, Select, OtpInput, Alert/AlertText, Icon, Card, Avatar, Chip, Tabs, Segments, StatusBadge, LoadBoundary, SettingsItem, SuccessModal.
+For **BottomSheet**, also ensure `react-native-gesture-handler` and `react-native-reanimated` are installed (Expo Router apps usually already have them), then wrap the root with `BottomSheetProvider`:
+
+```tsx
+import {
+  ThemeProvider,
+  ToastProvider,
+  BottomSheetProvider,
+  BottomSheet,
+  Button,
+  Text,
+} from '@instollar-dev/instollar-react-native';
+
+<ThemeProvider>
+  <BottomSheetProvider>
+    <ToastProvider>
+      <App />
+    </ToastProvider>
+  </BottomSheetProvider>
+</ThemeProvider>
+```
+
+```tsx
+const { openBottomSheet, closeBottomSheet } = useBottomSheet();
+
+openBottomSheet({
+  title: 'Details',
+  snapPoints: ['40%', '80%'],
+  content: (
+    <>
+      <Text>Sheet content</Text>
+      <Button onPress={closeBottomSheet}>Done</Button>
+    </>
+  ),
+});
+```
+
+Declarative alternative:
+
+```tsx
+const [open, setOpen] = useState(false);
+
+<Button onPress={() => setOpen(true)}>Open sheet</Button>
+<BottomSheet open={open} onClose={() => setOpen(false)} title="Details" snapPoints={['40%', '80%']}>
+  <Text>Sheet content</Text>
+</BottomSheet>
+```
+
+If your app already mounts `GestureHandlerRootView`, pass `wrapGestureHandler={false}` to `BottomSheetProvider`.
+
+RN UI surface (v0.6): Theme, Text, Button, Spinner, Modal, BottomSheet, Toast, FieldControl, Input, Textarea, Checkbox, Radio/RadioGroup, Switch, Select, OtpInput, Alert/AlertText, Icon, Card, Avatar, Chip, Tabs, Segments, StatusBadge, LoadBoundary, SettingsItem, SuccessModal.
 
 ```tsx
 import {
@@ -394,12 +443,12 @@ pnpm playground
 
 ## Release
 
-1. Keep package versions lockstep (`0.5.0` everywhere until you need otherwise).
+1. Bump the package version(s) you intend to publish (packages may diverge — e.g. `@instollar-dev/instollar-react-native@0.6.1` while web packages stay on `0.5.0`).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.5.0
-git push origin v0.5.0
+git tag v0.6.1
+git push origin v0.6.1
 ```
 
-The Publish workflow builds and publishes all packages to GitHub Packages under the `instollar-dev` org.
+The Publish workflow builds and publishes packages to GitHub Packages. Already-published versions are skipped so patch tags for one package do not fail the job.

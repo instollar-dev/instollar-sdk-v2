@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type ChipProps = {
   selected?: boolean;
@@ -29,6 +30,9 @@ export function Chip({
       accessibilityRole="button"
       accessibilityState={{ selected, disabled }}
       disabled={disabled}
+      onPressIn={() => {
+        if (!disabled) triggerHapticFeedback('light');
+      }}
       onPress={onPress}
       style={[
         {

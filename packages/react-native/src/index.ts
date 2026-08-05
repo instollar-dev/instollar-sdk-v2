@@ -18,6 +18,24 @@ export type { SpinnerProps } from './components/Spinner';
 export { Modal } from './components/Modal';
 export type { ModalProps } from './components/Modal';
 
+export { BottomSheet } from './components/BottomSheet';
+export type { BottomSheetProps } from './components/BottomSheet';
+
+export { BottomSheetProvider, useBottomSheet } from './components/BottomSheetProvider';
+export type {
+  BottomSheetProviderProps,
+  BottomSheetConfig,
+  BottomSheetContextValue,
+} from './components/BottomSheetProvider';
+
+/** Re-exports for custom sheet layouts. */
+export {
+  BottomSheetScrollView,
+  BottomSheetView,
+  BottomSheetFlatList,
+  BottomSheetTextInput,
+} from '@gorhom/bottom-sheet';
+
 export { ToastProvider } from './toast/ToastProvider';
 export type { ToastProviderProps } from './toast/ToastProvider';
 
@@ -174,6 +192,14 @@ export {
   numberInputDisplayValue,
   numberInputRawValue,
 } from './utils/numberInputUtils';
+
+export {
+  triggerHapticFeedback,
+  setHapticsEnabled,
+  getHapticsEnabled,
+  withHapticPress,
+} from './utils/haptics';
+export type { HapticFeedbackType } from './utils/haptics';
 
 /** Re-export core APIs so RN apps can use one UI package + core init. */
 export {

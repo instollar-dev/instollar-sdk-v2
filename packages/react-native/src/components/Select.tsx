@@ -15,6 +15,7 @@ import { Spinner } from './Spinner';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { fieldErrorStyle, fieldLabelStyle } from '../styles/formStyles';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type SelectVariant = 'default' | 'inline';
 
@@ -116,6 +117,7 @@ export function Select<T = string>({
 
   const toggleOption = (option: SelectOption<T>) => {
     if (option.disabled) return;
+    triggerHapticFeedback('selection');
     if (multiple) {
       const values = Array.isArray(current) ? [...current] : current != null ? [current] : [];
       const idx = values.findIndex((v) => compareValue(v, option.value));
@@ -135,7 +137,13 @@ export function Select<T = string>({
           {label}
         </Text>
       ) : null}
-      <Pressable disabled={disabled} onPress={() => setOpen(true)}>
+      <Pressable
+        disabled={disabled}
+        onPressIn={() => {
+          if (!disabled) triggerHapticFeedback('light');
+        }}
+        onPress={() => setOpen(true)}
+      >
         <FieldControl
           prefix={prefix}
           suffix={

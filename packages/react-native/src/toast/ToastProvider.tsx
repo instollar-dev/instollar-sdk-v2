@@ -8,6 +8,7 @@ import {
 } from '@instollar-dev/instollar-core';
 import { Text } from '../components/Text';
 import { useThemeColors } from '../theme/ThemeProvider';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 type ToastItem = ToastOptions & { id: number };
 
@@ -21,6 +22,12 @@ export function ToastProvider({ children }: ToastProviderProps) {
 
   useEffect(() => {
     setToastHandler((options) => {
+      const type = options.type ?? 'default';
+      if (type === 'success') triggerHapticFeedback('success');
+      else if (type === 'error') triggerHapticFeedback('error');
+      else if (type === 'warning') triggerHapticFeedback('warning');
+      else if (type === 'message' || type === 'info') triggerHapticFeedback('light');
+
       const id = Date.now() + Math.floor(Math.random() * 1000);
       setToasts((prev) => [...prev, { ...options, id }]);
       const autoClose = options.autoClose ?? (options.type === 'message' ? 10000 : 5000);
@@ -56,7 +63,10 @@ export function ToastProvider({ children }: ToastProviderProps) {
           return (
             <Pressable
               key={toast.id}
-              onPress={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
+              onPress={() => {
+                triggerHapticFeedback('light');
+                setToasts((prev) => prev.filter((t) => t.id !== toast.id));
+              }}
               style={[
                 styles.toast,
                 {

@@ -3,6 +3,7 @@ import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { fieldDescriptionStyle, fieldErrorStyle } from '../styles/formStyles';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type SwitchProps = {
   checked?: boolean;
@@ -32,6 +33,7 @@ export function Switch({
 
   const toggle = () => {
     if (disabled) return;
+    triggerHapticFeedback('selection');
     const next = !isChecked;
     if (!controlled) setInternal(next);
     onCheckedChange?.(next);

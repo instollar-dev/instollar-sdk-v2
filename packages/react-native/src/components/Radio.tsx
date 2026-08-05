@@ -9,6 +9,7 @@ import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { fieldDescriptionStyle, fieldErrorStyle, fieldLabelStyle } from '../styles/formStyles';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 type RadioContextValue = {
   value?: string;
@@ -101,7 +102,11 @@ export function Radio({ value, label, description, disabled, style }: RadioProps
       accessibilityRole="radio"
       accessibilityState={{ selected, disabled: isDisabled }}
       disabled={isDisabled}
-      onPress={() => ctx.onValueChange?.(value)}
+      onPress={() => {
+        if (isDisabled || selected) return;
+        triggerHapticFeedback('selection');
+        ctx.onValueChange?.(value);
+      }}
       style={[
         { flexDirection: 'row', alignItems: 'flex-start', gap: 10, opacity: isDisabled ? 0.5 : 1 },
         style,

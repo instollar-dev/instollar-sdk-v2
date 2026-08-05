@@ -17,6 +17,7 @@ import {
   numberInputDisplayValue,
   sanitizeNumberInput,
 } from '../utils/numberInputUtils';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type InputProps = Omit<TextInputProps, 'onChange'> & {
   label?: string;
@@ -82,7 +83,10 @@ export function Input({
       accessibilityRole="button"
       accessibilityLabel={visible ? 'Hide password' : 'Show password'}
       disabled={!editable}
-      onPress={() => setVisible((v) => !v)}
+      onPress={() => {
+        triggerHapticFeedback('selection');
+        setVisible((v) => !v);
+      }}
       hitSlop={8}
     >
       <Icon icon={visible ? EyeSlash : Eye} size="sm" color="muted" />

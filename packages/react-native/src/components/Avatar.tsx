@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type AvatarSize = 'sm' | 'md' | 'lg';
 
@@ -87,7 +88,11 @@ export function Avatar({
 
   if (onClick) {
     return (
-      <Pressable accessibilityRole="button" onPress={onClick}>
+      <Pressable
+        accessibilityRole="button"
+        onPressIn={() => triggerHapticFeedback('light')}
+        onPress={onClick}
+      >
         {content}
       </Pressable>
     );

@@ -3,6 +3,7 @@ import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Text } from './Text';
 import { ArrowDown2, ArrowRight2 } from './Icon';
 import { useThemeColors } from '../theme/ThemeProvider';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type SettingsItemProps = {
   icon: ReactNode;
@@ -42,6 +43,7 @@ export function SettingsItem({
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ expanded: isOpen }}
+        onPressIn={() => triggerHapticFeedback('light')}
         onPress={onClick}
         style={{
           flexDirection: 'row',

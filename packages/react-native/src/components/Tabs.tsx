@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
+import { triggerHapticFeedback } from '../utils/haptics';
 
 export type TabModel = {
   label: string;
@@ -74,6 +75,7 @@ export function Tabs({
   }, []);
 
   const select = (value: string, path?: string) => {
+    if (value !== current) triggerHapticFeedback('selection');
     if (!controlled) setInternal(value);
     onTabChange?.(value);
     if (useRoutes && router) {
