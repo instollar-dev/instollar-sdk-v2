@@ -55,7 +55,9 @@ describe('Button', () => {
   it('applies underline variant text styles', () => {
     render(<Button variant="underline">Learn more</Button>);
     const button = screen.getByRole('button', { name: 'Learn more' });
-    expect(button.style.color).toBe('var(--color-fg, var(--color-brand, #012b15))');
+    expect(button.style.color).toBe(
+      'var(--color-soft-button, var(--color-fg, var(--color-brand, #012b15)))',
+    );
     expect(button.className).toContain('underline');
   });
 

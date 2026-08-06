@@ -66,8 +66,8 @@ const softBaseClasses = {
 
 const softToneStyles: Record<ButtonTone, CSSProperties> = {
   default: {
-    color: 'var(--color-fg, var(--color-brand, #012b15))',
-    borderColor: 'var(--color-border, #d6ddd9)',
+    color: 'var(--color-soft-button, var(--color-fg, var(--color-brand, #012b15)))',
+    borderColor: 'var(--color-soft-button-border, var(--color-border, #d6ddd9))',
   },
   destructive: {
     color: 'var(--color-destructive, #f49e0c)',

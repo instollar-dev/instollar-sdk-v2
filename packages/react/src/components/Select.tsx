@@ -229,7 +229,17 @@ export function Select<T = string>({
   const filteredOptions = useMemo(() => {
     if (!searchable || !search.trim()) return allOptions;
     const query = search.trim().toLowerCase();
-    return allOptions.filter((option) => option.label.toLowerCase().includes(query));
+    return allOptions.filter((option) => {
+      const valueKey =
+        typeof option.value === 'string' || typeof option.value === 'number'
+          ? String(option.value).toLowerCase()
+          : '';
+      return (
+        option.label.toLowerCase().includes(query) ||
+        option.description?.toLowerCase().includes(query) ||
+        valueKey.includes(query)
+      );
+    });
   }, [allOptions, searchable, search]);
 
   const createInputValue = searchable ? search : customInput;

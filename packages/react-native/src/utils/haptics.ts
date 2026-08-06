@@ -20,16 +20,45 @@ export function getHapticsEnabled(): boolean {
 
 type HapticsModule = typeof import('expo-haptics');
 
+const HAPTICS_GLOBAL_KEY = '__INSTOLLAR_EXPO_HAPTICS__';
+
+type HapticsGlobal = typeof globalThis & {
+  [HAPTICS_GLOBAL_KEY]?: HapticsModule | null;
+};
+
 let cachedHaptics: HapticsModule | null | undefined;
+
+/**
+ * Register the host app's `expo-haptics` module.
+ *
+ * Required for Expo/Metro: the prebundled SDK cannot safely
+ * `require('expo-haptics')` at runtime (Metro leaves it as an unknown module).
+ *
+ * @example
+ * ```ts
+ * import * as ExpoHaptics from 'expo-haptics';
+ * import { registerHapticsModule } from '@instollar-dev/instollar-react-native';
+ * registerHapticsModule(ExpoHaptics);
+ * ```
+ */
+export function registerHapticsModule(mod: HapticsModule | null): void {
+  (globalThis as HapticsGlobal)[HAPTICS_GLOBAL_KEY] = mod;
+  cachedHaptics = mod;
+}
 
 function getHapticsModule(): HapticsModule | null {
   if (cachedHaptics !== undefined) return cachedHaptics;
-  try {
-    // Optional peer — no-op when expo-haptics is not installed.
-    cachedHaptics = require('expo-haptics') as HapticsModule;
-  } catch {
-    cachedHaptics = null;
+
+  const injected = (globalThis as HapticsGlobal)[HAPTICS_GLOBAL_KEY];
+  if (injected !== undefined) {
+    cachedHaptics = injected;
+    return cachedHaptics;
   }
+
+  // Do not dynamically require('expo-haptics') here.
+  // Metro does not rewrite requires inside the prebundled package, which
+  // surfaces "Requiring unknown module expo-haptics" as a redbox.
+  cachedHaptics = null;
   return cachedHaptics;
 }
 

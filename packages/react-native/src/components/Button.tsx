@@ -9,7 +9,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { Text } from './Text';
-import { useThemeColors } from '../theme/ThemeProvider';
+import { useResolvedScheme, useThemeColors } from '../theme/ThemeProvider';
 import { triggerHapticFeedback } from '../utils/haptics';
 
 export type ButtonVariant =
@@ -47,6 +47,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const colors = useThemeColors();
+  const scheme = useResolvedScheme();
   const isSoft = variant === 'ghost' || variant === 'underline';
   const isDisabled = Boolean(disabled || loading);
 
@@ -65,15 +66,18 @@ export function Button({
     backgroundColor = fill[variant];
     labelColor = variant === 'secondary' ? colors.brand : colors.white;
   } else {
+    // Ghost (outline) + underline: in dark mode default tone uses destructive.
     borderWidth = variant === 'ghost' ? 1 : 0;
+    const softTone =
+      tone === 'default' && scheme === 'dark' ? 'destructive' : tone;
     const toneColor =
-      tone === 'destructive'
+      softTone === 'destructive'
         ? colors.destructive
-        : tone === 'danger'
+        : softTone === 'danger'
           ? colors.danger
           : colors.fg;
     labelColor = toneColor;
-    borderColor = tone === 'default' ? colors.border : toneColor;
+    borderColor = softTone === 'default' ? colors.border : toneColor;
   }
 
   return (

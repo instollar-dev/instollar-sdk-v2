@@ -92,3 +92,9 @@ export function useThemeColors(): ThemeColors {
   const ctx = useContext(ThemeContext);
   return ctx?.colors ?? getThemeColors('light');
 }
+
+/** Resolved light/dark scheme; defaults to light outside ThemeProvider. */
+export function useResolvedScheme(): ColorScheme {
+  const ctx = useContext(ThemeContext);
+  return ctx?.scheme ?? 'light';
+}

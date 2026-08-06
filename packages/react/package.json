@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-react",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Instollar React web UI components",
   "type": "module",
   "main": "./dist/index.js",
@@ -28,7 +28,8 @@
   "files": [
     "dist",
     "src/styles/theme.css",
-    "src/styles/theme-base.css"
+    "src/styles/theme-base.css",
+    "AGENTS.md"
   ],
   "scripts": {
     "build": "tsup && pnpm build:css",

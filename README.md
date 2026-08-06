@@ -101,7 +101,24 @@ const [open, setOpen] = useState(false);
 
 If your app already mounts `GestureHandlerRootView`, pass `wrapGestureHandler={false}` to `BottomSheetProvider`.
 
-RN UI surface (v0.6): Theme, Text, Button, Spinner, Modal, BottomSheet, Toast, FieldControl, Input, Textarea, Checkbox, Radio/RadioGroup, Switch, Select, OtpInput, Alert/AlertText, Icon, Card, Avatar, Chip, Tabs, Segments, StatusBadge, LoadBoundary, SettingsItem, SuccessModal.
+RN UI surface (v0.6+): Theme, Text, Button, Spinner, Modal, BottomSheet, Toast, FieldControl, Input, PhoneInput, Textarea, Checkbox, Radio/RadioGroup, Switch, Select, OtpInput, Alert/AlertText, Icon, Card, Avatar, Chip, Tabs, Segments, StatusBadge, LoadBoundary, SettingsItem, SuccessModal, SuccessBottomSheet / `useSuccessBottomSheet`.
+
+Agent-oriented component docs ship with the packages:
+- RN: [`packages/react-native/AGENTS.md`](packages/react-native/AGENTS.md)
+- Web: [`packages/react/AGENTS.md`](packages/react/AGENTS.md)
+
+Success confirmation on mobile (preferred):
+
+```tsx
+const { openSuccessBottomSheet } = useSuccessBottomSheet();
+
+openSuccessBottomSheet({
+  title: 'Order Created Successfully!',
+  description: 'You have successfully created an order.',
+  buttonLabel: 'View Order',
+  onButtonClick: () => router.push(`/orders/${id}`),
+});
+```
 
 ```tsx
 import {
@@ -443,12 +460,12 @@ pnpm playground
 
 ## Release
 
-1. Bump the package version(s) you intend to publish (packages may diverge — e.g. `@instollar-dev/instollar-react-native@0.6.1` while web packages stay on `0.5.0`).
+1. Bump the package version(s) you intend to publish (packages may diverge — e.g. `@instollar-dev/instollar-react-native@0.7.0` while older tags remain).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.6.1
-git push origin v0.6.1
+git tag v0.7.0
+git push origin v0.7.0
 ```
 
 The Publish workflow builds and publishes packages to GitHub Packages. Already-published versions are skipped so patch tags for one package do not fail the job.

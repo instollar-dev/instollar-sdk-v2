@@ -8,8 +8,10 @@ import {
   formatDate,
   formatDateOnly,
   formatMoney,
+  formatNationalNumber,
   formatNumberWithGrouping,
   formatPhoneForApi,
+  formatPhoneValueForApi,
   getApiErrorMessage,
   isNetworkDisconnectError,
   maskEmailForOtpHint,
@@ -18,8 +20,14 @@ import {
   parseAmountInput,
   resolveProjectDisplayAmount,
   toDateInputValue,
+  toE164,
+  toPhoneCountryOptions,
   validateForm,
+  validateNationalNumber,
+  clampNationalDigits,
+  getCountryByCode,
 } from '../utils';
+import { COUNTRIES } from '../core/app/countries';
 
 describe('date and time helpers', () => {
   it('formats valid dates and safely rejects invalid values', () => {
@@ -56,6 +64,27 @@ describe('string and phone helpers', () => {
       formatPhoneForApi({ phoneCode: '+234', nationalNumber: '801 234 5678' }),
     ).toBe('2348012345678');
     expect(normalizePhoneForApi('+234+801')).toBe('234801');
+  });
+
+  it('formats national numbers and builds E.164 / API values from PhoneValue', () => {
+    expect(formatNationalNumber('8012345678', '### ### ####')).toBe('801 234 5678');
+    expect(formatNationalNumber('801', '### ### ####')).toBe('801');
+    expect(clampNationalDigits('8012345678999', getCountryByCode('NG', COUNTRIES))).toBe(
+      '8012345678',
+    );
+    expect(
+      toE164({ countryCode: 'NG', nationalNumber: '8012345678' }),
+    ).toBe('+2348012345678');
+    expect(
+      formatPhoneValueForApi({ countryCode: 'NG', nationalNumber: '801 234 5678' }),
+    ).toBe('2348012345678');
+    expect(validateNationalNumber('8012345678', getCountryByCode('NG', COUNTRIES)).valid).toBe(
+      true,
+    );
+    expect(validateNationalNumber('801', getCountryByCode('NG', COUNTRIES)).valid).toBe(false);
+    expect(toPhoneCountryOptions(COUNTRIES).some((o) => o.value === 'NG' && o.label === '+234')).toBe(
+      true,
+    );
   });
 });
 

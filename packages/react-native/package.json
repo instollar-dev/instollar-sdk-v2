@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-react-native",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Instollar React Native UI components",
   "type": "module",
   "main": "./dist/index.js",
@@ -16,7 +16,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "AGENTS.md"
   ],
   "scripts": {
     "build": "tsup",

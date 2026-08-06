@@ -21,6 +21,9 @@
   --color-border: color-mix(in srgb, var(--color-brand) 12%, white);
   --color-destructive: #f49e0c;
   --color-danger: #dc2626;
+  /* Ghost / underline (outline) soft buttons — light uses fg. */
+  --color-soft-button: var(--color-fg);
+  --color-soft-button-border: var(--color-border);
 
   color-scheme: light;
   font-family: var(--font-spline);
@@ -43,6 +46,9 @@
   --color-border: color-mix(in srgb, var(--color-fg) 18%, var(--color-bg));
   --color-destructive: #fbbf24;
   --color-danger: #ef4444;
+  /* Ghost / underline (outline) soft buttons use destructive in dark. */
+  --color-soft-button: var(--color-destructive);
+  --color-soft-button-border: color-mix(in srgb, var(--color-destructive) 45%, transparent);
 
   color-scheme: dark;
 }

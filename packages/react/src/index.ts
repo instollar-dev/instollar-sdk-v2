@@ -7,6 +7,17 @@ export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize } from './compo
 export { Input } from './components/Input';
 export type { InputProps } from './components/Input';
 
+export { PhoneInput } from './components/PhoneInput';
+export type { PhoneInputProps } from './components/PhoneInput';
+export type { PhoneValue } from '@instollar-dev/instollar-core/utils/phone';
+export {
+  formatPhoneValueForApi,
+  toE164,
+  validateNationalNumber,
+  formatNationalNumber,
+  createPhoneValue,
+} from '@instollar-dev/instollar-core/utils/phone';
+
 export { AddressAutocomplete, default } from './components/AddressAutocomplete';
 export type { AddressAutocompleteProps } from './components/AddressAutocomplete';
 

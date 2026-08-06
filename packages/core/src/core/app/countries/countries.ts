@@ -507,9 +507,19 @@ export function getLGAsForState(
 
 export function searchCountries(query: string): Country[] {
   const lowerQuery = query.toLowerCase();
+  const phoneQuery = query.trim().startsWith('+')
+    ? query.trim()
+    : query.trim() ? `+${query.trim().replace(/^\+/, '')}` : '';
   return COUNTRIES.filter(
     (c) =>
       c.name.toLowerCase().includes(lowerQuery) ||
-      c.countryCode.toLowerCase().includes(lowerQuery),
+      c.countryCode.toLowerCase().includes(lowerQuery) ||
+      c.phoneCode.includes(lowerQuery) ||
+      (phoneQuery !== '' && c.phoneCode.includes(phoneQuery)),
   );
+}
+
+export function getCountryByCode(countryCode: string): Country | undefined {
+  const code = countryCode.trim().toUpperCase();
+  return COUNTRIES.find((c) => c.countryCode.toUpperCase() === code);
 }

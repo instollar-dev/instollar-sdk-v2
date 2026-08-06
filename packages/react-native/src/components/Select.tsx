@@ -96,11 +96,17 @@ export function Select<T = string>({
   const filtered = useMemo(() => {
     if (!searchable || !query.trim()) return options;
     const q = query.trim().toLowerCase();
-    return options.filter(
-      (o) =>
+    return options.filter((o) => {
+      const valueKey =
+        typeof o.value === 'string' || typeof o.value === 'number'
+          ? String(o.value).toLowerCase()
+          : '';
+      return (
         o.label.toLowerCase().includes(q) ||
-        o.description?.toLowerCase().includes(q),
-    );
+        o.description?.toLowerCase().includes(q) ||
+        valueKey.includes(q)
+      );
+    });
   }, [options, query, searchable]);
 
   const triggerLabel =

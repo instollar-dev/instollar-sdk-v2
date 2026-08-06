@@ -1,4 +1,4 @@
-export { ThemeProvider, useTheme, useThemeColors } from './theme/ThemeProvider';
+export { ThemeProvider, useTheme, useThemeColors, useResolvedScheme } from './theme/ThemeProvider';
 export type { ThemeMode, ThemeProviderProps, InstollarTheme } from './theme/ThemeProvider';
 
 export { Text } from './components/Text';
@@ -44,6 +44,9 @@ export type { FieldControlProps } from './components/FieldControl';
 
 export { Input } from './components/Input';
 export type { InputProps } from './components/Input';
+
+export { PhoneInput } from './components/PhoneInput';
+export type { PhoneInputProps } from './components/PhoneInput';
 
 export { Textarea } from './components/Textarea';
 export type { TextareaProps } from './components/Textarea';
@@ -183,8 +186,26 @@ export type { LoadBoundaryProps } from './components/LoadBoundary';
 export { SettingsItem } from './components/SettingsItem';
 export type { SettingsItemProps } from './components/SettingsItem';
 
-export { SuccessModal, SuccessModalIcon } from './components/SuccessModal';
+export {
+  SuccessPanel,
+  SuccessModalIcon,
+  DEFAULT_SUCCESS_TITLE,
+  DEFAULT_SUCCESS_DESCRIPTION,
+  DEFAULT_SUCCESS_BUTTON_LABEL,
+} from './components/SuccessPanel';
+export type { SuccessPanelProps } from './components/SuccessPanel';
+
+export { SuccessModal } from './components/SuccessModal';
 export type { SuccessModalProps } from './components/SuccessModal';
+
+export { SuccessBottomSheet } from './components/SuccessBottomSheet';
+export type { SuccessBottomSheetProps } from './components/SuccessBottomSheet';
+
+export { useSuccessBottomSheet } from './hooks/useSuccessBottomSheet';
+export type {
+  OpenSuccessBottomSheetOptions,
+  SuccessBottomSheetApi,
+} from './hooks/useSuccessBottomSheet';
 
 export {
   sanitizeNumberInput,
@@ -193,10 +214,31 @@ export {
   numberInputRawValue,
 } from './utils/numberInputUtils';
 
+export type { PhoneValue, PhoneParts, PhoneCountryOption } from '@instollar-dev/instollar-core/utils/phone';
+export {
+  formatPhoneForApi,
+  normalizePhoneForApi,
+  formatPhoneValueForApi,
+  toE164,
+  digitsOnly,
+  formatNationalNumber,
+  validateNationalNumber,
+  toPhoneCountryOptions,
+  createPhoneValue,
+} from '@instollar-dev/instollar-core/utils/phone';
+
+export {
+  COUNTRIES,
+  getCountryByCode,
+  searchCountries,
+} from '@instollar-dev/instollar-core/countries';
+export type { Country } from '@instollar-dev/instollar-core/countries';
+
 export {
   triggerHapticFeedback,
   setHapticsEnabled,
   getHapticsEnabled,
+  registerHapticsModule,
   withHapticPress,
 } from './utils/haptics';
 export type { HapticFeedbackType } from './utils/haptics';
