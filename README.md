@@ -460,12 +460,12 @@ pnpm playground
 
 ## Release
 
-1. Bump the package version(s) you intend to publish (packages may diverge — e.g. `@instollar-dev/instollar-react-native@0.7.0` while older tags remain).
+1. Bump the package version(s) you intend to publish (packages may diverge — e.g. `@instollar-dev/instollar-react-native@0.7.1` while older tags remain).
 2. Commit, then tag and push:
 
 ```bash
-git tag v0.7.0
-git push origin v0.7.0
+git tag v0.7.1
+git push origin v0.7.1
 ```
 
 The Publish workflow builds and publishes packages to GitHub Packages. Already-published versions are skipped so patch tags for one package do not fail the job.

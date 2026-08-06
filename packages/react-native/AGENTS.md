@@ -146,6 +146,17 @@ Props: `variant?` (`primary` | `secondary` | `ghost` | `underline` | `destructiv
 ### `Spinner`
 Themed `ActivityIndicator`. Props: `size?`, `color?`, plus RN props.
 
+### `ProgressBar`
+Linear determinate bar. Fill uses **destructive** color. Props: `value` (0–`max`), `max?` (default `100`), `label?`, `showValue?`, `size?` (`sm`|`md`).
+
+```tsx
+{/* Bare track — no label / % */}
+<ProgressBar value={uploadProgress} />
+
+{/* With optional chrome */}
+<ProgressBar value={uploadProgress} label="Uploading" showValue />
+```
+
 ### `Icon` + named icons
 `Icon` props: `name` (Iconsax), `size?` (`xs`|`sm`|`md`|`lg`|`xl` or number), `color?` (token or string), `variant?` (`Linear`|`Outline`|`Bold`|…).
 
@@ -162,7 +173,7 @@ Label + error wrapper. Props: `label?`, `error?`, `children`, `style?`.
 Labeled text field. Props: `label?`, `error?`, `prefix?`, `suffix?`, `type?` (`text`|`password`|`number`|`email`|`tel`|`url`), `secureTextEntry?`, `onChangeText?`, `containerStyle?`, plus TextInput props (omit `onChange`). Number type uses sanitize/format helpers.
 
 ### `PhoneInput`
-Country dial code + national number. Uses searchable `Select` (modal picker) + `Input` `type="tel"`.
+Country dial code + national number. Uses searchable `Select` (**bottom sheet**) + `Input` `type="tel"`.
 
 ```tsx
 const [phone, setPhone] = useState({ countryCode: 'NG', nationalNumber: '' });
@@ -178,7 +189,9 @@ const [phone, setPhone] = useState({ countryCode: 'NG', nationalNumber: '' });
 
 - `value.nationalNumber` is **digits only**; UI applies `Country.inputFormat`
 - Max length from `Country.phoneLength`
-- Helpers also exported: `toE164`, `formatPhoneValueForApi`, `validateNationalNumber`, `COUNTRIES`
+- Flag emoji prefix on the dial-code trigger and each option (system font — custom fonts hide flags)
+- **Dark mode:** selected dial code (trigger + list accent) uses **destructive** color
+- Helpers also exported: `toE164`, `formatPhoneValueForApi`, `validateNationalNumber`, `countryCodeToFlagEmoji`, `COUNTRIES`
 
 ### `Textarea`
 Multiline. Props: `label?`, `error?`, plus TextInput (forced multiline).
@@ -195,7 +208,7 @@ Controlled: `checked`, `onCheckedChange`, `label?`, `description?`, `disabled?`,
 ```
 
 ### `Select`
-Options list in a bottom sheet. Props: `options`, `value`, `onValueChange`, `label?`, `placeholder?`, `error?`, `variant?` (`default`|`inline`), `disabled?`, `loading?`, `emptyMessage?`, etc. Helper: `selectOptionsPropsFromQuery(query)`.
+Options open in a **bottom sheet** (requires `BottomSheetProvider`). Props: `options` (`value`, `label`, `description?`, `prefix?`), `value`, `onValueChange`, `label?`, `placeholder?`, `error?`, `searchable?`, `selectedColor?`, `snapPoints?` (default `['55%', '90%']`), `variant?` (`default`|`inline`), `disabled?`, `optionsLoading?`, etc. Search matches label, description, and string value. Helper: `selectOptionsPropsFromQuery(query)`.
 
 ### `OtpInput` / `VerificationInput` (alias)
 Props: `length?` (default 6), `value?`, `onChangeText?`, `onComplete?`, `error?`, `autoFocus?`, `disabled?`.
@@ -327,7 +340,7 @@ import {
   // overlays
   Modal, BottomSheet,
   // primitives
-  Text, Button, Spinner, Icon, Card, Avatar, Chip,
+  Text, Button, Spinner, ProgressBar, Icon, Card, Avatar, Chip,
   // forms
   FieldControl, Input, PhoneInput, Textarea, Checkbox, Switch, Radio, RadioGroup,
   Select, OtpInput,

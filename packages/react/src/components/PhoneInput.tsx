@@ -5,6 +5,7 @@ import {
 } from '@instollar-dev/instollar-core/countries';
 import {
   clampNationalDigits,
+  countryCodeToFlagEmoji,
   createPhoneValue,
   formatNationalNumber,
   resolvePhoneCountry,
@@ -15,7 +16,17 @@ import {
 import { cn } from '../utils/cn';
 import { formFieldErrorClass, formFieldLabelClass } from './formVariants';
 import { Input } from './Input';
-import { Select } from './Select';
+import { Select, type SelectOption } from './Select';
+
+function FlagEmoji({ code, className }: { code: string; className?: string }) {
+  const flag = countryCodeToFlagEmoji(code);
+  if (!flag) return null;
+  return (
+    <span className={cn('text-base leading-none', className)} aria-hidden>
+      {flag}
+    </span>
+  );
+}
 
 export type PhoneInputProps = {
   label?: string;
@@ -74,7 +85,20 @@ export function PhoneInput({
     : internal;
 
   const country = resolvePhoneCountry(current, defaultCountryCode, countries);
-  const options = useMemo(() => toPhoneCountryOptions(countries), [countries]);
+  const options = useMemo<SelectOption<string>[]>(
+    () =>
+      toPhoneCountryOptions(countries).map((opt) => ({
+        value: opt.value,
+        label: opt.label,
+        description: opt.description,
+        prefix: opt.flag ? (
+          <span className="text-base leading-none" aria-hidden>
+            {opt.flag}
+          </span>
+        ) : undefined,
+      })),
+    [countries],
+  );
   const displayNational = formatNationalNumber(
     current.nationalNumber,
     country.inputFormat,
@@ -99,12 +123,13 @@ export function PhoneInput({
         </label>
       ) : null}
       <div className="flex items-start gap-2">
-        <div className="w-[7.25rem] shrink-0">
+        <div className="w-[8.5rem] shrink-0">
           <Select
             searchable
             disabled={disabled}
             options={options}
             value={country.countryCode}
+            prefix={<FlagEmoji code={country.countryCode} />}
             onValueChange={(next) => {
               const code = Array.isArray(next) ? next[0] : next;
               if (!code) return;

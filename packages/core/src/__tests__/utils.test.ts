@@ -26,6 +26,7 @@ import {
   validateNationalNumber,
   clampNationalDigits,
   getCountryByCode,
+  countryCodeToFlagEmoji,
 } from '../utils';
 import { COUNTRIES } from '../core/app/countries';
 
@@ -85,6 +86,10 @@ describe('string and phone helpers', () => {
     expect(toPhoneCountryOptions(COUNTRIES).some((o) => o.value === 'NG' && o.label === '+234')).toBe(
       true,
     );
+    expect(countryCodeToFlagEmoji('NG')).toBe('🇳🇬');
+    expect(countryCodeToFlagEmoji('ke')).toBe('🇰🇪');
+    expect(countryCodeToFlagEmoji('')).toBe('');
+    expect(toPhoneCountryOptions(COUNTRIES).find((o) => o.value === 'NG')?.flag).toBe('🇳🇬');
   });
 });
 

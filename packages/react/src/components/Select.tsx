@@ -538,7 +538,14 @@ export function Select<T = string>({
                             {option.prefix}
                           </span>
                         ) : null}
-                        <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate">{option.label}</span>
+                          {option.description ? (
+                            <span className="block truncate text-open-regular-tiny text-muted">
+                              {option.description}
+                            </span>
+                          ) : null}
+                        </span>
                         {option.suffix ? (
                           <span className="flex shrink-0 items-center text-muted [&>svg]:size-4">
                             {option.suffix}

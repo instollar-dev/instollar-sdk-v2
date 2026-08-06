@@ -1,6 +1,9 @@
 export { Spinner } from './components/Spinner';
 export type { SpinnerProps } from './components/Spinner';
 
+export { ProgressBar } from './components/ProgressBar';
+export type { ProgressBarProps, ProgressBarSize } from './components/ProgressBar';
+
 export { Button } from './components/Button';
 export type { ButtonProps, ButtonVariant, ButtonTone, ButtonSize } from './components/Button';
 
@@ -16,6 +19,7 @@ export {
   validateNationalNumber,
   formatNationalNumber,
   createPhoneValue,
+  countryCodeToFlagEmoji,
 } from '@instollar-dev/instollar-core/utils/phone';
 
 export { AddressAutocomplete, default } from './components/AddressAutocomplete';

@@ -35,7 +35,16 @@ export function fieldControlSurface(
     borderColor: opts.error ? colors.destructive : colors.border,
     backgroundColor: colors.bg,
     opacity: opts.disabled ? 0.5 : 1,
+    /** Single-line Input / Select target height (Textarea overrides via style). */
     minHeight: 44,
     paddingHorizontal: 12,
   };
 }
+
+/** Shared single-line field text metrics (Input + Select trigger). */
+export const fieldControlTextStyle = {
+  fontSize: 16,
+  lineHeight: 20,
+  paddingVertical: 10,
+  margin: 0,
+} as const;

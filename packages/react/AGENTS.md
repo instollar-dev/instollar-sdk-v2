@@ -8,7 +8,7 @@ description: >-
 
 # Instollar React (Web) SDK — Agent Guide
 
-Package: `@instollar-dev/instollar-react` (v0.6.0+) — also via `@instollar-dev/instollar-sdk`.
+Package: `@instollar-dev/instollar-react` (v0.6.1+) — also via `@instollar-dev/instollar-sdk`.
 
 Use for **web** only. Mobile apps should use `@instollar-dev/instollar-react-native`.
 
@@ -30,13 +30,25 @@ const [phone, setPhone] = useState<PhoneValue>({ countryCode: 'NG', nationalNumb
 />
 ```
 
-- Country dial code: searchable **dropdown** `Select`
+- Country dial code: searchable **dropdown** `Select` with **flag emoji** prefix on the trigger and each option
 - National number: `Input` `type="tel"` with country format/length
 - `nationalNumber` is **digits only**
 
 ## Soft buttons (ghost / underline)
 
 In dark mode (`data-theme="dark"` / `.dark`), default soft buttons use `--color-soft-button` → destructive. Light mode uses fg.
+
+## ProgressBar
+
+Determinate linear bar — fill uses **destructive** (`bg-destructive` / `--color-destructive`).
+
+```tsx
+{/* Bare track — no label / % */}
+<ProgressBar value={65} />
+
+{/* Optional chrome */}
+<ProgressBar value={65} label="Uploading" showValue />
+```
 
 ## Success
 

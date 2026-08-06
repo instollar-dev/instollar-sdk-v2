@@ -19,7 +19,7 @@ export const FieldControl = forwardRef<HTMLDivElement, FieldControlProps>(functi
     <div
       ref={ref}
       className={cn(
-        'flex w-full items-center rounded-lg border transition-colors duration-200',
+        'flex min-h-11 w-full items-center rounded-lg border transition-colors duration-200',
         formControlSurfaceClass,
         error && 'border-destructive',
         disabled && 'opacity-50',

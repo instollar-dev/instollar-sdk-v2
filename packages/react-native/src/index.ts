@@ -15,6 +15,9 @@ export type {
 export { Spinner } from './components/Spinner';
 export type { SpinnerProps } from './components/Spinner';
 
+export { ProgressBar } from './components/ProgressBar';
+export type { ProgressBarProps, ProgressBarSize } from './components/ProgressBar';
+
 export { Modal } from './components/Modal';
 export type { ModalProps } from './components/Modal';
 
@@ -225,6 +228,7 @@ export {
   validateNationalNumber,
   toPhoneCountryOptions,
   createPhoneValue,
+  countryCodeToFlagEmoji,
 } from '@instollar-dev/instollar-core/utils/phone';
 
 export {

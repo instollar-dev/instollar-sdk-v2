@@ -1,20 +1,22 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import {
-  FlatList,
   Pressable,
-  TextInput,
   View,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import {
+  BottomSheetFlatList,
+  BottomSheetTextInput,
+} from '@gorhom/bottom-sheet';
 import { Button } from './Button';
 import { FieldControl } from './FieldControl';
-import { Icon, ArrowDown2 } from './Icon';
-import { Modal } from './Modal';
+import { Icon, ArrowDown2, TickCircle } from './Icon';
+import { BottomSheet } from './BottomSheet';
 import { Spinner } from './Spinner';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
-import { fieldErrorStyle, fieldLabelStyle } from '../styles/formStyles';
+import { fieldErrorStyle, fieldLabelStyle, fieldControlTextStyle } from '../styles/formStyles';
 import { triggerHapticFeedback } from '../utils/haptics';
 
 export type SelectVariant = 'default' | 'inline';
@@ -51,6 +53,13 @@ export type SelectProps<T = string> = {
   prefix?: ReactNode;
   suffix?: ReactNode;
   style?: StyleProp<ViewStyle>;
+  /**
+   * Color for the selected trigger label and selected option accent.
+   * Defaults to theme `fg` (trigger) / `brand` (list check).
+   */
+  selectedColor?: string;
+  /** Sheet snap points. Default: `['55%', '90%']`. */
+  snapPoints?: (string | number)[];
 };
 
 function defaultCompare<T>(a: T, b: T) {
@@ -79,6 +88,8 @@ export function Select<T = string>({
   prefix,
   suffix,
   style,
+  selectedColor,
+  snapPoints = ['55%', '90%'],
 }: SelectProps<T>) {
   const colors = useThemeColors();
   const [open, setOpen] = useState(false);
@@ -116,9 +127,19 @@ export function Select<T = string>({
         ? selectedOptions.map((o) => o.label).join(', ')
         : selectedOptions[0]?.label;
 
+  const triggerColor = selectedOptions.length
+    ? (selectedColor ?? colors.fg)
+    : colors.muted;
+  const optionAccent = selectedColor ?? colors.brand;
+
   const setValue = (next: T | T[] | null) => {
     if (!controlled) setInternal(next);
     onValueChange?.(next);
+  };
+
+  const closeSheet = () => {
+    setOpen(false);
+    setQuery('');
   };
 
   const toggleOption = (option: SelectOption<T>) => {
@@ -133,7 +154,7 @@ export function Select<T = string>({
       return;
     }
     setValue(option.value);
-    setOpen(false);
+    closeSheet();
   };
 
   return (
@@ -157,13 +178,11 @@ export function Select<T = string>({
           }
           error={Boolean(error)}
           disabled={disabled}
+          style={{ height: 44 }}
         >
           <Text
             variant="open-regular-p"
-            style={{
-              color: selectedOptions.length ? colors.fg : colors.muted,
-              paddingVertical: 10,
-            }}
+            style={[{ color: triggerColor }, fieldControlTextStyle]}
             numberOfLines={1}
           >
             {triggerLabel}
@@ -176,102 +195,109 @@ export function Select<T = string>({
         </Text>
       ) : null}
 
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <View style={{ gap: 12, maxHeight: 420 }}>
-          <Text variant="spline-bold-h5">{label ?? 'Select'}</Text>
-          {searchable ? (
-            <TextInput
-              value={query}
-              onChangeText={setQuery}
-              placeholder="Search…"
-              placeholderTextColor={colors.muted}
-              style={{
-                borderWidth: 1,
-                borderColor: colors.border,
-                borderRadius: 8,
-                paddingHorizontal: 12,
-                paddingVertical: 10,
-                color: colors.fg,
-              }}
-            />
-          ) : null}
+      <BottomSheet
+        open={open}
+        onClose={closeSheet}
+        title={label ?? 'Select'}
+        snapPoints={snapPoints}
+        scrollable={false}
+        contentContainerStyle={{ flex: 1, maxHeight: '100%' }}
+      >
+        {searchable ? (
+          <BottomSheetTextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search…"
+            placeholderTextColor={colors.muted}
+            style={{
+              borderWidth: 1,
+              borderColor: colors.border,
+              borderRadius: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 10,
+              color: colors.fg,
+              marginBottom: 8,
+            }}
+          />
+        ) : null}
 
-          {optionsLoading ? (
-            <View style={{ alignItems: 'center', gap: 8, paddingVertical: 24 }}>
-              <Spinner />
-              <Text muted>{optionsLoadingLabel}</Text>
-            </View>
-          ) : optionsError ? (
-            <View style={{ gap: 8 }}>
-              <Text style={{ color: colors.danger }}>{optionsErrorLabel}</Text>
-              {onReloadOptions ? (
-                <Button size="sm" onPress={onReloadOptions}>
-                  {reloadLabel}
-                </Button>
-              ) : null}
-            </View>
-          ) : (
-            <FlatList
-              data={filtered}
-              keyExtractor={(item, index) =>
-                getOptionKey?.(item) ?? `${String(item.value)}-${index}`
-              }
-              style={{ maxHeight: 280 }}
-              renderItem={({ item }) => {
-                const selected = selectedOptions.some((o) =>
-                  compareValue(o.value, item.value),
-                );
-                return (
-                  <Pressable
-                    disabled={item.disabled}
-                    onPress={() => toggleOption(item)}
-                    style={{
-                      paddingVertical: 12,
-                      paddingHorizontal: 4,
-                      opacity: item.disabled ? 0.4 : 1,
-                      borderBottomWidth: 1,
-                      borderBottomColor: colors.border,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 8,
-                    }}
-                  >
-                    {item.prefix}
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        variant="open-regular-p"
-                        style={{ color: selected ? colors.brand : colors.fg }}
-                      >
-                        {item.label}
-                      </Text>
-                      {item.description ? (
-                        <Text variant="open-regular-tiny" muted>
-                          {item.description}
-                        </Text>
-                      ) : null}
-                    </View>
-                    {item.suffix}
-                    {selected ? (
-                      <Text variant="open-bold-p" style={{ color: colors.brand }}>
-                        ✓
+        {optionsLoading ? (
+          <View style={{ alignItems: 'center', gap: 8, paddingVertical: 24 }}>
+            <Spinner />
+            <Text muted>{optionsLoadingLabel}</Text>
+          </View>
+        ) : optionsError ? (
+          <View style={{ gap: 8 }}>
+            <Text style={{ color: colors.danger }}>{optionsErrorLabel}</Text>
+            {onReloadOptions ? (
+              <Button size="sm" onPress={onReloadOptions}>
+                {reloadLabel}
+              </Button>
+            ) : null}
+          </View>
+        ) : (
+          <BottomSheetFlatList
+            data={filtered}
+            keyExtractor={(item, index) =>
+              getOptionKey?.(item) ?? `${String(item.value)}-${index}`
+            }
+            style={{ flexGrow: 1 }}
+            contentContainerStyle={{ paddingBottom: multiple ? 8 : 24 }}
+            keyboardShouldPersistTaps="handled"
+            renderItem={({ item }) => {
+              const selected = selectedOptions.some((o) =>
+                compareValue(o.value, item.value),
+              );
+              return (
+                <Pressable
+                  disabled={item.disabled}
+                  onPress={() => toggleOption(item)}
+                  style={{
+                    paddingVertical: 12,
+                    paddingHorizontal: 4,
+                    opacity: item.disabled ? 0.4 : 1,
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
+                >
+                  {item.prefix}
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      variant="open-regular-p"
+                      style={{ color: selected ? optionAccent : colors.fg }}
+                    >
+                      {item.label}
+                    </Text>
+                    {item.description ? (
+                      <Text variant="open-regular-tiny" muted>
+                        {item.description}
                       </Text>
                     ) : null}
-                  </Pressable>
-                );
-              }}
-              ListEmptyComponent={
-                <Text muted style={{ paddingVertical: 16, textAlign: 'center' }}>
-                  No options
-                </Text>
-              }
-            />
-          )}
+                  </View>
+                  {item.suffix}
+                  {selected ? (
+                    <TickCircle size={20} color={optionAccent} variant="Bold" />
+                  ) : null}
+                </Pressable>
+              );
+            }}
+            ListEmptyComponent={
+              <Text muted style={{ paddingVertical: 16, textAlign: 'center' }}>
+                No options
+              </Text>
+            }
+          />
+        )}
 
-          {multiple ? (
-            <Button onPress={() => setOpen(false)}>Done</Button>
-          ) : null}
-        </View>
-      </Modal>
+        {multiple ? (
+          <Button onPress={closeSheet} style={{ marginTop: 8 }}>
+            Done
+          </Button>
+        ) : null}
+      </BottomSheet>
     </View>
   );
 }

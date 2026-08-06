@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { Text as RNText, View, type StyleProp, type ViewStyle } from 'react-native';
 import {
   COUNTRIES,
   type Country,
 } from '@instollar-dev/instollar-core/countries';
 import {
   clampNationalDigits,
+  countryCodeToFlagEmoji,
   createPhoneValue,
   formatNationalNumber,
   resolvePhoneCountry,
@@ -15,9 +16,28 @@ import {
 } from '@instollar-dev/instollar-core/utils/phone';
 import { Text } from './Text';
 import { Input } from './Input';
-import { Select } from './Select';
-import { useThemeColors } from '../theme/ThemeProvider';
+import { Select, type SelectOption } from './Select';
+import { useResolvedScheme, useThemeColors } from '../theme/ThemeProvider';
 import { fieldErrorStyle, fieldLabelStyle } from '../styles/formStyles';
+
+/** System font so flag emoji render (custom UI fonts often hide them). */
+function FlagEmoji({ code, size = 16 }: { code: string; size?: number }) {
+  const flag = countryCodeToFlagEmoji(code);
+  if (!flag) return null;
+  return (
+    <View
+      style={{
+        width: size + 2,
+        height: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+    >
+      <RNText style={{ fontSize: size, lineHeight: 20 }}>{flag}</RNText>
+    </View>
+  );
+}
 
 export type PhoneInputProps = {
   label?: string;
@@ -50,6 +70,7 @@ export function PhoneInput({
   onE164Change,
 }: PhoneInputProps) {
   const colors = useThemeColors();
+  const scheme = useResolvedScheme();
   const controlled = value !== undefined;
 
   const [internal, setInternal] = useState<PhoneValue>(() => {
@@ -70,7 +91,29 @@ export function PhoneInput({
     : internal;
 
   const country = resolvePhoneCountry(current, defaultCountryCode, countries);
-  const options = useMemo(() => toPhoneCountryOptions(countries), [countries]);
+  const options = useMemo<SelectOption<string>[]>(
+    () =>
+      toPhoneCountryOptions(countries).map((opt) => ({
+        value: opt.value,
+        label: opt.label,
+        description: opt.description,
+        prefix: opt.flag ? (
+          <View
+            style={{
+              width: 22,
+              height: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+            }}
+          >
+            <RNText style={{ fontSize: 18, lineHeight: 20 }}>{opt.flag}</RNText>
+          </View>
+        ) : undefined,
+      })),
+    [countries],
+  );
+  const dialSelectedColor = scheme === 'dark' ? colors.destructive : undefined;
   const displayNational = formatNationalNumber(
     current.nationalNumber,
     country.inputFormat,
@@ -95,12 +138,15 @@ export function PhoneInput({
         </Text>
       ) : null}
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-        <View style={{ width: 108, flexShrink: 0 }}>
+        <View style={{ width: 128, flexShrink: 0 }}>
           <Select
             searchable
             disabled={disabled}
             options={options}
             value={country.countryCode}
+            prefix={<FlagEmoji code={country.countryCode} />}
+            selectedColor={dialSelectedColor}
+            snapPoints={['55%', '90%']}
             onValueChange={(next) => {
               const code = Array.isArray(next) ? next[0] : next;
               if (!code) return;

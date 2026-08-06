@@ -11,7 +11,7 @@ import { Text } from './Text';
 import { FieldControl } from './FieldControl';
 import { Icon, Eye, EyeSlash } from './Icon';
 import { useThemeColors } from '../theme/ThemeProvider';
-import { fieldErrorStyle, fieldLabelStyle } from '../styles/formStyles';
+import { fieldErrorStyle, fieldLabelStyle, fieldControlTextStyle } from '../styles/formStyles';
 import {
   formatNumberInput,
   numberInputDisplayValue,
@@ -105,6 +105,7 @@ export function Input({
         suffix={suffix ?? passwordToggle}
         error={Boolean(error)}
         disabled={!editable}
+        style={{ height: 44 }}
       >
         <TextInput
           {...props}
@@ -117,15 +118,7 @@ export function Input({
           }
           autoCapitalize={type === 'email' ? 'none' : props.autoCapitalize}
           placeholderTextColor={colors.muted}
-          style={[
-            {
-              color: colors.fg,
-              fontSize: 16,
-              paddingVertical: 10,
-              margin: 0,
-            },
-            style,
-          ]}
+          style={[{ color: colors.fg }, fieldControlTextStyle, style]}
         />
       </FieldControl>
       {error ? (

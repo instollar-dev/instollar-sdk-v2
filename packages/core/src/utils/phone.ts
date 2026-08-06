@@ -15,7 +15,22 @@ export type PhoneCountryOption = {
   value: string;
   label: string;
   description: string;
+  /** Unicode regional-indicator flag for `value` (ISO alpha-2). */
+  flag: string;
 };
+
+/**
+ * Convert an ISO 3166-1 alpha-2 code to a flag emoji (e.g. `NG` → 🇳🇬).
+ * Returns empty string for invalid codes.
+ */
+export function countryCodeToFlagEmoji(countryCode: string): string {
+  const code = countryCode.trim().toUpperCase();
+  if (!/^[A-Z]{2}$/.test(code)) return '';
+  const regionalA = 0x1f1e6;
+  return String.fromCodePoint(
+    ...[...code].map((char) => regionalA + (char.charCodeAt(0) - 65)),
+  );
+}
 
 export function formatPhoneForApi(value?: PhoneParts | null): string {
   if (!value?.nationalNumber?.trim()) return '';
@@ -59,6 +74,7 @@ export function toPhoneCountryOptions(
     value: c.countryCode,
     label: c.phoneCode,
     description: c.name,
+    flag: countryCodeToFlagEmoji(c.countryCode),
   }));
 }
 
