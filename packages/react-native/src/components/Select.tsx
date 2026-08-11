@@ -5,13 +5,10 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import {
-  BottomSheetFlatList,
-  BottomSheetTextInput,
-} from '@gorhom/bottom-sheet';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Button } from './Button';
 import { FieldControl } from './FieldControl';
-import { Icon, ArrowDown2, CloseCircle, TickCircle } from './Icon';
+import { Icon, ArrowDown2, TickCircle } from './Icon';
 import { BottomSheet } from './BottomSheet';
 import { Spinner } from './Spinner';
 import { Text } from './Text';
@@ -143,7 +140,6 @@ export function Select<T = string>({
   const optionAccent = selectedColor ?? colors.brand;
   /** Prefer the tallest snap so keyboard search still leaves room for options. */
   const initialIndex = searchable ? Math.max(0, snapPoints.length - 1) : 0;
-  const sheetTitle = label ?? 'Select';
 
   const setValue = (next: T | T[] | null) => {
     if (!controlled) setInternal(next);
@@ -169,64 +165,6 @@ export function Select<T = string>({
     setValue(option.value);
     closeSheet();
   };
-
-  const listHeader = (
-    <View style={{ paddingHorizontal: 20, paddingBottom: 8, gap: 12 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <Text variant="spline-bold-h5" style={{ flex: 1, color: colors.fg }}>
-          {sheetTitle}
-        </Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Close"
-          hitSlop={8}
-          onPress={() => {
-            triggerHapticFeedback('light');
-            closeSheet();
-          }}
-        >
-          <CloseCircle size={22} color={colors.muted} variant="Linear" />
-        </Pressable>
-      </View>
-
-      {searchable ? (
-        <BottomSheetTextInput
-          value={query}
-          onChangeText={setQuery}
-          placeholder="Search country or code…"
-          placeholderTextColor={colors.muted}
-          autoCorrect={false}
-          autoCapitalize="none"
-          style={{
-            borderWidth: 1,
-            borderColor: colors.border,
-            borderRadius: 8,
-            paddingHorizontal: 12,
-            paddingVertical: 10,
-            color: colors.fg,
-          }}
-        />
-      ) : null}
-
-      {optionsLoading ? (
-        <View style={{ alignItems: 'center', gap: 8, paddingVertical: 24 }}>
-          <Spinner />
-          <Text muted>{optionsLoadingLabel}</Text>
-        </View>
-      ) : null}
-
-      {optionsError ? (
-        <View style={{ gap: 8 }}>
-          <Text style={{ color: colors.danger }}>{optionsErrorLabel}</Text>
-          {onReloadOptions ? (
-            <Button size="sm" onPress={onReloadOptions}>
-              {reloadLabel}
-            </Button>
-          ) : null}
-        </View>
-      ) : null}
-    </View>
-  );
 
   return (
     <View style={style}>
@@ -266,91 +204,115 @@ export function Select<T = string>({
         </Text>
       ) : null}
 
+      {/*
+        Use BottomSheetScrollView (not FlatList) for option lists.
+        FlatList nested under sheet layouts often collapses to 0 height /
+        loses items when the keyboard opens — bad for PhoneInput country search.
+        Country / form option lists are small enough for ScrollView.
+      */}
       <BottomSheet
         open={open}
         onClose={closeSheet}
+        title={label ?? 'Select'}
         snapPoints={snapPoints}
         index={initialIndex}
-        contentMode="raw"
-        showCloseButton={false}
+        scrollable
         modalProps={{
           keyboardBehavior: 'interactive',
           keyboardBlurBehavior: 'restore',
           android_keyboardInputMode: 'adjustResize',
         }}
       >
-        {/*
-          BottomSheetFlatList must be a direct child of BottomSheetModal.
-          Nesting it in BottomSheetView breaks list layout (empty / unscrollable),
-          especially once the keyboard opens during search.
-        */}
-        <BottomSheetFlatList
-          data={optionsLoading || optionsError ? [] : filtered}
-          keyExtractor={(item, index) =>
-            getOptionKey?.(item) ?? `${String(item.value)}-${index}`
-          }
-          ListHeaderComponent={listHeader}
-          contentContainerStyle={{
-            paddingBottom: multiple ? 16 : 32,
-          }}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="none"
-          renderItem={({ item }) => {
-            const selected = selectedOptions.some((o) =>
-              compareValue(o.value, item.value),
-            );
-            return (
-              <Pressable
-                disabled={item.disabled}
-                onPress={() => toggleOption(item)}
-                style={{
-                  marginHorizontal: 20,
-                  paddingVertical: 12,
-                  paddingHorizontal: 4,
-                  opacity: item.disabled ? 0.4 : 1,
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors.border,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 10,
-                }}
-              >
-                {item.prefix}
-                <View style={{ flex: 1 }}>
-                  <Text
-                    variant="open-regular-p"
-                    style={{ color: selected ? optionAccent : colors.fg }}
-                  >
-                    {item.label}
-                  </Text>
-                  {item.description ? (
-                    <Text variant="open-regular-tiny" muted>
-                      {item.description}
+        <View style={{ gap: 12 }}>
+          {searchable ? (
+            <BottomSheetTextInput
+              value={query}
+              onChangeText={setQuery}
+              placeholder="Search country or code…"
+              placeholderTextColor={colors.muted}
+              autoCorrect={false}
+              autoCapitalize="none"
+              style={{
+                borderWidth: 1,
+                borderColor: colors.border,
+                borderRadius: 8,
+                paddingHorizontal: 12,
+                paddingVertical: 10,
+                color: colors.fg,
+              }}
+            />
+          ) : null}
+
+          {optionsLoading ? (
+            <View style={{ alignItems: 'center', gap: 8, paddingVertical: 24 }}>
+              <Spinner />
+              <Text muted>{optionsLoadingLabel}</Text>
+            </View>
+          ) : optionsError ? (
+            <View style={{ gap: 8 }}>
+              <Text style={{ color: colors.danger }}>{optionsErrorLabel}</Text>
+              {onReloadOptions ? (
+                <Button size="sm" onPress={onReloadOptions}>
+                  {reloadLabel}
+                </Button>
+              ) : null}
+            </View>
+          ) : filtered.length === 0 ? (
+            <Text muted style={{ paddingVertical: 16, textAlign: 'center' }}>
+              No options
+            </Text>
+          ) : (
+            filtered.map((item, index) => {
+              const selected = selectedOptions.some((o) =>
+                compareValue(o.value, item.value),
+              );
+              const key =
+                getOptionKey?.(item) ?? `${String(item.value)}-${index}`;
+              return (
+                <Pressable
+                  key={key}
+                  disabled={item.disabled}
+                  onPress={() => toggleOption(item)}
+                  style={{
+                    paddingVertical: 12,
+                    paddingHorizontal: 4,
+                    opacity: item.disabled ? 0.4 : 1,
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
+                >
+                  {item.prefix}
+                  <View style={{ flex: 1 }}>
+                    <Text
+                      variant="open-regular-p"
+                      style={{ color: selected ? optionAccent : colors.fg }}
+                    >
+                      {item.label}
                     </Text>
+                    {item.description ? (
+                      <Text variant="open-regular-tiny" muted>
+                        {item.description}
+                      </Text>
+                    ) : null}
+                  </View>
+                  {item.suffix}
+                  {selected ? (
+                    <TickCircle size={20} color={optionAccent} variant="Bold" />
                   ) : null}
-                </View>
-                {item.suffix}
-                {selected ? (
-                  <TickCircle size={20} color={optionAccent} variant="Bold" />
-                ) : null}
-              </Pressable>
-            );
-          }}
-          ListEmptyComponent={
-            optionsLoading || optionsError ? null : (
-              <Text muted style={{ paddingVertical: 16, textAlign: 'center' }}>
-                No options
-              </Text>
-            )
-          }
-          ListFooterComponent={
-            multiple ? (
-              <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
-                <Button onPress={closeSheet}>Done</Button>
-              </View>
-            ) : null
-          }
-        />
+                </Pressable>
+              );
+            })
+          )}
+
+          {multiple ? (
+            <Button onPress={closeSheet} style={{ marginTop: 8 }}>
+              Done
+            </Button>
+          ) : null}
+        </View>
       </BottomSheet>
     </View>
   );
