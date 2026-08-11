@@ -1,6 +1,9 @@
-export interface UpdateInstallerProfilePayload {
+import type { InstallerOnboardingUpdatePayload } from './onboarding.types';
+
+/** @deprecated Prefer {@link InstallerOnboardingUpdatePayload}. */
+export type UpdateInstallerProfilePayload = InstallerOnboardingUpdatePayload & {
   [key: string]: unknown;
-}
+};
 
 export interface InstallerMyRatingModel {
   [key: string]: unknown;

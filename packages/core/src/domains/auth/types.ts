@@ -1,10 +1,18 @@
 export type UserType = 'INSTALLER' | 'COMPANY' | 'SUPER_ADMIN' | 'ADMIN';
 
+/**
+ * Shared register body.
+ * - Installer: `userType: "INSTALLER"`, first/last/email/phone/password
+ * - Company: also send `companyName` and `name` (same display name) + optional `website`
+ */
 export interface RegisterPayload {
   userType: UserType | null;
   firstName: string | null;
   lastName: string | null;
+  /** Company display name (legacy alias; prefer `companyName`). */
   name?: string | null;
+  /** Preferred company name field for company registration. */
+  companyName?: string | null;
   email: string | null;
   phone: string | null;
   website?: string | null;
@@ -20,6 +28,7 @@ export interface RegisterModel {
   userType: UserType | null;
   website?: string | null;
   token: string | null;
+  refreshToken?: string | null;
   otp: string | null;
 }
 
@@ -29,6 +38,9 @@ export interface VerifyOtpPayload {
 
 export interface VerifyOtpModel {
   message?: string | null;
+  token?: string | null;
+  refreshToken?: string | null;
+  userType?: UserType | null;
   [key: string]: unknown;
 }
 
@@ -58,6 +70,7 @@ export interface LoginModel {
   firstTimeLogin: boolean;
   companyType?: string | null;
   token: string | null;
+  refreshToken?: string | null;
   twoFactorEnabled: boolean;
   twoFactorVerified: boolean;
 }
@@ -73,6 +86,7 @@ export interface SendOtpModel {
   userType: UserType | null;
   website?: string | null;
   token: string | null;
+  refreshToken?: string | null;
   otp?: string | null;
 }
 
@@ -87,6 +101,12 @@ export interface ChangePasswordModel {
 
 export interface GuarantorFormPayload {
   [key: string]: unknown;
+}
+
+export interface AuthSessionInput {
+  token?: string | null;
+  refreshToken?: string | null;
+  userType?: UserType | string | null;
 }
 
 /** @deprecated Use RegisterModel */

@@ -8,6 +8,42 @@ export { installerNotificationsApi } from './installer.notifications.api';
 export { installerProfileApi } from './installer.profile.api';
 export { installerStorefrontApi } from './installer.storefront.api';
 export { installerWorkflowsApi } from './installer.workflows.api';
+export {
+  INSTALLER_EXPERIENCE,
+  normalizeInstallerExperienceLevel,
+  isExperiencedInstaller,
+  installerExperienceFromUiLevel,
+  resolveInstallerUiExperienceLevel,
+} from './experience';
+export {
+  INSTALLER_ONBOARD_STEPS,
+  INSTALLER_ONBOARD_STEP_ORDER,
+  INSTALLER_ONBOARDING_WELCOME_UI_STEP,
+  INSTALLER_ASSESSMENT_PASS_PERCENT,
+  INSTALLER_BRAND_OTHERS_VALUE,
+} from './onboarding.types';
+export {
+  normalizePendingInstallerOnboardingSteps,
+  getPendingInstallerOnboardingSteps,
+  isInstallerOnboardStepDone,
+  isInstallerOnboardStepPending,
+  getFirstPendingInstallerOnboardStep,
+  getUiStepForInstallerSlug,
+  getInstallerSlugForUiStep,
+  getUiStepAfterInstallerWelcome,
+  installerOnboardingProgressPercent,
+  isInstallerOnboardingComplete,
+  experienceLevelFromAssessmentLevel,
+  profileToInstallerOnboardingFormData,
+  buildPersonalDetailsStepPayload,
+  buildExperienceLevelStepPayload,
+  buildDocumentsStepPayload,
+  resolveInstallerBrandUsedForApi,
+  buildInstallerProfessionalDetailsUpdatePayload,
+  buildWorkExperienceStepPayload,
+  buildAssessmentStepPayload,
+  buildGuarantorFormStepPayload,
+} from './onboarding';
 export type * from './types';
 export type * from './finance.types';
 export type * from './job-requests.types';
@@ -17,3 +53,5 @@ export type * from './notifications.types';
 export type * from './profile.types';
 export type * from './storefront.types';
 export type * from './workflow.types';
+export type * from './onboarding.types';
+export type * from './experience';

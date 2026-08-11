@@ -3,6 +3,7 @@ import { apiUrl } from '../../core/api/base-urls';
 import { installerPaths } from '../../core/api/api-endpoints';
 import { unwrap } from '../../core/api/request';
 import type { ApiResponse } from '../../core/types';
+import type { GuarantorFormPayload } from '../auth/types';
 import { installerFinanceApi } from './installer.finance.api';
 import { installerAssessmentApi } from './installer.assessment.api';
 import { installerJobRequestsApi } from './installer.job-requests.api';
@@ -12,6 +13,7 @@ import { installerStorefrontApi } from './installer.storefront.api';
 import { installerNotificationsApi } from './installer.notifications.api';
 import { installerSiteAuditApi } from './installer.site-audit.api';
 import { installerWorkflowsApi } from './installer.workflows.api';
+import type { InstallerOnboardingUpdatePayload } from './onboarding.types';
 import type {
   AssessmentModel,
   InstallerJobRequestModel,
@@ -33,6 +35,12 @@ export const installerApi = {
       },
     };
   },
+
+  /** Alias for {@link installerProfileApi.updateInstallerProfile}. */
+  updateInstallerOnboarding: (
+    payload: InstallerOnboardingUpdatePayload,
+  ): Promise<ApiResponse<InstallerProfileRecordModel>> =>
+    installerProfileApi.updateInstallerProfile(payload),
 
   toggleInstallerAvailability: (): Promise<ApiResponse<ToggleInstallerAvailabilityModel>> =>
     unwrap(
@@ -64,6 +72,16 @@ export const installerApi = {
   getAllAssessments: (): Promise<ApiResponse<AssessmentModel[]>> =>
     unwrap(
       api.get<ApiResponse<AssessmentModel[]>>(apiUrl('installer', installerPaths.assessmentGetAll)),
+    ),
+
+  submitGuarantorForm: (payload: GuarantorFormPayload): Promise<ApiResponse<unknown>> =>
+    unwrap(
+      api.post<ApiResponse<unknown>>(
+        apiUrl('installer', installerPaths.guarantorForm),
+        payload,
+        {},
+        { showSuccessToast: true },
+      ),
     ),
 
   ...installerFinanceApi,

@@ -125,6 +125,8 @@ const triggerRefresh = async (): Promise<string | null | undefined> => {
   const newData: TokenData = {
     token: res.data.data?.token,
     refreshToken: res.data.data?.refreshToken,
+    // Preserve role so guards keep working across refresh.
+    userType: tokenData.userType,
   };
   await saveToStorage(StorageKeys.TOKEN_DATA, newData);
   config.onTokenRefreshed?.(newData);

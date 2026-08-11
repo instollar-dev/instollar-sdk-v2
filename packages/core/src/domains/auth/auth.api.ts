@@ -3,6 +3,7 @@ import { apiUrl } from '../../core/api/base-urls';
 import { authPaths } from '../../core/api/api-endpoints';
 import { unwrap } from '../../core/api/request';
 import type { ApiResponse } from '../../core/types';
+import { normalizePhoneForApi } from '../../utils/phone';
 import type {
   ChangePasswordModel,
   ChangePasswordPayload,
@@ -18,6 +19,32 @@ import type {
 } from './types';
 
 const silent = { showErrorToast: false } as const;
+
+function buildRegisterBody(payload: RegisterPayload): Record<string, unknown> {
+  const userType = payload.userType ?? 'INSTALLER';
+  const body: Record<string, unknown> = {
+    userType,
+    firstName: payload.firstName?.trim() ?? '',
+    lastName: payload.lastName?.trim() ?? '',
+    email: payload.email?.trim() ?? '',
+    phone: normalizePhoneForApi(payload.phone),
+    password: payload.password ?? '',
+  };
+
+  if (userType === 'COMPANY') {
+    const companyName =
+      payload.companyName?.trim() || payload.name?.trim() || '';
+    if (companyName) {
+      body.companyName = companyName;
+      body.name = companyName;
+    }
+    if (payload.website) {
+      body.website = payload.website.trim();
+    }
+  }
+
+  return body;
+}
 
 export const authApi = {
   login: (payload: LoginPayload): Promise<ApiResponse<LoginModel>> =>
@@ -37,7 +64,7 @@ export const authApi = {
     unwrap(
       api.post<ApiResponse<RegisterModel>>(
         apiUrl('base', authPaths.register),
-        payload,
+        buildRegisterBody(payload),
         {},
         silent,
       ),
@@ -106,6 +133,7 @@ export const authApi = {
     }
   },
 
+  /** Prefer `installerApi.submitGuarantorForm` for new code. */
   submitGuarantorForm: (payload: GuarantorFormPayload): Promise<ApiResponse<unknown>> =>
     unwrap(
       api.post<ApiResponse<unknown>>(

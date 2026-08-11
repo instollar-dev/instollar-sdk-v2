@@ -3,13 +3,13 @@ import { apiUrl } from '../../core/api/base-urls';
 import { basePaths, installerPaths } from '../../core/api/api-endpoints';
 import { unwrap } from '../../core/api/request';
 import type { ApiResponse } from '../../core/types';
+import type { InstallerOnboardingUpdatePayload } from './onboarding.types';
 import type {
   InstallerLanguageModel,
   InstallerMyRatingModel,
   InstallerProductsMetadataModel,
   InstallerProfileBadgeModel,
   InstallerSettingsModel,
-  UpdateInstallerProfilePayload,
   UpdateInstallerSettingsPayload,
 } from './profile.types';
 import type { InstallerProfileRecordModel } from './types';
@@ -17,15 +17,19 @@ import type { InstallerProfileRecordModel } from './types';
 const silent = { showSuccessToast: false, showErrorToast: false } as const;
 
 export const installerProfileApi = {
+  /**
+   * Update installer profile / complete an onboarding step.
+   * Pass `stepDone` with the slug just completed during onboarding.
+   */
   updateInstallerProfile: (
-    payload: UpdateInstallerProfilePayload,
+    payload: InstallerOnboardingUpdatePayload,
   ): Promise<ApiResponse<InstallerProfileRecordModel>> =>
     unwrap(
       api.post<ApiResponse<InstallerProfileRecordModel>>(
         apiUrl('installer', installerPaths.update),
         payload,
         {},
-        { showSuccessToast: true },
+        { showSuccessToast: true, showErrorToast: false },
       ),
     ),
 

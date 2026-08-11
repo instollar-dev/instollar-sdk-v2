@@ -13,6 +13,7 @@ import { companyProjectsApi } from './company.projects.api';
 import { companyStoreFrontApi } from './company.store-front.api';
 import { companyTeamApi } from './company.team.api';
 import { companyWorkflowsApi } from './company.workflows.api';
+import type { CompanyUpdatePayload } from './onboarding.types';
 import type {
   CompanyJobRequestModel,
   CompanyProfileModel,
@@ -22,6 +23,11 @@ import type {
 export const companyApi = {
   getCompanyProfile: (): Promise<ApiResponse<CompanyProfileModel>> =>
     unwrap(api.get<ApiResponse<CompanyProfileModel>>(apiUrl('company', companyPaths.profile))),
+
+  /** Alias for {@link companyProfileApi.updateProfile}. */
+  updateCompany: (
+    payload: CompanyUpdatePayload,
+  ): Promise<ApiResponse<CompanyProfileModel>> => companyProfileApi.updateProfile(payload),
 
   updateCompanyUser: (
     payload: CompanyUpdateUserPayload,

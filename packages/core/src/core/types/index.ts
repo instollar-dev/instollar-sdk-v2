@@ -1,8 +1,12 @@
 import type { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 
+export type AuthUserType = 'COMPANY' | 'INSTALLER' | 'ADMIN' | 'SUPER_ADMIN';
+
 export interface TokenData {
   token?: string;
   refreshToken?: string;
+  /** Persisted after OTP confirm / login / 2FA (uppercased). Often absent right after register. */
+  userType?: AuthUserType | string;
 }
 
 export interface RefreshTokenModel {

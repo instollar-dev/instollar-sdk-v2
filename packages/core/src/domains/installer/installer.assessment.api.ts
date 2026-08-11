@@ -10,7 +10,9 @@ import type {
 } from './assessment.types';
 
 export const installerAssessmentApi = {
-  startAssessment: (payload: StartAssessmentPayload): Promise<ApiResponse<unknown>> =>
+  startAssessment: (
+    payload: StartAssessmentPayload = {},
+  ): Promise<ApiResponse<unknown>> =>
     unwrap(
       api.post<ApiResponse<unknown>>(
         apiUrl('installer', installerPaths.assessmentStart),
@@ -28,7 +30,7 @@ export const installerAssessmentApi = {
         apiUrl('installer', installerPaths.assessmentSubmit),
         payload,
         {},
-        { showSuccessToast: true },
+        { showSuccessToast: true, showErrorToast: false },
       ),
     ),
 };

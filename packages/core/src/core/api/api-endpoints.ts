@@ -349,4 +349,5 @@ export const installerPaths = {
   assessmentGetAll: '/assessment/get-all',
   assessmentStart: '/assessment/start',
   assessmentSubmit: '/assessment/submit',
+  guarantorForm: '/installer/guarantor-form',
 } as const;

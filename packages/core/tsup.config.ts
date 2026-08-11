@@ -10,6 +10,7 @@ export default defineConfig({
     'src/utils/number.ts',
     'src/utils/string.ts',
     'src/utils/phone.ts',
+    'src/utils/currency.ts',
     'src/utils/validation.ts',
     'src/utils/errors.ts',
   ],
