@@ -191,7 +191,6 @@ export function PhoneInput({
             value={country.countryCode}
             prefix={<CountryFlag code={country.countryCode} />}
             selectedColor={dialSelectedColor}
-            snapPoints={['70%', '92%']}
             onValueChange={handleCountryChange}
             placeholder="+…"
           />

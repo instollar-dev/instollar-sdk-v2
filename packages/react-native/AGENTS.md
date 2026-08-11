@@ -2,7 +2,7 @@
 name: instollar-react-native
 description: >-
   Agent guide for @instollar-dev/instollar-react-native — Instollar mobile UI,
-  theme, sheets, toasts, forms, and core API re-exports. Use when building or
+  theme, toasts, forms, and core API re-exports. Use when building or
   editing Expo / React Native apps that consume this package.
 ---
 
@@ -15,7 +15,7 @@ Use this package for **mobile (Expo / React Native)** only. Do **not** import `@
 ## Install
 
 ```bash
-npx expo install @instollar-dev/instollar-react-native react-native-svg @gorhom/bottom-sheet react-native-gesture-handler react-native-reanimated
+npx expo install @instollar-dev/instollar-react-native react-native-svg
 npx expo install expo-haptics   # optional; enables haptics
 ```
 
@@ -28,7 +28,6 @@ Wrap once near the root. Order matters:
 ```tsx
 import {
   ThemeProvider,
-  BottomSheetProvider,
   ToastProvider,
   initInstollarSDK,
 } from '@instollar-dev/instollar-react-native';
@@ -38,16 +37,13 @@ initInstollarSDK({ /* env / base URLs */ });
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
-      {/* wrapGestureHandler={false} if Expo Router already provides GestureHandlerRootView */}
-      <BottomSheetProvider wrapGestureHandler={false}>
-        <ToastProvider>{children}</ToastProvider>
-      </BottomSheetProvider>
+      <ToastProvider>{children}</ToastProvider>
     </ThemeProvider>
   );
 }
 ```
 
-Peers: `@gorhom/bottom-sheet`, `react-native-gesture-handler`, `react-native-reanimated`, `react-native-svg`. Optional: `expo-haptics`.
+Peers: `react-native-svg`. Optional: `expo-haptics`.
 
 ---
 
@@ -58,8 +54,6 @@ Peers: `@gorhom/bottom-sheet`, `react-native-gesture-handler`, `react-native-rea
 | `ThemeProvider` | Light/dark/system theme from `@instollar-dev/instollar-tokens` |
 | `useTheme` | `{ mode, setMode, scheme, colors, fonts }` |
 | `useThemeColors` | Theme color tokens only |
-| `BottomSheetProvider` | Programmatic + declarative sheets |
-| `useBottomSheet` | `openBottomSheet`, `closeBottomSheet`, `closeBottomSheetByID`, `closeAll` |
 | `ToastProvider` | Wires core `toast()` to on-screen toasts + haptics |
 | `toast` | From core — `toast.success()`, `toast.error()`, etc. |
 
@@ -67,47 +61,26 @@ Peers: `@gorhom/bottom-sheet`, `react-native-gesture-handler`, `react-native-rea
 
 ---
 
-## Success confirmations (prefer sheet on mobile)
-
-Hybrid of web `SuccessModal` / `useSuccessModal`:
+## Success confirmations
 
 | API | When to use |
 |-----|-------------|
-| **`useSuccessBottomSheet()`** → `openSuccessBottomSheet(opts)` | **Preferred** programmatic success after mutations |
-| `SuccessBottomSheet` | Declarative controlled sheet (`open` / `onClose`) |
-| `SuccessModal` | Centered dialog; use when a modal (not sheet) is required |
+| **`SuccessModal`** | Centered success dialog after mutations |
 | `SuccessPanel` | Shared body only (custom layouts) |
 | `SuccessModalIcon` | Default green check seal |
 
 ```tsx
-const { openSuccessBottomSheet } = useSuccessBottomSheet();
+const [open, setOpen] = useState(false);
 
-openSuccessBottomSheet({
-  title: 'Order Created Successfully!',
-  description: 'You have successfully created an order.',
-  buttonLabel: 'View Order',
-  onButtonClick: () => router.push(`/orders/${id}`),
-  // optional: snapPoints: ['42%'], children: <CustomFooter />
-});
-```
-
-**Options** (`OpenSuccessBottomSheetOptions`): `title`, `description`, `icon`, `buttonLabel`, `onButtonClick`, `children` (replaces default button), `id`, `snapPoints` (default `['42%']`), `index`, `closeOnBackdrop`, `enablePanDownToClose`, `scrollable`, `onClose`.
-
-Also returns full sheet API: `closeBottomSheet`, `openBottomSheet`, etc.
-
-Declarative:
-
-```tsx
-<SuccessBottomSheet
+<SuccessModal
   open={open}
   onClose={() => setOpen(false)}
-  title="Saved"
-  description="Your changes were saved."
-  onButtonClick={() => setOpen(false)}
+  title="Order Created Successfully!"
+  description="You have successfully created an order."
+  buttonLabel="View Order"
+  onButtonClick={() => router.push(`/orders/${id}`)}
 />
 ```
-
-Requires `BottomSheetProvider`.
 
 ---
 
@@ -115,21 +88,6 @@ Requires `BottomSheetProvider`.
 
 ### `Modal`
 Centered dialog. Props: `open`, `onClose?`, `closeOnBackdrop?` (default true), `children`, plus RN Modal props (except `transparent`).
-
-### `BottomSheet`
-Gorhom-based sheet. Props: `open`, `onClose?`, `children`, `snapPoints?` (default `['50%', '90%']`), `index?`, `title?`, `footer?`, `showCloseButton?`, `closeOnBackdrop?`, `enablePanDownToClose?`, `scrollable?` (default true), `enableDynamicSizing?` (default **false** — we always pass explicit `snapPoints`; gorhom's content auto-sizing can mis-measure scrollable content and collapse the visible sheet), `style?`, `contentContainerStyle?`, `modalProps?`.
-
-Re-exports for custom layouts: `BottomSheetScrollView`, `BottomSheetView`, `BottomSheetFlatList`, `BottomSheetTextInput`.
-
-### `useBottomSheet` / `openBottomSheet`
-```tsx
-openBottomSheet({
-  title: 'Confirm',
-  content: <Text>…</Text>,
-  snapPoints: ['40%'],
-  footer: <Button onPress={closeBottomSheet}>Done</Button>,
-});
-```
 
 ---
 
@@ -173,7 +131,7 @@ Label + error wrapper. Props: `label?`, `error?`, `children`, `style?`.
 Labeled text field. Props: `label?`, `error?`, `prefix?`, `suffix?`, `type?` (`text`|`password`|`number`|`email`|`tel`|`url`), `secureTextEntry?`, `onChangeText?`, `containerStyle?`, plus TextInput props (omit `onChange`). Number type uses sanitize/format helpers.
 
 ### `PhoneInput`
-Country dial code + national number. Uses searchable `Select` (**bottom sheet**) + `Input` `type="tel"`.
+Country dial code + national number. Uses searchable `Select` (**modal**) + `Input` `type="tel"`.
 
 ```tsx
 const [phone, setPhone] = useState({ countryCode: 'NG', nationalNumber: '' });
@@ -208,9 +166,9 @@ Controlled: `checked`, `onCheckedChange`, `label?`, `description?`, `disabled?`,
 ```
 
 ### `Select`
-Options open in a **bottom sheet** (requires `BottomSheetProvider`). Uses `BottomSheetScrollView` + mapped rows (not FlatList) so search + keyboard keep the country list visible.
+Options open in a **Modal** with an optional search field and scrollable list.
 
-Props: `options` (`value`, `label`, `description?`, `prefix?`), `value`, `onValueChange`, `label?`, `placeholder?`, `error?`, `searchable?`, `selectedColor?`, `snapPoints?` (default `['55%', '90%']`), `variant?` (`default`|`inline`), `disabled?`, `optionsLoading?`, etc. Search matches label, description, dial digits, and string value. Helper: `selectOptionsPropsFromQuery(query)`.
+Props: `options` (`value`, `label`, `description?`, `prefix?`), `value`, `onValueChange`, `label?`, `placeholder?`, `error?`, `searchable?`, `selectedColor?`, `variant?` (`default`|`inline`), `disabled?`, `optionsLoading?`, etc. Search matches label, description, dial digits, and string value. Helper: `selectOptionsPropsFromQuery(query)`.
 
 ### `OtpInput` / `VerificationInput` (alias)
 Props: `length?` (default 6), `value?`, `onChangeText?`, `onComplete?`, `error?`, `autoFocus?`, `disabled?`.
@@ -293,39 +251,18 @@ Prefer importing these from `@instollar-dev/instollar-react-native` in RN apps:
 
 ## Local `file:` linking (SDK monorepo)
 
-If the app depends on `"@instollar-dev/instollar-react-native": "file:../instollar-sdk-v2/packages/react-native"`, Metro can load **duplicate** `react-native-reanimated` / `@gorhom/bottom-sheet` from the SDK’s nested `node_modules` and crash at import with:
-
-`TypeError: property is not writable`
-
-Fix in the **consuming app** `metro.config.js` (not the SDK):
-
-```js
-config.watchFolders = [/* … */, sdkPackageRoot];
-config.resolver.disableHierarchicalLookup = true;
-config.resolver.nodeModulesPaths = [path.resolve(projectRoot, 'node_modules')];
-config.resolver.extraNodeModules = {
-  'react-native-reanimated': /* app node_modules */,
-  'react-native-worklets': /* app */,
-  'react-native-gesture-handler': /* app */,
-  '@gorhom/bottom-sheet': /* app */,
-  // …react, react-native, svg, tokens, core
-};
-```
-
-Published installs from GitHub Packages do not need this (no nested peers).
+If the app depends on `"@instollar-dev/instollar-react-native": "file:../instollar-sdk-v2/packages/react-native"`, Metro may need `watchFolders` / `extraNodeModules` so shared deps resolve from the **app** `node_modules` (not nested copies under the SDK). Published GitHub Packages installs do not need this.
 
 ## Do / don’t
 
 **Do**
-- Use `ThemeProvider` + `BottomSheetProvider` + `ToastProvider` at root
-- Prefer `openSuccessBottomSheet` for post-action success on mobile
+- Use `ThemeProvider` + `ToastProvider` at root
+- Prefer `SuccessModal` for post-action success on mobile
 - Use SDK `Text` / `Button` / form controls for visual consistency
-- Pass `wrapGestureHandler={false}` when the host already has `GestureHandlerRootView`
 
 **Don’t**
 - Import `@instollar-dev/instollar-react` or web CSS into RN
-- Call `useBottomSheet` / `useSuccessBottomSheet` outside `BottomSheetProvider`
-- Build one-off success modals when `SuccessBottomSheet` / hook already covers the pattern
+- Import removed BottomSheet APIs (`BottomSheet`, `BottomSheetProvider`, `useSuccessBottomSheet`, …)
 
 ---
 
@@ -335,12 +272,11 @@ Published installs from GitHub Packages do not need this (no nested peers).
 import {
   // providers
   ThemeProvider, useTheme, useThemeColors,
-  BottomSheetProvider, useBottomSheet,
   ToastProvider, toast,
   // success
-  useSuccessBottomSheet, SuccessBottomSheet, SuccessModal, SuccessPanel, SuccessModalIcon,
+  SuccessModal, SuccessPanel, SuccessModalIcon,
   // overlays
-  Modal, BottomSheet,
+  Modal,
   // primitives
   Text, Button, Spinner, ProgressBar, Icon, Card, Avatar, Chip,
   // forms

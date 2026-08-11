@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-react-native",
-  "version": "0.7.4",
+  "version": "0.8.1",
   "description": "Instollar React Native UI components",
   "type": "module",
   "main": "./dist/index.js",
@@ -31,12 +31,9 @@
     "iconsax-react-native": "^0.0.8"
   },
   "peerDependencies": {
-    "@gorhom/bottom-sheet": ">=5",
     "expo-haptics": "*",
     "react": ">=18",
     "react-native": ">=0.73",
-    "react-native-gesture-handler": ">=2.16.1",
-    "react-native-reanimated": ">=3.16.0",
     "react-native-svg": ">=13"
   },
   "peerDependenciesMeta": {
@@ -45,13 +42,10 @@
     }
   },
   "devDependencies": {
-    "@gorhom/bottom-sheet": "^5.2.14",
     "@types/react": "^19.0.0",
     "@types/react-native": "^0.73.0",
     "expo-haptics": "^15.0.0",
     "react": "^19.0.0",
-    "react-native-gesture-handler": "^2.32.0",
-    "react-native-reanimated": "^4.5.1",
     "react-native-svg": "^15.15.5",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"

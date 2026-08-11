@@ -8,7 +8,6 @@ export type SuccessModalProps = SuccessPanelProps & {
 
 /**
  * Centered success dialog (RN Modal).
- * Prefer `useSuccessBottomSheet` on mobile for a native sheet affordance.
  */
 export function SuccessModal({
   open,

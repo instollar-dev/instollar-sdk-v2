@@ -1,15 +1,16 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import {
   Pressable,
+  ScrollView,
+  TextInput,
   View,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Button } from './Button';
 import { FieldControl } from './FieldControl';
-import { Icon, ArrowDown2, TickCircle } from './Icon';
-import { BottomSheet } from './BottomSheet';
+import { Icon, ArrowDown2, CloseCircle, TickCircle } from './Icon';
+import { Modal } from './Modal';
 import { Spinner } from './Spinner';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
@@ -55,8 +56,6 @@ export type SelectProps<T = string> = {
    * Defaults to theme `fg` (trigger) / `brand` (list check).
    */
   selectedColor?: string;
-  /** Sheet snap points. Default: `['55%', '90%']`. */
-  snapPoints?: (string | number)[];
 };
 
 function defaultCompare<T>(a: T, b: T) {
@@ -107,7 +106,6 @@ export function Select<T = string>({
   suffix,
   style,
   selectedColor,
-  snapPoints = ['55%', '90%'],
 }: SelectProps<T>) {
   const colors = useThemeColors();
   const [open, setOpen] = useState(false);
@@ -138,15 +136,13 @@ export function Select<T = string>({
     ? (selectedColor ?? colors.fg)
     : colors.muted;
   const optionAccent = selectedColor ?? colors.brand;
-  /** Prefer the tallest snap so keyboard search still leaves room for options. */
-  const initialIndex = searchable ? Math.max(0, snapPoints.length - 1) : 0;
 
   const setValue = (next: T | T[] | null) => {
     if (!controlled) setInternal(next);
     onValueChange?.(next);
   };
 
-  const closeSheet = useCallback(() => {
+  const closeModal = useCallback(() => {
     setOpen(false);
     setQuery('');
   }, []);
@@ -163,7 +159,7 @@ export function Select<T = string>({
       return;
     }
     setValue(option.value);
-    closeSheet();
+    closeModal();
   };
 
   return (
@@ -204,28 +200,33 @@ export function Select<T = string>({
         </Text>
       ) : null}
 
-      {/*
-        Use BottomSheetScrollView (not FlatList) for option lists.
-        FlatList nested under sheet layouts often collapses to 0 height /
-        loses items when the keyboard opens — bad for PhoneInput country search.
-        Country / form option lists are small enough for ScrollView.
-      */}
-      <BottomSheet
-        open={open}
-        onClose={closeSheet}
-        title={label ?? 'Select'}
-        snapPoints={snapPoints}
-        index={initialIndex}
-        scrollable
-        modalProps={{
-          keyboardBehavior: 'interactive',
-          keyboardBlurBehavior: 'restore',
-          android_keyboardInputMode: 'adjustResize',
-        }}
-      >
+      <Modal open={open} onClose={closeModal}>
         <View style={{ gap: 12 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 12,
+            }}
+          >
+            <Text variant="spline-bold-h5" style={{ flex: 1, color: colors.fg }}>
+              {label ?? 'Select'}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Close"
+              hitSlop={8}
+              onPress={() => {
+                triggerHapticFeedback('light');
+                closeModal();
+              }}
+            >
+              <CloseCircle size={22} color={colors.muted} variant="Linear" />
+            </Pressable>
+          </View>
+
           {searchable ? (
-            <BottomSheetTextInput
+            <TextInput
               value={query}
               onChangeText={setQuery}
               placeholder="Search country or code…"
@@ -262,58 +263,64 @@ export function Select<T = string>({
               No options
             </Text>
           ) : (
-            filtered.map((item, index) => {
-              const selected = selectedOptions.some((o) =>
-                compareValue(o.value, item.value),
-              );
-              const key =
-                getOptionKey?.(item) ?? `${String(item.value)}-${index}`;
-              return (
-                <Pressable
-                  key={key}
-                  disabled={item.disabled}
-                  onPress={() => toggleOption(item)}
-                  style={{
-                    paddingVertical: 12,
-                    paddingHorizontal: 4,
-                    opacity: item.disabled ? 0.4 : 1,
-                    borderBottomWidth: 1,
-                    borderBottomColor: colors.border,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 10,
-                  }}
-                >
-                  {item.prefix}
-                  <View style={{ flex: 1 }}>
-                    <Text
-                      variant="open-regular-p"
-                      style={{ color: selected ? optionAccent : colors.fg }}
-                    >
-                      {item.label}
-                    </Text>
-                    {item.description ? (
-                      <Text variant="open-regular-tiny" muted>
-                        {item.description}
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              style={{ maxHeight: 360 }}
+              contentContainerStyle={{ paddingBottom: 8 }}
+            >
+              {filtered.map((item, index) => {
+                const selected = selectedOptions.some((o) =>
+                  compareValue(o.value, item.value),
+                );
+                const key =
+                  getOptionKey?.(item) ?? `${String(item.value)}-${index}`;
+                return (
+                  <Pressable
+                    key={key}
+                    disabled={item.disabled}
+                    onPress={() => toggleOption(item)}
+                    style={{
+                      paddingVertical: 12,
+                      paddingHorizontal: 4,
+                      opacity: item.disabled ? 0.4 : 1,
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.border,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 10,
+                    }}
+                  >
+                    {item.prefix}
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        variant="open-regular-p"
+                        style={{ color: selected ? optionAccent : colors.fg }}
+                      >
+                        {item.label}
                       </Text>
+                      {item.description ? (
+                        <Text variant="open-regular-tiny" muted>
+                          {item.description}
+                        </Text>
+                      ) : null}
+                    </View>
+                    {item.suffix}
+                    {selected ? (
+                      <TickCircle size={20} color={optionAccent} variant="Bold" />
                     ) : null}
-                  </View>
-                  {item.suffix}
-                  {selected ? (
-                    <TickCircle size={20} color={optionAccent} variant="Bold" />
-                  ) : null}
-                </Pressable>
-              );
-            })
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
           )}
 
           {multiple ? (
-            <Button onPress={closeSheet} style={{ marginTop: 8 }}>
+            <Button onPress={closeModal} style={{ marginTop: 8 }}>
               Done
             </Button>
           ) : null}
         </View>
-      </BottomSheet>
+      </Modal>
     </View>
   );
 }

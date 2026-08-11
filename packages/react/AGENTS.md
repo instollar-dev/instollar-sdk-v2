@@ -52,4 +52,4 @@ Determinate linear bar — fill uses **destructive** (`bg-destructive` / `--colo
 
 ## Success
 
-Prefer `useSuccessModal()` / `openSuccessModal` with `ModalProvider` (web). Mobile uses `useSuccessBottomSheet`.
+Prefer `useSuccessModal()` / `openSuccessModal` with `ModalProvider` (web). Mobile uses `SuccessModal`.

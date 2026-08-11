@@ -41,7 +41,7 @@ export function SuccessModalIcon() {
   );
 }
 
-/** Shared success body — used by SuccessModal and SuccessBottomSheet. */
+/** Shared success body — used by SuccessModal. */
 export function SuccessPanel({
   title = DEFAULT_SUCCESS_TITLE,
   description = DEFAULT_SUCCESS_DESCRIPTION,
