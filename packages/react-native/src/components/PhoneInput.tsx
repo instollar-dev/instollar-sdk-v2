@@ -146,7 +146,7 @@ export function PhoneInput({
             value={country.countryCode}
             prefix={<FlagEmoji code={country.countryCode} />}
             selectedColor={dialSelectedColor}
-            snapPoints={['55%', '90%']}
+            snapPoints={['70%', '92%']}
             onValueChange={(next) => {
               const code = Array.isArray(next) ? next[0] : next;
               if (!code) return;

@@ -38,8 +38,20 @@ export type BottomSheetProps = {
   closeOnBackdrop?: boolean;
   /** Enable pan-down to close. Default: true. */
   enablePanDownToClose?: boolean;
-  /** Wrap children in BottomSheetScrollView. Default: true. */
+  /**
+   * Wrap children in BottomSheetScrollView. Default: true.
+   * Ignored when `contentMode` is set.
+   */
   scrollable?: boolean;
+  /**
+   * How children are wrapped inside the modal:
+   * - `scroll` — BottomSheetScrollView (forms / short content)
+   * - `view` — BottomSheetView
+   * - `raw` — no wrapper (required for BottomSheetFlatList as a direct child)
+   *
+   * Default: `scroll` when `scrollable`, else `view`.
+   */
+  contentMode?: 'scroll' | 'view' | 'raw';
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   /** Extra props forwarded to BottomSheetModal. */
@@ -68,6 +80,7 @@ export const BottomSheet = forwardRef<BottomSheetModal, BottomSheetProps>(
       closeOnBackdrop = true,
       enablePanDownToClose = true,
       scrollable = true,
+      contentMode,
       style,
       contentContainerStyle,
       modalProps,
@@ -83,6 +96,9 @@ export const BottomSheet = forwardRef<BottomSheetModal, BottomSheetProps>(
       [snapPointsProp],
     );
 
+    const resolvedMode: 'scroll' | 'view' | 'raw' =
+      contentMode ?? (scrollable ? 'scroll' : 'view');
+
     const showClose = showCloseButton ?? Boolean(title);
 
     useEffect(() => {
@@ -90,10 +106,13 @@ export const BottomSheet = forwardRef<BottomSheetModal, BottomSheetProps>(
       if (!modal) return;
       if (open) {
         triggerHapticFeedback('light');
-        modal.present();
-      } else {
-        modal.dismiss();
+        // Defer present so the modal portal is ready after layout.
+        const id = requestAnimationFrame(() => {
+          modal.present();
+        });
+        return () => cancelAnimationFrame(id);
       }
+      modal.dismiss();
     }, [open]);
 
     const renderBackdrop = useCallback(
@@ -139,6 +158,18 @@ export const BottomSheet = forwardRef<BottomSheetModal, BottomSheetProps>(
       </>
     );
 
+    /** FlatList/ScrollView scrollables must be direct modal children — no Fragment wrapper. */
+    const rawContent =
+      !header && !footer ? (
+        children
+      ) : (
+        <>
+          {header}
+          {children}
+          {footer ? <View style={styles.footer}>{footer}</View> : null}
+        </>
+      );
+
     return (
       <BottomSheetModal
         ref={sheetRef}
@@ -156,14 +187,18 @@ export const BottomSheet = forwardRef<BottomSheetModal, BottomSheetProps>(
         style={style}
         {...modalProps}
       >
-        {scrollable ? (
+        {resolvedMode === 'raw' ? (
+          rawContent
+        ) : resolvedMode === 'scroll' ? (
           <BottomSheetScrollView
             contentContainerStyle={[styles.content, contentContainerStyle]}
           >
             {body}
           </BottomSheetScrollView>
         ) : (
-          <BottomSheetView style={[styles.content, contentContainerStyle]}>{body}</BottomSheetView>
+          <BottomSheetView style={[styles.content, contentContainerStyle]}>
+            {body}
+          </BottomSheetView>
         )}
       </BottomSheetModal>
     );

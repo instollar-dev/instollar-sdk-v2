@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import {
   Pressable,
   View,
@@ -11,7 +11,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import { Button } from './Button';
 import { FieldControl } from './FieldControl';
-import { Icon, ArrowDown2, TickCircle } from './Icon';
+import { Icon, ArrowDown2, CloseCircle, TickCircle } from './Icon';
 import { BottomSheet } from './BottomSheet';
 import { Spinner } from './Spinner';
 import { Text } from './Text';
@@ -66,6 +66,27 @@ function defaultCompare<T>(a: T, b: T) {
   return Object.is(a, b);
 }
 
+function optionMatchesQuery<T>(option: SelectOption<T>, rawQuery: string): boolean {
+  const q = rawQuery.trim().toLowerCase();
+  if (!q) return true;
+
+  const label = option.label.toLowerCase();
+  const description = option.description?.toLowerCase() ?? '';
+  const valueKey =
+    typeof option.value === 'string' || typeof option.value === 'number'
+      ? String(option.value).toLowerCase()
+      : '';
+  const queryDigits = q.replace(/\D/g, '');
+  const labelDigits = label.replace(/\D/g, '');
+
+  return (
+    label.includes(q) ||
+    description.includes(q) ||
+    valueKey.includes(q) ||
+    (queryDigits.length > 0 && labelDigits.includes(queryDigits))
+  );
+}
+
 export function Select<T = string>({
   label,
   error,
@@ -106,18 +127,7 @@ export function Select<T = string>({
 
   const filtered = useMemo(() => {
     if (!searchable || !query.trim()) return options;
-    const q = query.trim().toLowerCase();
-    return options.filter((o) => {
-      const valueKey =
-        typeof o.value === 'string' || typeof o.value === 'number'
-          ? String(o.value).toLowerCase()
-          : '';
-      return (
-        o.label.toLowerCase().includes(q) ||
-        o.description?.toLowerCase().includes(q) ||
-        valueKey.includes(q)
-      );
-    });
+    return options.filter((o) => optionMatchesQuery(o, query));
   }, [options, query, searchable]);
 
   const triggerLabel =
@@ -131,16 +141,19 @@ export function Select<T = string>({
     ? (selectedColor ?? colors.fg)
     : colors.muted;
   const optionAccent = selectedColor ?? colors.brand;
+  /** Prefer the tallest snap so keyboard search still leaves room for options. */
+  const initialIndex = searchable ? Math.max(0, snapPoints.length - 1) : 0;
+  const sheetTitle = label ?? 'Select';
 
   const setValue = (next: T | T[] | null) => {
     if (!controlled) setInternal(next);
     onValueChange?.(next);
   };
 
-  const closeSheet = () => {
+  const closeSheet = useCallback(() => {
     setOpen(false);
     setQuery('');
-  };
+  }, []);
 
   const toggleOption = (option: SelectOption<T>) => {
     if (option.disabled) return;
@@ -156,6 +169,64 @@ export function Select<T = string>({
     setValue(option.value);
     closeSheet();
   };
+
+  const listHeader = (
+    <View style={{ paddingHorizontal: 20, paddingBottom: 8, gap: 12 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <Text variant="spline-bold-h5" style={{ flex: 1, color: colors.fg }}>
+          {sheetTitle}
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+          hitSlop={8}
+          onPress={() => {
+            triggerHapticFeedback('light');
+            closeSheet();
+          }}
+        >
+          <CloseCircle size={22} color={colors.muted} variant="Linear" />
+        </Pressable>
+      </View>
+
+      {searchable ? (
+        <BottomSheetTextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search country or code…"
+          placeholderTextColor={colors.muted}
+          autoCorrect={false}
+          autoCapitalize="none"
+          style={{
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 8,
+            paddingHorizontal: 12,
+            paddingVertical: 10,
+            color: colors.fg,
+          }}
+        />
+      ) : null}
+
+      {optionsLoading ? (
+        <View style={{ alignItems: 'center', gap: 8, paddingVertical: 24 }}>
+          <Spinner />
+          <Text muted>{optionsLoadingLabel}</Text>
+        </View>
+      ) : null}
+
+      {optionsError ? (
+        <View style={{ gap: 8 }}>
+          <Text style={{ color: colors.danger }}>{optionsErrorLabel}</Text>
+          {onReloadOptions ? (
+            <Button size="sm" onPress={onReloadOptions}>
+              {reloadLabel}
+            </Button>
+          ) : null}
+        </View>
+      ) : null}
+    </View>
+  );
 
   return (
     <View style={style}>
@@ -198,105 +269,88 @@ export function Select<T = string>({
       <BottomSheet
         open={open}
         onClose={closeSheet}
-        title={label ?? 'Select'}
         snapPoints={snapPoints}
-        scrollable={false}
-        contentContainerStyle={{ flex: 1, maxHeight: '100%' }}
+        index={initialIndex}
+        contentMode="raw"
+        showCloseButton={false}
+        modalProps={{
+          keyboardBehavior: 'interactive',
+          keyboardBlurBehavior: 'restore',
+          android_keyboardInputMode: 'adjustResize',
+        }}
       >
-        {searchable ? (
-          <BottomSheetTextInput
-            value={query}
-            onChangeText={setQuery}
-            placeholder="Search…"
-            placeholderTextColor={colors.muted}
-            style={{
-              borderWidth: 1,
-              borderColor: colors.border,
-              borderRadius: 8,
-              paddingHorizontal: 12,
-              paddingVertical: 10,
-              color: colors.fg,
-              marginBottom: 8,
-            }}
-          />
-        ) : null}
-
-        {optionsLoading ? (
-          <View style={{ alignItems: 'center', gap: 8, paddingVertical: 24 }}>
-            <Spinner />
-            <Text muted>{optionsLoadingLabel}</Text>
-          </View>
-        ) : optionsError ? (
-          <View style={{ gap: 8 }}>
-            <Text style={{ color: colors.danger }}>{optionsErrorLabel}</Text>
-            {onReloadOptions ? (
-              <Button size="sm" onPress={onReloadOptions}>
-                {reloadLabel}
-              </Button>
-            ) : null}
-          </View>
-        ) : (
-          <BottomSheetFlatList
-            data={filtered}
-            keyExtractor={(item, index) =>
-              getOptionKey?.(item) ?? `${String(item.value)}-${index}`
-            }
-            style={{ flexGrow: 1 }}
-            contentContainerStyle={{ paddingBottom: multiple ? 8 : 24 }}
-            keyboardShouldPersistTaps="handled"
-            renderItem={({ item }) => {
-              const selected = selectedOptions.some((o) =>
-                compareValue(o.value, item.value),
-              );
-              return (
-                <Pressable
-                  disabled={item.disabled}
-                  onPress={() => toggleOption(item)}
-                  style={{
-                    paddingVertical: 12,
-                    paddingHorizontal: 4,
-                    opacity: item.disabled ? 0.4 : 1,
-                    borderBottomWidth: 1,
-                    borderBottomColor: colors.border,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 10,
-                  }}
-                >
-                  {item.prefix}
-                  <View style={{ flex: 1 }}>
-                    <Text
-                      variant="open-regular-p"
-                      style={{ color: selected ? optionAccent : colors.fg }}
-                    >
-                      {item.label}
+        {/*
+          BottomSheetFlatList must be a direct child of BottomSheetModal.
+          Nesting it in BottomSheetView breaks list layout (empty / unscrollable),
+          especially once the keyboard opens during search.
+        */}
+        <BottomSheetFlatList
+          data={optionsLoading || optionsError ? [] : filtered}
+          keyExtractor={(item, index) =>
+            getOptionKey?.(item) ?? `${String(item.value)}-${index}`
+          }
+          ListHeaderComponent={listHeader}
+          contentContainerStyle={{
+            paddingBottom: multiple ? 16 : 32,
+          }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="none"
+          renderItem={({ item }) => {
+            const selected = selectedOptions.some((o) =>
+              compareValue(o.value, item.value),
+            );
+            return (
+              <Pressable
+                disabled={item.disabled}
+                onPress={() => toggleOption(item)}
+                style={{
+                  marginHorizontal: 20,
+                  paddingVertical: 12,
+                  paddingHorizontal: 4,
+                  opacity: item.disabled ? 0.4 : 1,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10,
+                }}
+              >
+                {item.prefix}
+                <View style={{ flex: 1 }}>
+                  <Text
+                    variant="open-regular-p"
+                    style={{ color: selected ? optionAccent : colors.fg }}
+                  >
+                    {item.label}
+                  </Text>
+                  {item.description ? (
+                    <Text variant="open-regular-tiny" muted>
+                      {item.description}
                     </Text>
-                    {item.description ? (
-                      <Text variant="open-regular-tiny" muted>
-                        {item.description}
-                      </Text>
-                    ) : null}
-                  </View>
-                  {item.suffix}
-                  {selected ? (
-                    <TickCircle size={20} color={optionAccent} variant="Bold" />
                   ) : null}
-                </Pressable>
-              );
-            }}
-            ListEmptyComponent={
+                </View>
+                {item.suffix}
+                {selected ? (
+                  <TickCircle size={20} color={optionAccent} variant="Bold" />
+                ) : null}
+              </Pressable>
+            );
+          }}
+          ListEmptyComponent={
+            optionsLoading || optionsError ? null : (
               <Text muted style={{ paddingVertical: 16, textAlign: 'center' }}>
                 No options
               </Text>
-            }
-          />
-        )}
-
-        {multiple ? (
-          <Button onPress={closeSheet} style={{ marginTop: 8 }}>
-            Done
-          </Button>
-        ) : null}
+            )
+          }
+          ListFooterComponent={
+            multiple ? (
+              <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
+                <Button onPress={closeSheet}>Done</Button>
+              </View>
+            ) : null
+          }
+        />
       </BottomSheet>
     </View>
   );

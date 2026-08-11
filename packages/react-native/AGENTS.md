@@ -208,7 +208,9 @@ Controlled: `checked`, `onCheckedChange`, `label?`, `description?`, `disabled?`,
 ```
 
 ### `Select`
-Options open in a **bottom sheet** (requires `BottomSheetProvider`). Props: `options` (`value`, `label`, `description?`, `prefix?`), `value`, `onValueChange`, `label?`, `placeholder?`, `error?`, `searchable?`, `selectedColor?`, `snapPoints?` (default `['55%', '90%']`), `variant?` (`default`|`inline`), `disabled?`, `optionsLoading?`, etc. Search matches label, description, and string value. Helper: `selectOptionsPropsFromQuery(query)`.
+Options open in a **bottom sheet** (requires `BottomSheetProvider`). The options list uses `BottomSheetFlatList` as a **direct** child of the sheet modal (not nested in `BottomSheetView`) so search + keyboard keep the list visible.
+
+Props: `options` (`value`, `label`, `description?`, `prefix?`), `value`, `onValueChange`, `label?`, `placeholder?`, `error?`, `searchable?`, `selectedColor?`, `snapPoints?` (default `['55%', '90%']`), `variant?` (`default`|`inline`), `disabled?`, `optionsLoading?`, etc. Search matches label, description, dial digits, and string value. Helper: `selectOptionsPropsFromQuery(query)`.
 
 ### `OtpInput` / `VerificationInput` (alias)
 Props: `length?` (default 6), `value?`, `onChangeText?`, `onComplete?`, `error?`, `autoFocus?`, `disabled?`.
