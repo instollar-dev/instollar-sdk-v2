@@ -117,7 +117,7 @@ Requires `BottomSheetProvider`.
 Centered dialog. Props: `open`, `onClose?`, `closeOnBackdrop?` (default true), `children`, plus RN Modal props (except `transparent`).
 
 ### `BottomSheet`
-Gorhom-based sheet. Props: `open`, `onClose?`, `children`, `snapPoints?` (default `['50%', '90%']`), `index?`, `title?`, `footer?`, `showCloseButton?`, `closeOnBackdrop?`, `enablePanDownToClose?`, `scrollable?` (default true), `style?`, `contentContainerStyle?`, `modalProps?`.
+Gorhom-based sheet. Props: `open`, `onClose?`, `children`, `snapPoints?` (default `['50%', '90%']`), `index?`, `title?`, `footer?`, `showCloseButton?`, `closeOnBackdrop?`, `enablePanDownToClose?`, `scrollable?` (default true), `enableDynamicSizing?` (default **false** — we always pass explicit `snapPoints`; gorhom's content auto-sizing can mis-measure scrollable content and collapse the visible sheet), `style?`, `contentContainerStyle?`, `modalProps?`.
 
 Re-exports for custom layouts: `BottomSheetScrollView`, `BottomSheetView`, `BottomSheetFlatList`, `BottomSheetTextInput`.
 
@@ -189,7 +189,7 @@ const [phone, setPhone] = useState({ countryCode: 'NG', nationalNumber: '' });
 
 - `value.nationalNumber` is **digits only**; UI applies `Country.inputFormat`
 - Max length from `Country.phoneLength`
-- Flag emoji prefix on the dial-code trigger and each option (system font — custom fonts hide flags)
+- Flag prefix on the dial-code trigger and each option: `flagcdn.com` PNG (`https://flagcdn.com/w40/{iso2}.png`), falling back to the emoji flag if the image fails to load (e.g. offline)
 - **Dark mode:** selected dial code (trigger + list accent) uses **destructive** color
 - Helpers also exported: `toE164`, `formatPhoneValueForApi`, `validateNationalNumber`, `countryCodeToFlagEmoji`, `COUNTRIES`
 

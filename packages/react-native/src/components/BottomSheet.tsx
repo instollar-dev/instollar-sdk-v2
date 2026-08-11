@@ -54,6 +54,12 @@ export type BottomSheetProps = {
   contentMode?: 'scroll' | 'view' | 'raw';
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  /**
+   * Gorhom's content-based auto-sizing. Default: **false** — we always pass
+   * explicit `snapPoints`, and dynamic sizing can mis-measure scrollable
+   * content (e.g. a searchable list), collapsing it to an empty-looking sheet.
+   */
+  enableDynamicSizing?: boolean;
   /** Extra props forwarded to BottomSheetModal. */
   modalProps?: Omit<
     BottomSheetModalProps,
@@ -63,6 +69,7 @@ export type BottomSheetProps = {
     | 'onDismiss'
     | 'enablePanDownToClose'
     | 'backdropComponent'
+    | 'enableDynamicSizing'
   >;
 };
 
@@ -83,6 +90,7 @@ export const BottomSheet = forwardRef<BottomSheetModal, BottomSheetProps>(
       contentMode,
       style,
       contentContainerStyle,
+      enableDynamicSizing = false,
       modalProps,
     },
     ref,
@@ -175,6 +183,7 @@ export const BottomSheet = forwardRef<BottomSheetModal, BottomSheetProps>(
         ref={sheetRef}
         snapPoints={snapPoints}
         index={index}
+        enableDynamicSizing={enableDynamicSizing}
         enablePanDownToClose={enablePanDownToClose}
         onDismiss={onClose}
         backdropComponent={renderBackdrop}
