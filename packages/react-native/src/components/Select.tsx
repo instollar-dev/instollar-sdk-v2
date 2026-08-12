@@ -53,10 +53,15 @@ export type SelectProps<T = string> = {
   suffix?: ReactNode;
   style?: StyleProp<ViewStyle>;
   /**
-   * Color for the selected trigger label and selected option accent.
-   * Defaults to theme `fg` (trigger) / `brand` (list check).
+   * Accent for the selected row in the options list (label + check icon).
+   * Defaults to theme `brand`.
    */
   selectedColor?: string;
+  /**
+   * Trigger label color when a value is selected. Defaults to theme `fg`
+   * (independent of `selectedColor`).
+   */
+  triggerSelectedColor?: string;
   /** How options open. Default: `modal`. Use `sheet` for long searchable lists. */
   presentation?: 'modal' | 'sheet';
   /** Search field placeholder when `searchable`. Default: `Search…`. */
@@ -111,6 +116,7 @@ export function Select<T = string>({
   suffix,
   style,
   selectedColor,
+  triggerSelectedColor,
   presentation = 'modal',
   searchPlaceholder = 'Search…',
 }: SelectProps<T>) {
@@ -140,7 +146,7 @@ export function Select<T = string>({
         : selectedOptions[0]?.label;
 
   const triggerColor = selectedOptions.length
-    ? (selectedColor ?? colors.fg)
+    ? (triggerSelectedColor ?? colors.fg)
     : colors.muted;
   const optionAccent = selectedColor ?? colors.brand;
 

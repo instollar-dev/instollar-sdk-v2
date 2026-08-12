@@ -140,19 +140,27 @@ export const DateInput: FC<DateInputProps> = ({
     }
   };
 
+  const webkitPicker =
+    '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0';
+
+  /** Native date/time fields render via WebKit pseudo-elements that default to grey. */
+  const webkitDateTimeText =
+    '[&::-webkit-datetime-edit]:text-foreground [&::-webkit-datetime-edit-fields-wrapper]:text-foreground [&::-webkit-datetime-edit-text]:text-foreground [&::-webkit-datetime-edit-month-field]:text-foreground [&::-webkit-datetime-edit-day-field]:text-foreground [&::-webkit-datetime-edit-year-field]:text-foreground [&::-webkit-datetime-edit-hour-field]:text-foreground [&::-webkit-datetime-edit-minute-field]:text-foreground [&::-webkit-datetime-edit-second-field]:text-foreground [&::-webkit-datetime-edit-ampm-field]:text-foreground';
+
   const defaultClasses =
     variant === 'inline'
-      ? 'w-full rounded bg-transparent px-2 py-1 text-spline-regular-p text-foreground focus:outline-none'
+      ? cn(
+          'w-full rounded bg-transparent px-2 py-1 text-spline-regular-p text-foreground focus:outline-none',
+          webkitDateTimeText,
+        )
       : cn(
-          'w-full rounded-[4px] border-[0.5px] bg-background px-4 py-3 text-foreground transition-shadow',
+          'w-full rounded-[4px] border-[0.5px] bg-background px-4 py-3 text-open-regular-p text-foreground transition-shadow',
+          webkitDateTimeText,
           'focus:outline-none focus:ring-1 focus:ring-primary',
           'disabled:cursor-not-allowed disabled:border-border/50 disabled:bg-foreground/5 disabled:text-muted',
           error ? 'border-destructive focus:ring-destructive' : 'border-border',
           'pr-13',
         );
-
-  const webkitPicker =
-    '[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0';
 
   const pickerLabel =
     type === 'time' ? 'Choose time' : type === 'datetime-local' ? 'Choose date and time' : 'Choose date';

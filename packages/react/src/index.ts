@@ -187,6 +187,14 @@ export { SettingsItem } from './components/SettingsItem';
 export type { SettingsItemProps } from './components/SettingsItem';
 export { useSettingsAccordion } from './hooks/useSettingsAccordion';
 
+export { Accordion, AccordionItem, useAccordion } from './components/Accordion';
+export type {
+  AccordionProps,
+  AccordionItemProps,
+  AccordionType,
+  UseAccordionOptions,
+} from './components/Accordion';
+
 export { Avatar, getAvatarInitials } from './components/Avatar';
 export type { AvatarProps, AvatarSize } from './components/Avatar';
 

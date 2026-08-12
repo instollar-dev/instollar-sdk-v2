@@ -1,5 +1,7 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
+  Animated,
+  Easing,
   Modal as RNModal,
   Pressable,
   StyleSheet,
@@ -7,6 +9,10 @@ import {
   type ModalProps as RNModalProps,
 } from 'react-native';
 import { useThemeColors } from '../theme/ThemeProvider';
+
+const PANEL_OFFSET = 32;
+const ENTER_MS = 280;
+const EXIT_MS = 220;
 
 export type ModalProps = Omit<RNModalProps, 'transparent'> & {
   open: boolean;
@@ -16,21 +22,71 @@ export type ModalProps = Omit<RNModalProps, 'transparent'> & {
   closeOnBackdrop?: boolean;
 };
 
+/**
+ * Centered dialog on RN Modal.
+ * Backdrop appears instantly; panel fades/slides in.
+ */
 export function Modal({
   open,
   onClose,
   children,
   closeOnBackdrop = true,
-  animationType = 'fade',
   ...props
 }: ModalProps) {
   const colors = useThemeColors();
+  const [mounted, setMounted] = useState(open);
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(PANEL_OFFSET)).current;
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      opacity.setValue(0);
+      translateY.setValue(PANEL_OFFSET);
+      Animated.parallel([
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: ENTER_MS,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: ENTER_MS,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start();
+      return;
+    }
+
+    if (!mounted) return;
+
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: EXIT_MS,
+        easing: Easing.in(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: PANEL_OFFSET,
+        duration: EXIT_MS,
+        easing: Easing.in(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start(({ finished }) => {
+      if (finished) setMounted(false);
+    });
+  }, [open, mounted, opacity, translateY]);
+
+  if (!mounted) return null;
 
   return (
     <RNModal
-      visible={open}
+      visible={mounted}
       transparent
-      animationType={animationType}
+      animationType="none"
       onRequestClose={onClose}
       {...props}
     >
@@ -41,9 +97,19 @@ export function Modal({
           style={styles.backdrop}
           onPress={closeOnBackdrop ? onClose : undefined}
         />
-        <View style={[styles.sheet, { backgroundColor: colors.bg, borderColor: colors.border }]}>
+        <Animated.View
+          style={[
+            styles.sheet,
+            {
+              backgroundColor: colors.bg,
+              borderColor: colors.border,
+              opacity,
+              transform: [{ translateY }],
+            },
+          ]}
+        >
           {children}
-        </View>
+        </Animated.View>
       </View>
     </RNModal>
   );

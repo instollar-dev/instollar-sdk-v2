@@ -174,6 +174,14 @@ export type { LoadBoundaryProps } from './components/LoadBoundary';
 export { SettingsItem } from './components/SettingsItem';
 export type { SettingsItemProps } from './components/SettingsItem';
 
+export { Accordion, AccordionItem, useAccordion } from './components/Accordion';
+export type {
+  AccordionProps,
+  AccordionItemProps,
+  AccordionType,
+  UseAccordionOptions,
+} from './components/Accordion';
+
 export {
   SuccessPanel,
   SuccessModalIcon,
@@ -185,6 +193,20 @@ export type { SuccessPanelProps } from './components/SuccessPanel';
 
 export { SuccessModal } from './components/SuccessModal';
 export type { SuccessModalProps } from './components/SuccessModal';
+
+export { FileUpload } from './components/FileUpload';
+export type {
+  FileUploadProps,
+  FileUploadStrings,
+  UploadedFileAsset,
+} from './components/FileUpload.types';
+export {
+  ALL_DOCUMENT_UPLOAD_ACCEPT,
+  registerFilePickerModules,
+  getDocumentPickerModule,
+  getImagePickerModule,
+} from './components/FileUpload';
+export type { PickedFile } from './utils/filePickerModules';
 
 export {
   sanitizeNumberInput,

@@ -31,13 +31,21 @@
     "iconsax-react-native": "^0.0.8"
   },
   "peerDependencies": {
+    "expo-document-picker": "*",
     "expo-haptics": "*",
+    "expo-image-picker": "*",
     "react": ">=18",
     "react-native": ">=0.73",
     "react-native-svg": ">=13"
   },
   "peerDependenciesMeta": {
+    "expo-document-picker": {
+      "optional": true
+    },
     "expo-haptics": {
+      "optional": true
+    },
+    "expo-image-picker": {
       "optional": true
     }
   },

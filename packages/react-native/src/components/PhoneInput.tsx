@@ -26,13 +26,11 @@ import { Select, type SelectOption } from './Select';
 import { useResolvedScheme, useThemeColors } from '../theme/ThemeProvider';
 import { fieldErrorStyle, fieldLabelStyle } from '../styles/formStyles';
 
-const FLAG_BOX_SIZE = 22;
-const FLAG_IMAGE_WIDTH = 20;
-const FLAG_IMAGE_HEIGHT = 15;
+const FLAG_SIZE = 22;
 
 /** flagcdn.com URL for an ISO 3166-1 alpha-2 country code. */
 function flagImageUrl(countryCode: string): string {
-  return `https://flagcdn.com/w40/${countryCode.trim().toLowerCase()}.png`;
+  return `https://flagcdn.com/w80/${countryCode.trim().toLowerCase()}.png`;
 }
 
 /**
@@ -40,16 +38,18 @@ function flagImageUrl(countryCode: string): string {
  * (system font, so it renders even under custom UI fonts) if the
  * image fails to load — e.g. offline, or an unmapped country code.
  */
-function CountryFlag({ code, size = FLAG_BOX_SIZE }: { code: string; size?: number }) {
+function CountryFlag({ code, size = FLAG_SIZE }: { code: string; size?: number }) {
   const [failed, setFailed] = useState(false);
   const emoji = countryCodeToFlagEmoji(code);
   const showImage = Boolean(code) && !failed;
+  const radius = size / 2;
 
   return (
     <View
       style={{
         width: size,
-        height: 20,
+        height: size,
+        borderRadius: radius,
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
@@ -61,13 +61,13 @@ function CountryFlag({ code, size = FLAG_BOX_SIZE }: { code: string; size?: numb
           onError={() => setFailed(true)}
           resizeMode="cover"
           style={{
-            width: FLAG_IMAGE_WIDTH,
-            height: FLAG_IMAGE_HEIGHT,
-            borderRadius: 2,
+            width: size,
+            height: size,
+            borderRadius: radius,
           }}
         />
       ) : emoji ? (
-        <RNText style={{ fontSize: size - 4, lineHeight: 20 }}>{emoji}</RNText>
+        <RNText style={{ fontSize: size - 8, lineHeight: size }}>{emoji}</RNText>
       ) : null}
     </View>
   );
@@ -137,7 +137,6 @@ export function PhoneInput({
     [countries],
   );
 
-  const dialSelectedColor = scheme === 'dark' ? colors.destructive : undefined;
   const displayNational = formatNationalNumber(
     current.nationalNumber,
     country.inputFormat,
@@ -192,7 +191,7 @@ export function PhoneInput({
             options={dialCodeOptions}
             value={country.countryCode}
             prefix={<CountryFlag code={country.countryCode} />}
-            selectedColor={dialSelectedColor}
+            selectedColor={scheme === 'dark' ? colors.destructive : undefined}
             onValueChange={handleCountryChange}
             placeholder="+…"
           />
