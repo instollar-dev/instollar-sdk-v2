@@ -67,7 +67,7 @@ export function Switch({
             isChecked
               ? 'border-primary bg-primary'
               : 'border-border bg-[color-mix(in_srgb,var(--color-brand,#012b15)_12%,transparent)]',
-            error && 'border-destructive',
+            error && 'border-error',
           )}
           {...props}
         >

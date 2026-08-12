@@ -32,6 +32,10 @@ export type InputProps = Omit<TextInputProps, 'onChange'> & {
   /** Web-parity: treat as password field with visibility toggle. */
   secureTextEntry?: boolean;
   type?: 'text' | 'password' | 'number' | 'email' | 'tel' | 'url';
+  /** Non-editable trigger (e.g. date picker) without dimmed border opacity. */
+  readOnly?: boolean;
+  /** Opens a picker/sheet when `readOnly` (preferred over wrapping in Pressable). */
+  onPress?: () => void;
 };
 
 export function Input({
@@ -44,6 +48,8 @@ export function Input({
   defaultValue,
   onChangeText,
   editable = true,
+  readOnly = false,
+  onPress,
   secureTextEntry,
   type = 'text',
   containerStyle,
@@ -51,6 +57,7 @@ export function Input({
   ...props
 }: InputProps) {
   const colors = useThemeColors();
+  const isEditable = editable && !readOnly;
   const isPassword = type === 'password' || secureTextEntry;
   const isNumber = type === 'number';
   const [visible, setVisible] = useState(false);
@@ -85,7 +92,7 @@ export function Input({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={visible ? 'Hide password' : 'Show password'}
-      disabled={!editable}
+      disabled={!isEditable}
       onPress={() => {
         triggerHapticFeedback('selection');
         setVisible((v) => !v);
@@ -96,39 +103,58 @@ export function Input({
     </Pressable>
   ) : null;
 
-  return (
-    <View style={containerStyle}>
+  const control = (
+    <FieldControl
+      prefix={prefix}
+      suffix={suffix ?? passwordToggle}
+      error={Boolean(error) || Boolean(invalid)}
+      disabled={!isEditable && !readOnly}
+      style={{ height: 44 }}
+    >
+      <TextInput
+        {...props}
+        value={displayValue}
+        onChangeText={handleChange}
+        editable={isEditable}
+        pointerEvents={readOnly ? 'none' : props.pointerEvents}
+        secureTextEntry={Boolean(isPassword && !visible)}
+        keyboardType={
+          isNumber ? 'decimal-pad' : type === 'email' ? 'email-address' : type === 'tel' ? 'phone-pad' : 'default'
+        }
+        autoCapitalize={type === 'email' ? 'none' : props.autoCapitalize}
+        placeholderTextColor={colors.muted}
+        style={[{ color: colors.fg }, fieldControlTextStyle, style]}
+      />
+    </FieldControl>
+  );
+
+  const body = (
+    <>
       {label ? (
         <Text variant="open-regular-label" style={fieldLabelStyle(colors)}>
           {label}
         </Text>
       ) : null}
-      <FieldControl
-        prefix={prefix}
-        suffix={suffix ?? passwordToggle}
-        error={Boolean(error) || Boolean(invalid)}
-        disabled={!editable}
-        style={{ height: 44 }}
-      >
-        <TextInput
-          {...props}
-          value={displayValue}
-          onChangeText={handleChange}
-          editable={editable}
-          secureTextEntry={Boolean(isPassword && !visible)}
-          keyboardType={
-            isNumber ? 'decimal-pad' : type === 'email' ? 'email-address' : type === 'tel' ? 'phone-pad' : 'default'
-          }
-          autoCapitalize={type === 'email' ? 'none' : props.autoCapitalize}
-          placeholderTextColor={colors.muted}
-          style={[{ color: colors.fg }, fieldControlTextStyle, style]}
-        />
-      </FieldControl>
+      {readOnly && !onPress ? <View pointerEvents="none">{control}</View> : control}
       {error ? (
         <Text variant="open-regular-tiny" style={fieldErrorStyle(colors)}>
           {error}
         </Text>
       ) : null}
+    </>
+  );
+
+  if (readOnly && onPress) {
+    return (
+      <Pressable accessibilityRole="button" onPress={onPress} style={containerStyle}>
+        {body}
+      </Pressable>
+    );
+  }
+
+  return (
+    <View style={containerStyle} pointerEvents={readOnly ? 'box-none' : undefined}>
+      {body}
     </View>
   );
 }

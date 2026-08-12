@@ -30,7 +30,7 @@ const iconMap = {
 
 const iconColorMap: Record<AlertVariant, string> = {
   success: iconPaint.primary,
-  error: iconPaint.destructive,
+  error: iconPaint.error,
   destructive: iconPaint.destructive,
   warning: iconPaint.foreground,
   info: iconPaint.primary,

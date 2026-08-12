@@ -11,6 +11,7 @@ export const iconPaint = {
   inverse: '#ffffff',
   destructive: 'var(--color-destructive, #f49e0c)',
   danger: 'var(--color-danger, #dc2626)',
+  error: 'var(--color-error, var(--color-danger, #dc2626))',
   foreground: 'var(--color-fg, var(--color-brand, #012b15))',
 } as const;
 

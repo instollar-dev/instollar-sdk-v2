@@ -496,7 +496,7 @@ export const FileUpload: FC<FileUploadProps> = ({
           className={cn(
             'relative flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center transition-colors',
             dragActive ? 'border-primary bg-primary/5' : 'border-border bg-background hover:bg-muted/20',
-            displayError && 'border-destructive',
+            displayError && 'border-error',
           )}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}

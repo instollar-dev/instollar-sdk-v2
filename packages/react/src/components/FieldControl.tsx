@@ -21,7 +21,7 @@ export const FieldControl = forwardRef<HTMLDivElement, FieldControlProps>(functi
       className={cn(
         'flex min-h-11 w-full items-center rounded-lg border transition-colors duration-200',
         formControlSurfaceClass,
-        error && 'border-destructive',
+        error && 'border-error',
         disabled && 'opacity-50',
         className,
       )}

@@ -142,12 +142,12 @@
 @source inline("{,sm:,md:,lg:,xl:,2xl:}bg-origin-{border,padding,content}");
 
 /* ── Colors — theme tokens + neutrals ─────────────────────────────────── */
-@source inline("{,hover:,focus:,disabled:,sm:,md:,lg:,xl:,2xl:}{bg,text,border,outline,ring,divide,fill,stroke,caret,accent,decoration,from,via,to}-{primary,secondary,background,foreground,muted,border,destructive,danger,brand,white,black,transparent,current,inherit}");
+@source inline("{,hover:,focus:,disabled:,sm:,md:,lg:,xl:,2xl:}{bg,text,border,outline,ring,divide,fill,stroke,caret,accent,decoration,from,via,to}-{primary,secondary,background,foreground,muted,border,destructive,danger,error,brand,white,black,transparent,current,inherit}");
 @source inline("{,hover:,focus:,disabled:,sm:,md:,lg:,xl:,2xl:}{bg,text,border,outline,ring,divide,fill,stroke}-{slate,gray,zinc,neutral,stone}-{50,{100..900..100},950}");
 @source inline("{,hover:,focus:,disabled:,sm:,md:,lg:,xl:,2xl:}{bg,text,border}-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose}-{50,{100..900..100},950}");
 
 /* Color opacity modifiers commonly used with theme tokens */
-@source inline("{,hover:,sm:,md:,lg:}{bg,text,border}-{primary,secondary,foreground,muted,destructive,danger,brand,black,white}/{5,10,15,20,25,30,40,50,60,70,75,80,90}");
+@source inline("{,hover:,sm:,md:,lg:}{bg,text,border}-{primary,secondary,foreground,muted,destructive,danger,error,brand,black,white}/{5,10,15,20,25,30,40,50,60,70,75,80,90}");
 
 /* ── Transitions / transforms / interactivity ─────────────────────────── */
 @source inline("{,sm:,md:,lg:,xl:,2xl:}transition{,-none,-all,-colors,-opacity,-shadow,-transform}");

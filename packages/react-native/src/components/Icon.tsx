@@ -10,7 +10,8 @@ export type IconColor =
   | 'muted'
   | 'inverse'
   | 'destructive'
-  | 'danger';
+  | 'danger'
+  | 'error';
 
 const sizeMap: Record<IconSize, number> = {
   xs: 13,
@@ -49,6 +50,7 @@ export function Icon({
     inverse: colors.white,
     destructive: colors.destructive,
     danger: colors.danger,
+    error: colors.error,
   };
 
   return (

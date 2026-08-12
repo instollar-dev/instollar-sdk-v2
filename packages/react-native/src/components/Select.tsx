@@ -14,7 +14,7 @@ import { Modal } from './Modal';
 import { Sheet } from './Sheet';
 import { Spinner } from './Spinner';
 import { Text } from './Text';
-import { useThemeColors } from '../theme/ThemeProvider';
+import { useResolvedScheme, useThemeColors } from '../theme/ThemeProvider';
 import { fieldErrorStyle, fieldLabelStyle, fieldControlTextStyle } from '../styles/formStyles';
 import { triggerHapticFeedback } from '../utils/haptics';
 
@@ -124,6 +124,7 @@ export function Select<T = string>({
   searchPlaceholder = 'Search…',
 }: SelectProps<T>) {
   const colors = useThemeColors();
+  const scheme = useResolvedScheme();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const controlled = value !== undefined;
@@ -151,7 +152,8 @@ export function Select<T = string>({
   const triggerColor = selectedOptions.length
     ? (triggerSelectedColor ?? colors.fg)
     : colors.muted;
-  const optionAccent = selectedColor ?? colors.brand;
+  const optionAccent =
+    selectedColor ?? (scheme === 'dark' ? colors.destructive : colors.brand);
 
   const setValue = (next: T | T[] | null) => {
     if (!controlled) setInternal(next);
@@ -231,7 +233,7 @@ export function Select<T = string>({
         </View>
       ) : optionsError ? (
         <View style={{ gap: 8 }}>
-          <Text style={{ color: colors.danger }}>{optionsErrorLabel}</Text>
+          <Text style={{ color: colors.error }}>{optionsErrorLabel}</Text>
           {onReloadOptions ? (
             <Button size="sm" onPress={onReloadOptions}>
               {reloadLabel}
@@ -324,7 +326,6 @@ export function Select<T = string>({
             suffix ?? <Icon icon={ArrowDown2} size="sm" color="muted" />
           }
           error={Boolean(error) || Boolean(invalid)}
-          disabled={disabled}
           style={{ height: 44 }}
         >
           <Text

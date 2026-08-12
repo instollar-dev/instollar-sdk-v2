@@ -59,7 +59,7 @@ export function Checkbox({
               'peer-checked:border-primary peer-checked:bg-primary',
               '[&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100',
               'peer-disabled:opacity-50',
-              error && 'border-destructive',
+              error && 'border-error',
             )}
           >
             <CheckmarkIcon color={iconPaint.inverse} />

@@ -3,7 +3,7 @@ export type AlertVariant = 'success' | 'error' | 'destructive' | 'warning' | 'in
 /** Soft tinted surface + left accent bar — inline alerts, forms */
 export const alertContainerClasses: Record<AlertVariant, string> = {
   success: 'bg-primary/7 border-l-primary',
-  error: 'bg-destructive/7 border-l-destructive/55',
+  error: 'bg-error/7 border-l-error/55',
   destructive: 'bg-destructive/10 border-l-destructive',
   warning: 'bg-secondary/40 border-l-secondary',
   info: 'bg-primary/7 border-l-primary/50',
@@ -12,7 +12,7 @@ export const alertContainerClasses: Record<AlertVariant, string> = {
 /** Opaque surface — toasts overlay page content */
 export const toastContainerClasses: Record<AlertVariant, string> = {
   success: 'bg-background border border-border border-l-primary',
-  error: 'bg-background border border-border border-l-destructive',
+  error: 'bg-background border border-border border-l-error',
   destructive: 'bg-background border border-border border-l-destructive',
   warning: 'bg-background border border-border border-l-secondary',
   info: 'bg-background border border-border border-l-primary',
@@ -21,7 +21,7 @@ export const toastContainerClasses: Record<AlertVariant, string> = {
 /** Soft circular icon chip background + icon color */
 export const alertIconChipClasses: Record<AlertVariant, string> = {
   success: 'bg-primary/16 text-primary',
-  error: 'bg-destructive/16 text-destructive',
+  error: 'bg-error/16 text-error',
   destructive: 'bg-destructive/20 text-destructive',
   warning: 'bg-secondary/50 text-foreground',
   info: 'bg-primary/14 text-primary',

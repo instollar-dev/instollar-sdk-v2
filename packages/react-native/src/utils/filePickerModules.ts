@@ -67,6 +67,25 @@ let cachedModules:
     }
   | undefined;
 
+/** Expo document picker allows one active session app-wide. */
+let documentPickInFlight = false;
+
+export async function pickDocumentAsync(
+  documentPicker: DocumentPickerModule,
+  options?: Parameters<DocumentPickerModule['getDocumentAsync']>[0],
+): Promise<Awaited<ReturnType<DocumentPickerModule['getDocumentAsync']>>> {
+  if (documentPickInFlight) {
+    return { canceled: true };
+  }
+
+  documentPickInFlight = true;
+  try {
+    return await documentPicker.getDocumentAsync(options);
+  } finally {
+    documentPickInFlight = false;
+  }
+}
+
 /**
  * Register the host app's Expo picker modules.
  *

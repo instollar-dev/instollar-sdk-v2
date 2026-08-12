@@ -24,6 +24,7 @@ const colorValues: Record<IconColor, string> = {
   inverse: iconPaint.inverse,
   destructive: iconPaint.destructive,
   danger: iconPaint.danger,
+  error: iconPaint.error,
 };
 
 type IconsaxProps = SVGProps<SVGSVGElement> & {

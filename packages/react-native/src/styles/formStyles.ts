@@ -10,7 +10,7 @@ export function fieldLabelStyle(colors: ThemeColors): TextStyle {
 
 export function fieldErrorStyle(colors: ThemeColors): TextStyle {
   return {
-    color: colors.destructive,
+    color: colors.error,
     marginTop: 6,
   };
 }
@@ -32,7 +32,7 @@ export function fieldControlSurface(
     width: '100%',
     borderWidth: 1,
     borderRadius: 8,
-    borderColor: opts.error ? colors.destructive : colors.border,
+    borderColor: opts.error ? colors.error : colors.border,
     backgroundColor: colors.bg,
     opacity: opts.disabled && !opts.error ? 0.5 : 1,
     /** Single-line Input / Select target height (Textarea overrides via style). */

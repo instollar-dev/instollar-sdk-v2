@@ -191,6 +191,9 @@ export type {
   UseAccordionOptions,
 } from './components/Accordion';
 
+export { AccordionFileUploadItem } from './components/AccordionFileUploadItem';
+export type { AccordionFileUploadItemProps } from './components/AccordionFileUploadItem';
+
 export {
   SuccessPanel,
   SuccessModalIcon,

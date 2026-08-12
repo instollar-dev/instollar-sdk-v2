@@ -28,6 +28,8 @@ export const colors = {
   border: '#d6ddd9',
   destructive: '#f49e0c',
   danger: '#dc2626',
+  /** Validation / error feedback — red in light. */
+  error: '#dc2626',
   white: '#ffffff',
 } as const;
 
@@ -42,6 +44,8 @@ export const darkColors = {
   border: '#3d5248',
   destructive: '#fbbf24',
   danger: '#ef4444',
+  /** Validation / error feedback — amber in dark. */
+  error: '#fbbf24',
   white: '#ffffff',
 } as const;
 
@@ -55,6 +59,7 @@ export type ThemeColors = {
   border: string;
   destructive: string;
   danger: string;
+  error: string;
   white: string;
 };
 

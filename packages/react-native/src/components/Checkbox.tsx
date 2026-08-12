@@ -54,7 +54,7 @@ export function Checkbox({
             height: 20,
             borderRadius: 4,
             borderWidth: 1.5,
-            borderColor: error ? colors.destructive : isChecked ? colors.brand : colors.border,
+            borderColor: error ? colors.error : isChecked ? colors.brand : colors.border,
             backgroundColor: isChecked ? colors.brand : 'transparent',
             alignItems: 'center',
             justifyContent: 'center',

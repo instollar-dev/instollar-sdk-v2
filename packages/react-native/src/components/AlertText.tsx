@@ -30,7 +30,7 @@ const variantColor = (
       return colors.fg;
     case 'error':
     default:
-      return colors.danger;
+      return colors.error;
   }
 };
 

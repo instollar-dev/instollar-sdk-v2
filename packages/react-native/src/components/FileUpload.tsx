@@ -5,7 +5,6 @@ import {
   Pressable,
   View,
 } from 'react-native';
-import { Button } from './Button';
 import {
   DEFAULT_FILE_UPLOAD_STRINGS,
   type FileUploadProps,
@@ -21,12 +20,12 @@ import {
   normalizeValue,
   validatePickedFileAgainstAccept,
 } from './fileUploadUtils';
-import { DocumentText, DocumentUpload, Eye, Icon, TickCircle } from './Icon';
+import { DocumentText, Eye, Icon, TickCircle } from './Icon';
 import { Modal } from './Modal';
 import { Sheet } from './Sheet';
 import { Spinner } from './Spinner';
 import { Text } from './Text';
-import { useThemeColors } from '../theme/ThemeProvider';
+import { useResolvedScheme, useThemeColors } from '../theme/ThemeProvider';
 import { fieldErrorStyle, fieldLabelStyle } from '../styles/formStyles';
 import { triggerHapticFeedback } from '../utils/haptics';
 import {
@@ -34,6 +33,7 @@ import {
   getDocumentPickerModule,
   getImagePickerModule,
   imageAssetToPickedFile,
+  pickDocumentAsync,
   pickedFileToFormDataPart,
   type PickedFile,
 } from '../utils/filePickerModules';
@@ -48,6 +48,7 @@ export {
   registerFilePickerModules,
   getDocumentPickerModule,
   getImagePickerModule,
+  pickDocumentAsync,
   type PickedFile,
 } from '../utils/filePickerModules';
 
@@ -86,6 +87,8 @@ export function FileUpload({
   isNetworkDisconnectError = defaultIsNetworkDisconnectError,
 }: FileUploadProps) {
   const colors = useThemeColors();
+  const scheme = useResolvedScheme();
+  const actionAccent = scheme === 'dark' ? colors.destructive : colors.brand;
   const strings = useMemo(
     () => ({ ...DEFAULT_FILE_UPLOAD_STRINGS, ...stringsOverride }),
     [stringsOverride],
@@ -97,6 +100,7 @@ export function FileUpload({
   const [selectedFiles, setSelectedFiles] = useState<PickedFile[]>([]);
   const [localError, setLocalError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isPicking, setIsPicking] = useState(false);
   const [uploadedLabels, setUploadedLabels] = useState<string[]>([]);
   const [locallyRemovedPrefilled, setLocallyRemovedPrefilled] = useState<Set<number>>(
     new Set(),
@@ -252,69 +256,100 @@ export function FileUpload({
     [multiple, onFileSelect, selectedFiles.length, uploadSelectedFiles, validateFile],
   );
 
-  const openSourcePicker = () => {
-    if (!documentPicker && !imagePicker) {
-      setLocalError(strings.pickerNotConfigured);
-      return;
-    }
-    triggerHapticFeedback('light');
-    setSourceOpen(true);
-  };
-
   const pickFromDocuments = async () => {
+    if (isPicking) return;
     setSourceOpen(false);
     if (!documentPicker) {
       setLocalError(strings.pickerNotConfigured);
       return;
     }
-    const result = await documentPicker.getDocumentAsync({
-      type: acceptToDocumentPickerTypes(accept),
-      multiple,
-      copyToCacheDirectory: true,
-    });
-    if (result.canceled || !result.assets?.length) return;
-    ingestFiles(result.assets.map(documentAssetToPickedFile));
+    setIsPicking(true);
+    try {
+      const result = await pickDocumentAsync(documentPicker, {
+        type: acceptToDocumentPickerTypes(accept),
+        multiple,
+        copyToCacheDirectory: true,
+      });
+      if (result.canceled || !result.assets?.length) return;
+      ingestFiles(result.assets.map(documentAssetToPickedFile));
+    } catch {
+      setLocalError(strings.uploadFailed);
+    } finally {
+      setIsPicking(false);
+    }
   };
 
   const pickFromLibrary = async () => {
+    if (isPicking) return;
     setSourceOpen(false);
     if (!imagePicker) {
       setLocalError(strings.pickerNotConfigured);
       return;
     }
-    if (imagePicker.requestMediaLibraryPermissionsAsync) {
-      const permission = await imagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permission.granted) {
-        setLocalError(strings.libraryPermissionDenied);
-        return;
+    setIsPicking(true);
+    try {
+      if (imagePicker.requestMediaLibraryPermissionsAsync) {
+        const permission = await imagePicker.requestMediaLibraryPermissionsAsync();
+        if (!permission.granted) {
+          setLocalError(strings.libraryPermissionDenied);
+          return;
+        }
       }
+      const result = await imagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsMultipleSelection: multiple,
+        quality: 0.9,
+      });
+      if (result.canceled || !result.assets?.length) return;
+      ingestFiles(result.assets.map(imageAssetToPickedFile));
+    } finally {
+      setIsPicking(false);
     }
-    const result = await imagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsMultipleSelection: multiple,
-      quality: 0.9,
-    });
-    if (result.canceled || !result.assets?.length) return;
-    ingestFiles(result.assets.map(imageAssetToPickedFile));
   };
 
   const takePhoto = async () => {
+    if (isPicking) return;
     setSourceOpen(false);
     if (!imagePicker) {
       setLocalError(strings.pickerNotConfigured);
       return;
     }
-    const permission = await imagePicker.requestCameraPermissionsAsync();
-    if (!permission.granted) {
-      setLocalError(strings.cameraPermissionDenied);
+    setIsPicking(true);
+    try {
+      const permission = await imagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        setLocalError(strings.cameraPermissionDenied);
+        return;
+      }
+      const result = await imagePicker.launchCameraAsync({
+        mediaTypes: ['images'],
+        quality: 0.9,
+      });
+      if (result.canceled || !result.assets?.length) return;
+      ingestFiles(result.assets.map(imageAssetToPickedFile));
+    } finally {
+      setIsPicking(false);
+    }
+  };
+
+  const openSourcePicker = () => {
+    if (isPicking || isUploading) return;
+    if (!documentPicker && !imagePicker) {
+      setLocalError(strings.pickerNotConfigured);
       return;
     }
-    const result = await imagePicker.launchCameraAsync({
-      mediaTypes: ['images'],
-      quality: 0.9,
-    });
-    if (result.canceled || !result.assets?.length) return;
-    ingestFiles(result.assets.map(imageAssetToPickedFile));
+    triggerHapticFeedback('light');
+
+    const sourceCount =
+      (documentPicker ? 1 : 0) +
+      (allowsImages && imagePicker ? 2 : 0);
+
+    if (sourceCount === 1 && documentPicker) {
+      void pickFromDocuments();
+      return;
+    }
+
+    setSourceOpen(true);
   };
 
   const removeFile = () => {
@@ -360,11 +395,13 @@ export function FileUpload({
 
   const displayError = errorProp || localError;
 
-  const sourceOption = (title: string, onPress: () => void) => (
+  const sourceOption = (title: string, onPress: () => void | Promise<void>) => (
     <Pressable
       key={title}
       accessibilityRole="button"
+      disabled={isPicking}
       onPress={() => {
+        if (isPicking) return;
         triggerHapticFeedback('selection');
         void onPress();
       }}
@@ -532,21 +569,20 @@ export function FileUpload({
         <Pressable
           accessibilityRole="button"
           onPress={openSourcePicker}
+          disabled={isUploading || isPicking}
           style={{
             alignItems: 'center',
             justifyContent: 'center',
             borderWidth: 1,
             borderStyle: 'dashed',
             borderRadius: 8,
-            borderColor: displayError ? colors.destructive : colors.border,
+            borderColor: displayError ? colors.error : colors.border,
             backgroundColor: colors.bg,
             paddingVertical: 32,
             paddingHorizontal: 16,
+            opacity: isUploading || isPicking ? 0.6 : 1,
           }}
         >
-          <View style={{ marginBottom: 16 }}>
-            <Icon icon={DocumentUpload} size="xl" color="secondary" />
-          </View>
           <Text variant="open-regular-p" muted style={{ marginBottom: 8, textAlign: 'center' }}>
             {strings.clickToUpload}
           </Text>
@@ -557,15 +593,20 @@ export function FileUpload({
           >
             {helperText || acceptDisplay}
           </Text>
-          <Button
-            variant="ghost"
-            size="sm"
-            loading={isUploading}
-            disabled={isUploading}
-            onPress={openSourcePicker}
-          >
-            {isUploading ? strings.browseUploading : strings.browse}
-          </Button>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              borderRadius: 8,
+            }}>
+            {isUploading ? <Spinner size={16} /> : null}
+            <Text variant="open-regular-p" style={{ color: actionAccent, fontWeight: '600' }}>
+              {isUploading ? strings.browseUploading : strings.browse}
+            </Text>
+          </View>
         </Pressable>
       ) : (
         <View
@@ -603,8 +644,8 @@ export function FileUpload({
           )}
 
           {multiple ? (
-            <Pressable accessibilityRole="button" onPress={openSourcePicker} disabled={isUploading}>
-              <Text variant="open-regular-tiny" style={{ color: colors.brand, fontWeight: '600' }}>
+            <Pressable accessibilityRole="button" onPress={openSourcePicker} disabled={isUploading || isPicking}>
+              <Text variant="open-regular-tiny" style={{ color: actionAccent, fontWeight: '600' }}>
                 {strings.addMore}
               </Text>
             </Pressable>

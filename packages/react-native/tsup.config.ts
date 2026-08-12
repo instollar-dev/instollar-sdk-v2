@@ -9,6 +9,7 @@ export default defineConfig({
   external: [
     'react',
     'react-native',
+    'react-native-reanimated',
     'react-native-svg',
     'iconsax-react-native',
     'expo-haptics',

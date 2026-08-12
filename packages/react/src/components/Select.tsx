@@ -645,7 +645,7 @@ export function Select<T = string>({
             'hover:cursor-pointer disabled:cursor-not-allowed',
             isInline && 'px-0',
             !hasSelection && 'text-muted',
-            optionsError && !optionsLoading && 'text-destructive',
+            optionsError && !optionsLoading && 'text-error',
           )}
         >
           <span className="min-w-0 flex-1 truncate">{displayLabel}</span>

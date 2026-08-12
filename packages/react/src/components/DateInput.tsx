@@ -158,7 +158,7 @@ export const DateInput: FC<DateInputProps> = ({
           webkitDateTimeText,
           'focus:outline-none focus:ring-1 focus:ring-primary',
           'disabled:cursor-not-allowed disabled:border-border/50 disabled:bg-foreground/5 disabled:text-muted',
-          error ? 'border-destructive focus:ring-destructive' : 'border-border',
+          error ? 'border-error focus:ring-error' : 'border-border',
           'pr-13',
         );
 
@@ -220,7 +220,7 @@ export const DateInput: FC<DateInputProps> = ({
       </div>
 
       {showErrorMessage && error ? (
-        <p className="mt-1 text-sm text-destructive">{error}</p>
+        <p className="mt-1 text-sm text-error">{error}</p>
       ) : null}
     </div>
   );

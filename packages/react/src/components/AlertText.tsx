@@ -32,7 +32,7 @@ export function dismissibleAlertProps(
 
 const variantClasses: Record<AlertVariant, string> = {
   error:
-    'text-[var(--sdk-alert-text-error-text,var(--color-destructive))] bg-[var(--sdk-alert-text-error-bg,color-mix(in_srgb,var(--color-destructive)_12%,var(--color-bg)))] border-l-[var(--sdk-alert-text-error-border,var(--color-destructive))]',
+    'text-[var(--sdk-alert-text-error-text,var(--color-error))] bg-[var(--sdk-alert-text-error-bg,color-mix(in_srgb,var(--color-error)_12%,var(--color-bg)))] border-l-[var(--sdk-alert-text-error-border,var(--color-error))]',
   success:
     'text-[var(--sdk-alert-text-success-text,var(--color-primary))] bg-[var(--sdk-alert-text-success-bg,color-mix(in_srgb,var(--color-primary)_12%,var(--color-bg)))] border-l-[var(--sdk-alert-text-success-border,var(--color-primary))]',
   pending:

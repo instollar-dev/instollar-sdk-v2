@@ -61,7 +61,7 @@ function Shell({
 }) {
   const toneClasses = {
     neutral: 'border-border/70 bg-background',
-    error: 'border-destructive/25 bg-destructive/10',
+    error: 'border-error/25 bg-error/10',
     forbidden: 'border-border/70 bg-background',
   } as const;
 
@@ -227,7 +227,7 @@ export function LoadBoundary({
     return (
       <div className={cn('relative w-full', className)} style={{ ...shellStyle, ...style }}>
         <Shell tone="error" style={shellStyle}>
-          <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <div className="flex size-12 items-center justify-center rounded-full bg-error/10 text-error">
             <Warning2 size={24} variant="Bold" color={iconPaint.destructive} aria-hidden />
           </div>
           <div className="space-y-1">
