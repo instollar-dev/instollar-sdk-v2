@@ -11,6 +11,7 @@ import { Button } from './Button';
 import { FieldControl } from './FieldControl';
 import { Icon, ArrowDown2, CloseCircle, TickCircle } from './Icon';
 import { Modal } from './Modal';
+import { Sheet } from './Sheet';
 import { Spinner } from './Spinner';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
@@ -56,6 +57,10 @@ export type SelectProps<T = string> = {
    * Defaults to theme `fg` (trigger) / `brand` (list check).
    */
   selectedColor?: string;
+  /** How options open. Default: `modal`. Use `sheet` for long searchable lists. */
+  presentation?: 'modal' | 'sheet';
+  /** Search field placeholder when `searchable`. Default: `Search…`. */
+  searchPlaceholder?: string;
 };
 
 function defaultCompare<T>(a: T, b: T) {
@@ -106,6 +111,8 @@ export function Select<T = string>({
   suffix,
   style,
   selectedColor,
+  presentation = 'modal',
+  searchPlaceholder = 'Search…',
 }: SelectProps<T>) {
   const colors = useThemeColors();
   const [open, setOpen] = useState(false);
@@ -142,7 +149,7 @@ export function Select<T = string>({
     onValueChange?.(next);
   };
 
-  const closeModal = useCallback(() => {
+  const closeOverlay = useCallback(() => {
     setOpen(false);
     setQuery('');
   }, []);
@@ -159,8 +166,134 @@ export function Select<T = string>({
       return;
     }
     setValue(option.value);
-    closeModal();
+    closeOverlay();
   };
+
+  const listMaxHeight = presentation === 'sheet' ? 480 : 360;
+
+  const optionsPanel = (
+    <View style={{ gap: 12 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+        }}
+      >
+        <Text variant="spline-bold-h5" style={{ flex: 1, color: colors.fg }}>
+          {label ?? 'Select'}
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Close"
+          hitSlop={8}
+          onPress={() => {
+            triggerHapticFeedback('light');
+            closeOverlay();
+          }}
+        >
+          <CloseCircle size={22} color={colors.muted} variant="Linear" />
+        </Pressable>
+      </View>
+
+      {searchable ? (
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder={searchPlaceholder}
+          placeholderTextColor={colors.muted}
+          autoCorrect={false}
+          autoCapitalize="none"
+          style={{
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 8,
+            paddingHorizontal: 12,
+            paddingVertical: 10,
+            color: colors.fg,
+          }}
+        />
+      ) : null}
+
+      {optionsLoading ? (
+        <View style={{ alignItems: 'center', gap: 8, paddingVertical: 24 }}>
+          <Spinner />
+          <Text muted>{optionsLoadingLabel}</Text>
+        </View>
+      ) : optionsError ? (
+        <View style={{ gap: 8 }}>
+          <Text style={{ color: colors.danger }}>{optionsErrorLabel}</Text>
+          {onReloadOptions ? (
+            <Button size="sm" onPress={onReloadOptions}>
+              {reloadLabel}
+            </Button>
+          ) : null}
+        </View>
+      ) : filtered.length === 0 ? (
+        <Text muted style={{ paddingVertical: 16, textAlign: 'center' }}>
+          No options
+        </Text>
+      ) : (
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          style={{ maxHeight: listMaxHeight }}
+          contentContainerStyle={{ paddingBottom: 8 }}
+        >
+          {filtered.map((item, index) => {
+            const selected = selectedOptions.some((o) =>
+              compareValue(o.value, item.value),
+            );
+            const key =
+              getOptionKey?.(item) ?? `${String(item.value)}-${index}`;
+            return (
+              <Pressable
+                key={key}
+                disabled={item.disabled}
+                onPress={() => toggleOption(item)}
+                style={{
+                  paddingVertical: 12,
+                  paddingHorizontal: 4,
+                  opacity: item.disabled ? 0.4 : 1,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 10,
+                }}
+              >
+                {item.prefix}
+                <View style={{ flex: 1 }}>
+                  <Text
+                    variant="open-regular-p"
+                    style={{ color: selected ? optionAccent : colors.fg }}
+                  >
+                    {item.label}
+                  </Text>
+                  {item.description ? (
+                    <Text variant="open-regular-tiny" muted>
+                      {item.description}
+                    </Text>
+                  ) : null}
+                </View>
+                {item.suffix}
+                {selected ? (
+                  <TickCircle size={20} color={optionAccent} variant="Bold" />
+                ) : null}
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      )}
+
+      {multiple ? (
+        <Button onPress={closeOverlay} style={{ marginTop: 8 }}>
+          Done
+        </Button>
+      ) : null}
+    </View>
+  );
+
+  const Overlay = presentation === 'sheet' ? Sheet : Modal;
 
   return (
     <View style={style}>
@@ -200,127 +333,9 @@ export function Select<T = string>({
         </Text>
       ) : null}
 
-      <Modal open={open} onClose={closeModal}>
-        <View style={{ gap: 12 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 12,
-            }}
-          >
-            <Text variant="spline-bold-h5" style={{ flex: 1, color: colors.fg }}>
-              {label ?? 'Select'}
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Close"
-              hitSlop={8}
-              onPress={() => {
-                triggerHapticFeedback('light');
-                closeModal();
-              }}
-            >
-              <CloseCircle size={22} color={colors.muted} variant="Linear" />
-            </Pressable>
-          </View>
-
-          {searchable ? (
-            <TextInput
-              value={query}
-              onChangeText={setQuery}
-              placeholder="Search country or code…"
-              placeholderTextColor={colors.muted}
-              autoCorrect={false}
-              autoCapitalize="none"
-              style={{
-                borderWidth: 1,
-                borderColor: colors.border,
-                borderRadius: 8,
-                paddingHorizontal: 12,
-                paddingVertical: 10,
-                color: colors.fg,
-              }}
-            />
-          ) : null}
-
-          {optionsLoading ? (
-            <View style={{ alignItems: 'center', gap: 8, paddingVertical: 24 }}>
-              <Spinner />
-              <Text muted>{optionsLoadingLabel}</Text>
-            </View>
-          ) : optionsError ? (
-            <View style={{ gap: 8 }}>
-              <Text style={{ color: colors.danger }}>{optionsErrorLabel}</Text>
-              {onReloadOptions ? (
-                <Button size="sm" onPress={onReloadOptions}>
-                  {reloadLabel}
-                </Button>
-              ) : null}
-            </View>
-          ) : filtered.length === 0 ? (
-            <Text muted style={{ paddingVertical: 16, textAlign: 'center' }}>
-              No options
-            </Text>
-          ) : (
-            <ScrollView
-              keyboardShouldPersistTaps="handled"
-              style={{ maxHeight: 360 }}
-              contentContainerStyle={{ paddingBottom: 8 }}
-            >
-              {filtered.map((item, index) => {
-                const selected = selectedOptions.some((o) =>
-                  compareValue(o.value, item.value),
-                );
-                const key =
-                  getOptionKey?.(item) ?? `${String(item.value)}-${index}`;
-                return (
-                  <Pressable
-                    key={key}
-                    disabled={item.disabled}
-                    onPress={() => toggleOption(item)}
-                    style={{
-                      paddingVertical: 12,
-                      paddingHorizontal: 4,
-                      opacity: item.disabled ? 0.4 : 1,
-                      borderBottomWidth: 1,
-                      borderBottomColor: colors.border,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 10,
-                    }}
-                  >
-                    {item.prefix}
-                    <View style={{ flex: 1 }}>
-                      <Text
-                        variant="open-regular-p"
-                        style={{ color: selected ? optionAccent : colors.fg }}
-                      >
-                        {item.label}
-                      </Text>
-                      {item.description ? (
-                        <Text variant="open-regular-tiny" muted>
-                          {item.description}
-                        </Text>
-                      ) : null}
-                    </View>
-                    {item.suffix}
-                    {selected ? (
-                      <TickCircle size={20} color={optionAccent} variant="Bold" />
-                    ) : null}
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          )}
-
-          {multiple ? (
-            <Button onPress={closeModal} style={{ marginTop: 8 }}>
-              Done
-            </Button>
-          ) : null}
-        </View>
-      </Modal>
+      <Overlay open={open} onClose={closeOverlay}>
+        {optionsPanel}
+      </Overlay>
     </View>
   );
 }

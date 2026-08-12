@@ -21,6 +21,9 @@ export type { ProgressBarProps, ProgressBarSize } from './components/ProgressBar
 export { Modal } from './components/Modal';
 export type { ModalProps } from './components/Modal';
 
+export { Sheet } from './components/Sheet';
+export type { SheetProps } from './components/Sheet';
+
 export { ToastProvider } from './toast/ToastProvider';
 export type { ToastProviderProps } from './toast/ToastProvider';
 

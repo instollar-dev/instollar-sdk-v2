@@ -89,6 +89,9 @@ const [open, setOpen] = useState(false);
 ### `Modal`
 Centered dialog. Props: `open`, `onClose?`, `closeOnBackdrop?` (default true), `children`, plus RN Modal props (except `transparent`).
 
+### `Sheet`
+Lightweight bottom sheet (RN Modal, slide-up). No Gorhom dependency. Props: `open`, `onClose?`, `closeOnBackdrop?`, `children`, `style?`, `contentContainerStyle?`.
+
 ---
 
 ## Typography & actions
@@ -131,7 +134,7 @@ Label + error wrapper. Props: `label?`, `error?`, `children`, `style?`.
 Labeled text field. Props: `label?`, `error?`, `prefix?`, `suffix?`, `type?` (`text`|`password`|`number`|`email`|`tel`|`url`), `secureTextEntry?`, `onChangeText?`, `containerStyle?`, plus TextInput props (omit `onChange`). Number type uses sanitize/format helpers.
 
 ### `PhoneInput`
-Country dial code + national number. Uses searchable `Select` (**modal**) + `Input` `type="tel"`.
+Country dial code + national number. Dial-code picker uses searchable **`Select` with `presentation="sheet"`** + `Input` `type="tel"`.
 
 ```tsx
 const [phone, setPhone] = useState({ countryCode: 'NG', nationalNumber: '' });
@@ -166,9 +169,9 @@ Controlled: `checked`, `onCheckedChange`, `label?`, `description?`, `disabled?`,
 ```
 
 ### `Select`
-Options open in a **Modal** with an optional search field and scrollable list.
+Options open in a **centered `Modal`** by default. Pass **`presentation="sheet"`** for a bottom sheet (recommended for long searchable lists).
 
-Props: `options` (`value`, `label`, `description?`, `prefix?`), `value`, `onValueChange`, `label?`, `placeholder?`, `error?`, `searchable?`, `selectedColor?`, `variant?` (`default`|`inline`), `disabled?`, `optionsLoading?`, etc. Search matches label, description, dial digits, and string value. Helper: `selectOptionsPropsFromQuery(query)`.
+Props: `options`, `value`, `onValueChange`, `label?`, `placeholder?`, `error?`, `searchable?`, `searchPlaceholder?` (default `Search…`), `presentation?` (`modal` | `sheet`, default `modal`), `selectedColor?`, `variant?`, `disabled?`, `optionsLoading?`, etc. Helper: `selectOptionsPropsFromQuery(query)`.
 
 ### `OtpInput` / `VerificationInput` (alias)
 Props: `length?` (default 6), `value?`, `onChangeText?`, `onComplete?`, `error?`, `autoFocus?`, `disabled?`.
@@ -276,7 +279,7 @@ import {
   // success
   SuccessModal, SuccessPanel, SuccessModalIcon,
   // overlays
-  Modal,
+  Modal, Sheet,
   // primitives
   Text, Button, Spinner, ProgressBar, Icon, Card, Avatar, Chip,
   // forms

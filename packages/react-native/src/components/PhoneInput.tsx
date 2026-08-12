@@ -186,6 +186,8 @@ export function PhoneInput({
         <View style={{ width: 128, flexShrink: 0 }}>
           <Select
             searchable
+            presentation="sheet"
+            searchPlaceholder="Search country or code…"
             disabled={disabled}
             options={dialCodeOptions}
             value={country.countryCode}
