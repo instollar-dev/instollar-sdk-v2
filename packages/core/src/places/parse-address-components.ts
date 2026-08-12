@@ -1,3 +1,4 @@
+import { COUNTRIES } from '../core/app/countries/countries';
 import type { AddressComponents, GoogleAddressComponent, PlaceDetailsResult } from './types';
 
 function componentWithType(
@@ -29,14 +30,26 @@ export function parseAddressComponents(
 
   const city = locality || neighborhood;
   const landmark = landmarkType || neighborhood;
+  const countryName = componentText(componentWithType(components, 'country'));
+  const countryShort = componentWithType(components, 'country')?.shortText ?? '';
+  const countryCode =
+    COUNTRIES.find(
+      (c) => c.name === countryName || c.countryCode === countryShort,
+    )?.countryCode ?? countryShort;
+
+  const lga =
+    componentText(componentWithType(components, 'administrative_area_level_2')) ||
+    city ||
+    undefined;
 
   return {
     street: joinNonEmpty([streetNumber, route], ' ') || undefined,
     city: city || undefined,
     state: componentText(componentWithType(components, 'administrative_area_level_1')) || undefined,
-    lga: componentText(componentWithType(components, 'administrative_area_level_2')) || undefined,
+    lga,
     postalCode: componentText(componentWithType(components, 'postal_code')) || undefined,
-    country: componentText(componentWithType(components, 'country')) || undefined,
+    country: countryName || undefined,
+    countryCode: countryCode || undefined,
     landmark: landmark || undefined,
     latitude: details.location?.latitude,
     longitude: details.location?.longitude,

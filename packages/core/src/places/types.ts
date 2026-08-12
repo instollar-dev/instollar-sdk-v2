@@ -5,6 +5,8 @@ export interface AddressComponents {
   lga?: string;
   postalCode?: string;
   country?: string;
+  /** ISO 3166-1 alpha-2 when resolved from the country component. */
+  countryCode?: string;
   landmark?: string;
   latitude?: number;
   longitude?: number;

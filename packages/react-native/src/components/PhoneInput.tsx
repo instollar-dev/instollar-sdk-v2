@@ -174,6 +174,8 @@ export function PhoneInput({
     });
   }
 
+  const invalid = Boolean(error);
+
   return (
     <View style={style}>
       {label ? (
@@ -188,6 +190,7 @@ export function PhoneInput({
             presentation="sheet"
             searchPlaceholder="Search country or code…"
             disabled={disabled}
+            invalid={invalid}
             options={dialCodeOptions}
             value={country.countryCode}
             prefix={<CountryFlag code={country.countryCode} />}
@@ -200,6 +203,7 @@ export function PhoneInput({
           <Input
             type="tel"
             editable={!disabled}
+            invalid={invalid}
             placeholder={placeholder}
             value={displayNational}
             onChangeText={handleNumberChange}

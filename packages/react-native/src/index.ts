@@ -18,6 +18,12 @@ export type { SpinnerProps } from './components/Spinner';
 export { ProgressBar } from './components/ProgressBar';
 export type { ProgressBarProps, ProgressBarSize } from './components/ProgressBar';
 
+export { Stepper } from './components/Stepper';
+export type { StepperProps } from './components/Stepper';
+
+export { StepperLayout } from './components/StepperLayout';
+export type { StepperLayoutProps } from './components/StepperLayout';
+
 export { Modal } from './components/Modal';
 export type { ModalProps } from './components/Modal';
 
@@ -32,6 +38,9 @@ export type { FieldControlProps } from './components/FieldControl';
 
 export { Input } from './components/Input';
 export type { InputProps } from './components/Input';
+
+export { AddressAutocomplete } from './components/AddressAutocomplete';
+export type { AddressAutocompleteProps } from './components/AddressAutocomplete';
 
 export { PhoneInput } from './components/PhoneInput';
 export type { PhoneInputProps } from './components/PhoneInput';
@@ -269,4 +278,18 @@ export type {
   ToastOptions,
   ToastType,
   IStorage,
+} from '@instollar-dev/instollar-core';
+
+export {
+  fetchPlaceAutocompleteSuggestions,
+  fetchPlaceDetailsAsAddress,
+  parseAddressComponents,
+  resolveGooglePlacesApiKey,
+  configureGooglePlacesApiKey,
+  getConfiguredGooglePlacesApiKey,
+} from '@instollar-dev/instollar-core';
+export type {
+  AddressComponents,
+  PlaceAutocompleteSuggestion,
+  PlaceDetailsResult,
 } from '@instollar-dev/instollar-core';

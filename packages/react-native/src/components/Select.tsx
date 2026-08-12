@@ -32,6 +32,8 @@ export type SelectOption<T = string> = {
 export type SelectProps<T = string> = {
   label?: string;
   error?: string;
+  /** Error border without rendering error text (e.g. compound fields). */
+  invalid?: boolean;
   optionsError?: boolean;
   optionsLoading?: boolean;
   optionsLoadingLabel?: string;
@@ -96,6 +98,7 @@ function optionMatchesQuery<T>(option: SelectOption<T>, rawQuery: string): boole
 export function Select<T = string>({
   label,
   error,
+  invalid,
   optionsError,
   optionsLoading,
   optionsLoadingLabel = 'Loading options…',
@@ -320,7 +323,7 @@ export function Select<T = string>({
           suffix={
             suffix ?? <Icon icon={ArrowDown2} size="sm" color="muted" />
           }
-          error={Boolean(error)}
+          error={Boolean(error) || Boolean(invalid)}
           disabled={disabled}
           style={{ height: 44 }}
         >

@@ -8,6 +8,7 @@ import { ArrowDown2, ArrowRight2 } from './Icon';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { triggerHapticFeedback } from '../utils/haptics';
+import { fieldErrorStyle } from '../styles/formStyles';
 import {
   useAccordion,
   type AccordionType,
@@ -65,6 +66,7 @@ export type AccordionItemProps = {
   value: string;
   title: string;
   description?: string;
+  error?: string;
   icon?: ReactNode;
   disabled?: boolean;
   children?: ReactNode;
@@ -75,6 +77,7 @@ export function AccordionItem({
   value,
   title,
   description,
+  error,
   icon,
   disabled = false,
   children,
@@ -84,13 +87,14 @@ export function AccordionItem({
   const { isOpen, toggle } = useAccordionContext();
   const open = isOpen(value);
   const Chevron = open ? ArrowDown2 : ArrowRight2;
+  const borderColor = error ? colors.destructive : colors.border;
 
   return (
     <View
       style={[
         {
           borderWidth: 1,
-          borderColor: colors.border,
+          borderColor,
           borderRadius: 12,
           overflow: 'hidden',
           backgroundColor: colors.bg,
@@ -129,11 +133,18 @@ export function AccordionItem({
         </View>
         <Chevron size={18} color={colors.muted} variant="Linear" />
       </Pressable>
+      {error ? (
+        <Text
+          variant="open-regular-tiny"
+          style={[fieldErrorStyle(colors), { marginTop: 0, paddingHorizontal: 16, paddingBottom: 12 }]}>
+          {error}
+        </Text>
+      ) : null}
       {open && children != null ? (
         <View
           style={{
             borderTopWidth: 1,
-            borderTopColor: colors.border,
+            borderTopColor: borderColor,
             padding: 16,
           }}
         >

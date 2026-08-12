@@ -22,6 +22,8 @@ import { triggerHapticFeedback } from '../utils/haptics';
 export type InputProps = Omit<TextInputProps, 'onChange'> & {
   label?: string;
   error?: string;
+  /** Error border without rendering error text (e.g. compound fields). */
+  invalid?: boolean;
   prefix?: ReactNode;
   suffix?: ReactNode;
   /** When set, called with the string value (raw for number type). */
@@ -35,6 +37,7 @@ export type InputProps = Omit<TextInputProps, 'onChange'> & {
 export function Input({
   label,
   error,
+  invalid,
   prefix,
   suffix,
   value,
@@ -103,7 +106,7 @@ export function Input({
       <FieldControl
         prefix={prefix}
         suffix={suffix ?? passwordToggle}
-        error={Boolean(error)}
+        error={Boolean(error) || Boolean(invalid)}
         disabled={!editable}
         style={{ height: 44 }}
       >

@@ -34,7 +34,7 @@ export function fieldControlSurface(
     borderRadius: 8,
     borderColor: opts.error ? colors.destructive : colors.border,
     backgroundColor: colors.bg,
-    opacity: opts.disabled ? 0.5 : 1,
+    opacity: opts.disabled && !opts.error ? 0.5 : 1,
     /** Single-line Input / Select target height (Textarea overrides via style). */
     minHeight: 44,
     paddingHorizontal: 12,
