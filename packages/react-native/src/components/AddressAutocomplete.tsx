@@ -8,13 +8,13 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   View,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Input } from './Input';
 import { Location } from './Icon';
 import { Spinner } from './Spinner';
@@ -62,6 +62,8 @@ export function AddressAutocomplete({
   const abortRef = useRef<AbortController | null>(null);
   const detailsAbortRef = useRef<AbortController | null>(null);
   const selectingRef = useRef(false);
+  /** Skip one autocomplete pass after a place is chosen (avoids refetching the filled address). */
+  const skipNextFetchRef = useRef(false);
 
   const displayError = error ?? apiError;
   const showDropdown = open && focused && suggestions.length > 0 && !disabled;
@@ -73,6 +75,14 @@ export function AddressAutocomplete({
 
   useEffect(() => {
     const trimmed = value.trim();
+
+    if (skipNextFetchRef.current) {
+      skipNextFetchRef.current = false;
+      abortRef.current?.abort();
+      abortRef.current = null;
+      setLoading(false);
+      return;
+    }
 
     if (!trimmed || trimmed.length < MIN_QUERY_LENGTH || !resolvedKey || disabled) {
       abortRef.current?.abort();
@@ -118,11 +128,24 @@ export function AddressAutocomplete({
     [],
   );
 
+  const handleChangeText = useCallback(
+    (text: string) => {
+      // Typing means the field is active again — even if we cleared `focused`
+      // after a previous selection while the native input stayed focused.
+      selectingRef.current = false;
+      skipNextFetchRef.current = false;
+      setFocused(true);
+      onChangeText(text);
+    },
+    [onChangeText],
+  );
+
   const selectSuggestion = useCallback(
     async (suggestion: PlaceAutocompleteSuggestion) => {
       if (!resolvedKey || disabled) return;
 
       selectingRef.current = true;
+      skipNextFetchRef.current = true;
       setOpen(false);
       clearSuggestions();
       setLoading(true);
@@ -156,28 +179,36 @@ export function AddressAutocomplete({
         }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
-        selectingRef.current = false;
+        // Keep the guard briefly so a late Input blur from keyboard dismiss
+        // cannot race and remount/clear mid-select on some devices.
+        setTimeout(() => {
+          selectingRef.current = false;
+        }, 0);
       }
     },
     [resolvedKey, disabled, clearSuggestions, onChangeText, onPlaceSelect],
   );
 
   return (
-    <View style={[styles.root, style]}>
+    <View style={[styles.root, showDropdown ? styles.rootElevated : null, style]}>
       <Input
         label={label}
         placeholder={placeholder}
         value={value}
         editable={!disabled}
-        onChangeText={onChangeText}
+        onChangeText={handleChangeText}
         onFocus={() => {
           setFocused(true);
           if (suggestions.length > 0) setOpen(true);
         }}
         onBlur={() => {
-          if (selectingRef.current) return;
-          setFocused(false);
-          setOpen(false);
+          // Blur fires before suggestion onPress on iOS. Delay close so the
+          // press can mark selectingRef / run selectSuggestion first.
+          setTimeout(() => {
+            if (selectingRef.current) return;
+            setFocused(false);
+            setOpen(false);
+          }, 180);
         }}
         error={displayError}
         suffix={loading ? <Spinner size={16} /> : undefined}
@@ -206,13 +237,19 @@ export function AddressAutocomplete({
             Platform.OS === 'ios' ? styles.dropdownShadowIos : styles.dropdownShadowAndroid,
           ]}>
           <ScrollView
-            keyboardShouldPersistTaps="handled"
+            keyboardShouldPersistTaps="always"
             nestedScrollEnabled
             style={styles.list}>
             {suggestions.map((item, index) => (
-              <Pressable
+              <DismissKeyboardPressable
                 key={item.placeId}
+                // Do not dismiss the keyboard on press-in — that blurs the
+                // input and unmounts this list before onPress can fire.
+                dismissKeyboard={false}
                 accessibilityRole="button"
+                onPressIn={() => {
+                  selectingRef.current = true;
+                }}
                 onPress={() => void selectSuggestion(item)}
                 style={({ pressed }) => [
                   styles.option,
@@ -235,7 +272,7 @@ export function AddressAutocomplete({
                     </Text>
                   ) : null}
                 </View>
-              </Pressable>
+              </DismissKeyboardPressable>
             ))}
           </ScrollView>
         </View>
@@ -247,14 +284,23 @@ export function AddressAutocomplete({
 const styles = StyleSheet.create({
   root: {
     gap: 6,
-    zIndex: 10,
+    zIndex: 1,
+  },
+  rootElevated: {
+    zIndex: 30,
+    elevation: 30,
   },
   dropdown: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: '100%',
     marginTop: 4,
     borderWidth: 1,
     borderRadius: 12,
     maxHeight: 240,
     overflow: 'hidden',
+    zIndex: 40,
   },
   dropdownShadowIos: {
     shadowColor: '#012B15',
@@ -263,7 +309,7 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
   },
   dropdownShadowAndroid: {
-    elevation: 8,
+    elevation: 12,
   },
   list: {
     flexGrow: 0,

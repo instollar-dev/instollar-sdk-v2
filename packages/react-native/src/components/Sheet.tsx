@@ -4,13 +4,13 @@ import {
   Dimensions,
   Easing,
   Modal as RNModal,
-  Pressable,
   StyleSheet,
   View,
   type ModalProps as RNModalProps,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { useThemeColors } from '../theme/ThemeProvider';
 
 const SLIDE_OFFSET = Dimensions.get('window').height;
@@ -81,7 +81,7 @@ export function Sheet({
       {...props}
     >
       <View style={styles.root}>
-        <Pressable
+        <DismissKeyboardPressable
           accessibilityRole="button"
           accessibilityLabel="Close sheet"
           style={styles.backdrop}

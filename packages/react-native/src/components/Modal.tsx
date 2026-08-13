@@ -3,11 +3,11 @@ import {
   Animated,
   Easing,
   Modal as RNModal,
-  Pressable,
   StyleSheet,
   View,
   type ModalProps as RNModalProps,
 } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { useThemeColors } from '../theme/ThemeProvider';
 
 const PANEL_OFFSET = 32;
@@ -91,7 +91,7 @@ export function Modal({
       {...props}
     >
       <View style={styles.root}>
-        <Pressable
+        <DismissKeyboardPressable
           accessibilityRole="button"
           accessibilityLabel="Close dialog"
           style={styles.backdrop}

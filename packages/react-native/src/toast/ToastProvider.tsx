@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 import {
   clearToastHandler,
   setToastHandler,
@@ -45,13 +45,37 @@ export function ToastProvider({ children, topInset }: ToastProviderProps) {
   return (
     <View style={styles.root}>
       {children}
-      {activeToast ? (
-        <ToastBanner toast={activeToast} topInset={resolvedTopInset} onDismiss={handleDismiss} />
-      ) : null}
+      {/*
+        Host toasts in their own transparent Modal so they stack above other
+        Modals (bottom sheets, dialogs). Absolute overlays in the app tree sit
+        under RN Modal windows and get dimmed by sheet backdrops.
+      */}
+      <Modal
+        visible={activeToast != null}
+        transparent
+        animationType="none"
+        statusBarTranslucent
+        presentationStyle="overFullScreen"
+        onRequestClose={() => {
+          if (activeToast) handleDismiss(activeToast.id);
+        }}>
+        <View style={styles.toastLayer} pointerEvents="box-none">
+          {activeToast ? (
+            <ToastBanner
+              toast={activeToast}
+              topInset={resolvedTopInset}
+              onDismiss={handleDismiss}
+            />
+          ) : null}
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+  toastLayer: {
+    flex: 1,
+  },
 });

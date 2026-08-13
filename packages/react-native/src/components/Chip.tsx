@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
+import { type StyleProp, type ViewStyle } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { triggerHapticFeedback } from '../utils/haptics';
@@ -26,7 +27,7 @@ export function Chip({
   const colors = useThemeColors();
 
   return (
-    <Pressable
+    <DismissKeyboardPressable
       accessibilityRole="button"
       accessibilityState={{ selected, disabled }}
       disabled={disabled}
@@ -62,6 +63,6 @@ export function Chip({
         children
       )}
       {suffix}
-    </Pressable>
+    </DismissKeyboardPressable>
   );
 }

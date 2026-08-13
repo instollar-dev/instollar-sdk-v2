@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import type { TabsRouterAdapter } from './Tabs';
@@ -71,7 +72,7 @@ export function Segments({
       {options.map((option) => {
         const selected = option.value === current;
         return (
-          <Pressable
+          <DismissKeyboardPressable
             key={option.value}
             accessibilityRole="radio"
             accessibilityState={{ selected, disabled: option.disabled }}
@@ -97,7 +98,7 @@ export function Segments({
             >
               {option.label}
             </Text>
-          </Pressable>
+          </DismissKeyboardPressable>
         );
       })}
     </View>

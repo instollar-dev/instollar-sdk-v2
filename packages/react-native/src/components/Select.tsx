@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import {
-  Pressable,
   ScrollView,
   TextInput,
   View,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Button } from './Button';
 import { FieldControl } from './FieldControl';
 import { Icon, ArrowDown2, CloseCircle, TickCircle } from './Icon';
@@ -64,7 +64,10 @@ export type SelectProps<T = string> = {
    * (independent of `selectedColor`).
    */
   triggerSelectedColor?: string;
-  /** How options open. Default: `modal`. Use `sheet` for long searchable lists. */
+  /**
+   * How options open. Default: `sheet` (mobile-friendly).
+   * Use `modal` for a centered dialog when needed.
+   */
   presentation?: 'modal' | 'sheet';
   /** Search field placeholder when `searchable`. Default: `Search…`. */
   searchPlaceholder?: string;
@@ -120,7 +123,7 @@ export function Select<T = string>({
   style,
   selectedColor,
   triggerSelectedColor,
-  presentation = 'modal',
+  presentation = 'sheet',
   searchPlaceholder = 'Search…',
 }: SelectProps<T>) {
   const colors = useThemeColors();
@@ -194,7 +197,7 @@ export function Select<T = string>({
         <Text variant="spline-bold-h5" style={{ flex: 1, color: colors.fg }}>
           {label ?? 'Select'}
         </Text>
-        <Pressable
+        <DismissKeyboardPressable
           accessibilityRole="button"
           accessibilityLabel="Close"
           hitSlop={8}
@@ -204,7 +207,7 @@ export function Select<T = string>({
           }}
         >
           <CloseCircle size={22} color={colors.muted} variant="Linear" />
-        </Pressable>
+        </DismissKeyboardPressable>
       </View>
 
       {searchable ? (
@@ -257,7 +260,7 @@ export function Select<T = string>({
             const key =
               getOptionKey?.(item) ?? `${String(item.value)}-${index}`;
             return (
-              <Pressable
+              <DismissKeyboardPressable
                 key={key}
                 disabled={item.disabled}
                 onPress={() => toggleOption(item)}
@@ -290,7 +293,7 @@ export function Select<T = string>({
                 {selected ? (
                   <TickCircle size={20} color={optionAccent} variant="Bold" />
                 ) : null}
-              </Pressable>
+              </DismissKeyboardPressable>
             );
           })}
         </ScrollView>
@@ -313,7 +316,7 @@ export function Select<T = string>({
           {label}
         </Text>
       ) : null}
-      <Pressable
+      <DismissKeyboardPressable
         disabled={disabled}
         onPressIn={() => {
           if (!disabled) triggerHapticFeedback('light');
@@ -336,7 +339,7 @@ export function Select<T = string>({
             {triggerLabel}
           </Text>
         </FieldControl>
-      </Pressable>
+      </DismissKeyboardPressable>
       {error ? (
         <Text variant="open-regular-tiny" style={fieldErrorStyle(colors)}>
           {error}

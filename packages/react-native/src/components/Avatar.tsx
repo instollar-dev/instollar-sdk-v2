@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import {
   Image,
-  Pressable,
   View,
   type ImageProps,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { triggerHapticFeedback } from '../utils/haptics';
@@ -88,13 +88,13 @@ export function Avatar({
 
   if (onClick) {
     return (
-      <Pressable
+      <DismissKeyboardPressable
         accessibilityRole="button"
         onPressIn={() => triggerHapticFeedback('light')}
         onPress={onClick}
       >
         {content}
-      </Pressable>
+      </DismissKeyboardPressable>
     );
   }
   return content;

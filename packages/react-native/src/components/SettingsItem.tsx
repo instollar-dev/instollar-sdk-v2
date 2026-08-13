@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { ArrowDown2, ArrowRight2 } from './Icon';
 import { useThemeColors } from '../theme/ThemeProvider';
@@ -40,7 +41,7 @@ export function SettingsItem({
         style,
       ]}
     >
-      <Pressable
+      <DismissKeyboardPressable
         accessibilityRole="button"
         accessibilityState={{ expanded: isOpen }}
         onPressIn={() => triggerHapticFeedback('light')}
@@ -60,7 +61,7 @@ export function SettingsItem({
           </Text>
         </View>
         <Chevron size={18} color={colors.muted} variant="Linear" />
-      </Pressable>
+      </DismissKeyboardPressable>
       {isOpen && children != null ? (
         <View
           style={{

@@ -5,7 +5,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import Animated, {
   Easing,
   interpolate,
@@ -97,7 +98,7 @@ export function AccordionItem({
   const expanded = isOpen(value);
   const [contentHeight, setContentHeight] = useState(0);
   const open = useSharedValue(expanded ? 1 : 0);
-  const borderColor = error ? colors.destructive : colors.border;
+  const borderColor = error ? colors.error : colors.border;
 
   useEffect(() => {
     open.value = withTiming(expanded ? 1 : 0, {
@@ -127,7 +128,7 @@ export function AccordionItem({
         },
         style,
       ]}>
-      <Pressable
+      <DismissKeyboardPressable
         accessibilityRole="button"
         accessibilityState={{ expanded, disabled }}
         disabled={disabled}
@@ -146,12 +147,12 @@ export function AccordionItem({
         <Animated.View style={chevronStyle}>
           <ArrowDown2 size={16} color={colors.muted} variant="Linear" />
         </Animated.View>
-      </Pressable>
+      </DismissKeyboardPressable>
 
       {error ? (
         <Text
           variant="open-regular-tiny"
-          style={[styles.error, { color: colors.destructive }]}>
+          style={[styles.error, { color: colors.error }]}>
           {error}
         </Text>
       ) : null}

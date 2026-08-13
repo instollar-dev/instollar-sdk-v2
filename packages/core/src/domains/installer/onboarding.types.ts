@@ -58,6 +58,11 @@ export interface InstallerOnboardingUpdatePayload {
   latitude?: number | null;
   longitude?: number | null;
   currency?: string;
+  /** New-installer work experience (optional until backend always returns them). */
+  occupation?: string;
+  otherOccupation?: string;
+  skills?: string[];
+  motivation?: string;
 }
 
 /** Minimal form shape used by step payload builders (apps may extend). */
@@ -91,4 +96,8 @@ export interface InstallerOnboardingFormInput {
   brandOther?: string;
   projectType?: string[];
   projectTypes?: string[];
+  occupation?: string;
+  otherOccupation?: string;
+  skills?: string[];
+  motivation?: string;
 }

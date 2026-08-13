@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
-  Pressable,
   ScrollView,
   View,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { triggerHapticFeedback } from '../utils/haptics';
@@ -103,7 +103,7 @@ export function Tabs({
           {tabs.map((tab) => {
             const selected = tab.value === current;
             return (
-              <Pressable
+              <DismissKeyboardPressable
                 key={tab.value}
                 onPress={() => select(tab.value, tab.path)}
                 style={{
@@ -120,7 +120,7 @@ export function Tabs({
                 >
                   {tab.label}
                 </Text>
-              </Pressable>
+              </DismissKeyboardPressable>
             );
           })}
         </ScrollView>

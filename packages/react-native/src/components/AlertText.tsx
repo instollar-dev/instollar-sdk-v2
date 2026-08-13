@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { CloseCircle } from './Icon';
 import { useThemeColors } from '../theme/ThemeProvider';
@@ -59,7 +60,7 @@ export function AlertText({
         {children}
       </Text>
       {dismissible ? (
-        <Pressable
+        <DismissKeyboardPressable
           accessibilityRole="button"
           accessibilityLabel="Dismiss"
           onPress={() => {
@@ -69,7 +70,7 @@ export function AlertText({
           }}
         >
           <CloseCircle size={14} color={colors.muted} variant="Linear" />
-        </Pressable>
+        </DismissKeyboardPressable>
       ) : null}
     </View>
   );

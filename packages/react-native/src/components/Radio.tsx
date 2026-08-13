@@ -5,7 +5,8 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { fieldDescriptionStyle, fieldErrorStyle, fieldLabelStyle } from '../styles/formStyles';
@@ -98,7 +99,7 @@ export function Radio({ value, label, description, disabled, style }: RadioProps
   const selected = ctx.value === value;
 
   return (
-    <Pressable
+    <DismissKeyboardPressable
       accessibilityRole="radio"
       accessibilityState={{ selected, disabled: isDisabled }}
       disabled={isDisabled}
@@ -143,6 +144,6 @@ export function Radio({ value, label, description, disabled, style }: RadioProps
           </Text>
         ) : null}
       </View>
-    </Pressable>
+    </DismissKeyboardPressable>
   );
 }

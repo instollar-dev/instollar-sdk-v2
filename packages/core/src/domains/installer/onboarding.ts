@@ -137,6 +137,11 @@ export function profileToInstallerOnboardingFormData(
       ? Number(profile.longitude)
       : null;
 
+  const brandUsed = [...(profile.brandUsed ?? [])];
+  const skills = Array.isArray(profile.skills)
+    ? profile.skills.filter((item): item is string => typeof item === 'string')
+    : [];
+
   return {
     gender: profile.gender ?? '',
     dob: profile.dob ? String(profile.dob).slice(0, 10) : '',
@@ -155,8 +160,8 @@ export function profileToInstallerOnboardingFormData(
     minCapKva: profile.minCapKva ?? '',
     maxCapKva: profile.maxCapKva ?? '',
     yoe: profile.yoe != null ? String(profile.yoe) : '',
-    brandUsed: [...(profile.brandUsed ?? [])],
-    brands: [...(profile.brandUsed ?? [])],
+    brandUsed,
+    brands: brandUsed,
     projectType: [...(profile.projectType ?? [])],
     projectTypes: (profile.projectType ?? []).filter((type) => type !== 'SOLAR'),
     cvUrl: [...(profile.cvUrl ?? [])],
@@ -167,6 +172,11 @@ export function profileToInstallerOnboardingFormData(
     maxCapacity: profile.maxCapKva != null ? String(profile.maxCapKva) : '',
     experienceYears: profile.yoe != null ? String(profile.yoe) : '',
     brandOther: '',
+    occupation: typeof profile.occupation === 'string' ? profile.occupation : '',
+    otherOccupation:
+      typeof profile.otherOccupation === 'string' ? profile.otherOccupation : '',
+    skills,
+    motivation: typeof profile.motivation === 'string' ? profile.motivation : '',
   };
 }
 
@@ -297,6 +307,10 @@ export function buildWorkExperienceStepPayload(
     brandUsed: [],
     projectType: [],
     eduQualUrl: formData.eduQualUrl || formData.education,
+    occupation: formData.occupation || undefined,
+    otherOccupation: formData.otherOccupation || undefined,
+    skills: formData.skills?.length ? formData.skills : undefined,
+    motivation: formData.motivation || undefined,
   };
 }
 

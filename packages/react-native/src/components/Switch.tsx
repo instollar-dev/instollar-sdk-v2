@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { fieldDescriptionStyle, fieldErrorStyle } from '../styles/formStyles';
@@ -41,7 +42,7 @@ export function Switch({
 
   return (
     <View style={[{ gap: 4 }, style]}>
-      <Pressable
+      <DismissKeyboardPressable
         accessibilityRole="switch"
         accessibilityState={{ checked: isChecked, disabled }}
         disabled={disabled}
@@ -82,7 +83,7 @@ export function Switch({
             </Text>
           ) : null}
         </View>
-      </Pressable>
+      </DismissKeyboardPressable>
       {error ? (
         <Text variant="open-regular-tiny" style={fieldErrorStyle(colors)}>
           {error}

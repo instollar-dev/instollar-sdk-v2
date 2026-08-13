@@ -26,6 +26,7 @@ export type StepperLayoutProps = {
   hideFooter?: boolean;
   style?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
+  footerStyle?: StyleProp<ViewStyle>;
 };
 
 export function StepperLayout({
@@ -43,6 +44,7 @@ export function StepperLayout({
   hideFooter = false,
   style,
   contentStyle,
+  footerStyle,
 }: StepperLayoutProps) {
   const colors = useThemeColors();
 
@@ -62,13 +64,14 @@ export function StepperLayout({
             style={[
               styles.footer,
               { borderTopColor: colors.border, backgroundColor: colors.bg },
+              footerStyle,
             ]}>
             <View style={styles.footerInner}>
               {hidePrevious ? (
                 <View style={styles.footerSpacer} />
               ) : (
                 <Button
-                  variant="secondary"
+                  variant="ghost"
                   style={styles.footerBtn}
                   disabled={previousDisabled}
                   onPress={onPrevious}>
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 12,
     paddingBottom: 8,
   },
@@ -114,7 +117,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 12,
   },
   footerBtn: {

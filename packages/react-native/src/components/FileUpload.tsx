@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Image,
   Linking,
-  Pressable,
   View,
 } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import {
   DEFAULT_FILE_UPLOAD_STRINGS,
   type FileUploadProps,
@@ -396,7 +396,7 @@ export function FileUpload({
   const displayError = errorProp || localError;
 
   const sourceOption = (title: string, onPress: () => void | Promise<void>) => (
-    <Pressable
+    <DismissKeyboardPressable
       key={title}
       accessibilityRole="button"
       disabled={isPicking}
@@ -414,7 +414,7 @@ export function FileUpload({
       <Text variant="open-regular-p" style={{ color: colors.fg }}>
         {title}
       </Text>
-    </Pressable>
+    </DismissKeyboardPressable>
   );
 
   const renderListRow = (item: DisplayItem, idx: number) => {
@@ -462,9 +462,9 @@ export function FileUpload({
           <Spinner size={20} />
         ) : null}
         {showUploadedIcon ? (
-          <Icon icon={TickCircle} size="sm" color="brand" variant="Bold" />
+          <TickCircle size={16} color={actionAccent} variant="Bold" />
         ) : null}
-        <Pressable
+        <DismissKeyboardPressable
           accessibilityRole="button"
           accessibilityLabel={strings.preview}
           hitSlop={8}
@@ -472,8 +472,8 @@ export function FileUpload({
           disabled={isUploading}
         >
           <Icon icon={Eye} size="sm" color="muted" />
-        </Pressable>
-        <Pressable
+        </DismissKeyboardPressable>
+        <DismissKeyboardPressable
           accessibilityRole="button"
           onPress={() => removeItem(item.source, item.index)}
           disabled={isUploading}
@@ -481,7 +481,7 @@ export function FileUpload({
           <Text variant="open-regular-tiny" style={{ color: colors.destructive, fontWeight: '600' }}>
             {strings.remove}
           </Text>
-        </Pressable>
+        </DismissKeyboardPressable>
       </View>
     );
   };
@@ -493,7 +493,7 @@ export function FileUpload({
     const showUploadedIcon = !isSelected || Boolean(uploadedLabels[item.index]);
 
     return (
-      <Pressable
+      <DismissKeyboardPressable
         key={item.key}
         accessibilityRole="button"
         accessibilityLabel={`${strings.preview} ${item.name}`}
@@ -538,10 +538,10 @@ export function FileUpload({
         ) : null}
         {showUploadedIcon ? (
           <View style={{ position: 'absolute', top: 8, left: 8 }}>
-            <Icon icon={TickCircle} size="xs" color="brand" variant="Bold" />
+            <TickCircle size={13} color={actionAccent} variant="Bold" />
           </View>
         ) : null}
-        <Pressable
+        <DismissKeyboardPressable
           accessibilityRole="button"
           onPress={(e) => {
             e.stopPropagation?.();
@@ -552,8 +552,8 @@ export function FileUpload({
           <Text variant="open-regular-tiny" style={{ color: colors.destructive, fontWeight: '700' }}>
             {strings.remove}
           </Text>
-        </Pressable>
-      </Pressable>
+        </DismissKeyboardPressable>
+      </DismissKeyboardPressable>
     );
   };
 
@@ -566,7 +566,7 @@ export function FileUpload({
       ) : null}
 
       {!hasFile ? (
-        <Pressable
+        <DismissKeyboardPressable
           accessibilityRole="button"
           onPress={openSourcePicker}
           disabled={isUploading || isPicking}
@@ -607,7 +607,7 @@ export function FileUpload({
               {isUploading ? strings.browseUploading : strings.browse}
             </Text>
           </View>
-        </Pressable>
+        </DismissKeyboardPressable>
       ) : (
         <View
           style={{
@@ -623,12 +623,12 @@ export function FileUpload({
             <Text variant="open-regular-label" style={{ color: colors.muted, fontWeight: '500' }}>
               {strings.files}
             </Text>
-            <Pressable accessibilityRole="button" onPress={removeFile} disabled={isUploading}>
+            <DismissKeyboardPressable accessibilityRole="button" onPress={removeFile} disabled={isUploading}>
               <Text variant="open-regular-tiny" style={{ color: colors.destructive, fontWeight: '600' }}>
                 {strings.clear}
                 {selectedFiles.length > 1 ? ` ${strings.all}` : ''}
               </Text>
-            </Pressable>
+            </DismissKeyboardPressable>
           </View>
 
           {showAssetPreviewGrid ? (
@@ -644,11 +644,11 @@ export function FileUpload({
           )}
 
           {multiple ? (
-            <Pressable accessibilityRole="button" onPress={openSourcePicker} disabled={isUploading || isPicking}>
+            <DismissKeyboardPressable accessibilityRole="button" onPress={openSourcePicker} disabled={isUploading || isPicking}>
               <Text variant="open-regular-tiny" style={{ color: actionAccent, fontWeight: '600' }}>
                 {strings.addMore}
               </Text>
-            </Pressable>
+            </DismissKeyboardPressable>
           ) : null}
         </View>
       )}
@@ -659,7 +659,7 @@ export function FileUpload({
             {displayError}
           </Text>
           {selectedFiles.length > 0 && autoUpload ? (
-            <Pressable
+            <DismissKeyboardPressable
               accessibilityRole="button"
               onPress={() => {
                 setLocalError(null);
@@ -670,7 +670,7 @@ export function FileUpload({
               <Text variant="open-regular-tiny" style={{ color: colors.brand, fontWeight: '500' }}>
                 {strings.retry}
               </Text>
-            </Pressable>
+            </DismissKeyboardPressable>
           ) : null}
         </View>
       ) : null}

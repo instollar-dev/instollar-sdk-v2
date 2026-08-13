@@ -1,12 +1,12 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import {
-  Pressable,
   TextInput,
   View,
   type StyleProp,
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { FieldControl } from './FieldControl';
 import { Icon, Eye, EyeSlash } from './Icon';
@@ -89,10 +89,11 @@ export function Input({
   };
 
   const passwordToggle = isPassword ? (
-    <Pressable
+    <DismissKeyboardPressable
       accessibilityRole="button"
       accessibilityLabel={visible ? 'Hide password' : 'Show password'}
       disabled={!isEditable}
+      dismissKeyboard={false}
       onPress={() => {
         triggerHapticFeedback('selection');
         setVisible((v) => !v);
@@ -100,7 +101,7 @@ export function Input({
       hitSlop={8}
     >
       <Icon icon={visible ? EyeSlash : Eye} size="sm" color="muted" />
-    </Pressable>
+    </DismissKeyboardPressable>
   ) : null;
 
   const control = (
@@ -146,9 +147,9 @@ export function Input({
 
   if (readOnly && onPress) {
     return (
-      <Pressable accessibilityRole="button" onPress={onPress} style={containerStyle}>
+      <DismissKeyboardPressable accessibilityRole="button" onPress={onPress} style={containerStyle}>
         {body}
-      </Pressable>
+      </DismissKeyboardPressable>
     );
   }
 

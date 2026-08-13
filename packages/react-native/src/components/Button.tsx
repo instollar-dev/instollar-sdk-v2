@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import {
   ActivityIndicator,
-  Pressable,
   StyleSheet,
   View,
   type PressableProps,
@@ -9,6 +8,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { Text } from './Text';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { useResolvedScheme, useThemeColors } from '../theme/ThemeProvider';
 import { triggerHapticFeedback } from '../utils/haptics';
 
@@ -27,6 +27,8 @@ export type ButtonProps = Omit<PressableProps, 'children'> & {
   tone?: ButtonTone;
   size?: ButtonSize;
   loading?: boolean;
+  /** Dismiss the keyboard when pressed. Default: `true`. */
+  dismissKeyboard?: boolean;
   prefix?: ReactNode;
   suffix?: ReactNode;
   children?: ReactNode;
@@ -38,6 +40,7 @@ export function Button({
   tone = 'default',
   size = 'default',
   loading = false,
+  dismissKeyboard = true,
   disabled,
   prefix,
   suffix,
@@ -81,9 +84,10 @@ export function Button({
   }
 
   return (
-    <Pressable
+    <DismissKeyboardPressable
       accessibilityRole="button"
       disabled={isDisabled}
+      dismissKeyboard={dismissKeyboard}
       onPressIn={(event) => {
         if (!isDisabled) triggerHapticFeedback('light');
         onPressIn?.(event);
@@ -123,7 +127,7 @@ export function Button({
           {suffix}
         </View>
       )}
-    </Pressable>
+    </DismissKeyboardPressable>
   );
 }
 

@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
-import { useThemeColors } from '../theme/ThemeProvider';
+import { useResolvedScheme, useThemeColors } from '../theme/ThemeProvider';
 import { fieldDescriptionStyle, fieldErrorStyle } from '../styles/formStyles';
 import { triggerHapticFeedback } from '../utils/haptics';
 
@@ -27,6 +28,9 @@ export function Checkbox({
   style,
 }: CheckboxProps) {
   const colors = useThemeColors();
+  const scheme = useResolvedScheme();
+  // Amber in dark, brand green in light — same accent pattern as Select.
+  const accent = scheme === 'dark' ? colors.destructive : colors.brand;
   const controlled = checked !== undefined;
   const [internal, setInternal] = useState(defaultChecked);
   const isChecked = controlled ? Boolean(checked) : internal;
@@ -41,28 +45,33 @@ export function Checkbox({
 
   return (
     <View style={[{ gap: 4 }, style]}>
-      <Pressable
+      <DismissKeyboardPressable
         accessibilityRole="checkbox"
         accessibilityState={{ checked: isChecked, disabled }}
         disabled={disabled}
         onPress={toggle}
-        style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, opacity: disabled ? 0.5 : 1 }}
-      >
+        style={{
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          gap: 10,
+          opacity: disabled ? 0.5 : 1,
+        }}>
         <View
           style={{
             width: 20,
             height: 20,
             borderRadius: 4,
             borderWidth: 1.5,
-            borderColor: error ? colors.error : isChecked ? colors.brand : colors.border,
-            backgroundColor: isChecked ? colors.brand : 'transparent',
+            borderColor: error ? colors.error : isChecked ? accent : colors.border,
+            backgroundColor: isChecked ? accent : 'transparent',
             alignItems: 'center',
             justifyContent: 'center',
             marginTop: 2,
-          }}
-        >
+          }}>
           {isChecked ? (
-            <Text variant="open-regular-tiny" style={{ color: colors.white, fontWeight: '700' }}>
+            <Text
+              variant="open-regular-tiny"
+              style={{ color: colors.white, fontWeight: '700' }}>
               ✓
             </Text>
           ) : null}
@@ -81,7 +90,7 @@ export function Checkbox({
             </Text>
           ) : null}
         </View>
-      </Pressable>
+      </DismissKeyboardPressable>
       {error ? (
         <Text variant="open-regular-tiny" style={fieldErrorStyle(colors)}>
           {error}

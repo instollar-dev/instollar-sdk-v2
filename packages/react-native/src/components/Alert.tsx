@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
+import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
 import { CloseCircle, InfoCircle, TickCircle, Warning2 } from './Icon';
 import { useThemeColors } from '../theme/ThemeProvider';
@@ -62,9 +63,9 @@ export function Alert({
         ) : null}
       </View>
       {onDismiss ? (
-        <Pressable accessibilityRole="button" accessibilityLabel="Dismiss" onPress={onDismiss}>
+        <DismissKeyboardPressable accessibilityRole="button" accessibilityLabel="Dismiss" onPress={onDismiss}>
           <CloseCircle size={16} color={colors.muted} variant="Linear" />
-        </Pressable>
+        </DismissKeyboardPressable>
       ) : null}
     </View>
   );

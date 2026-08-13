@@ -30,6 +30,10 @@ export interface InstallerProfileRecordModel {
   projectType?: string[] | null;
   latitude?: number | string | null;
   longitude?: number | string | null;
+  occupation?: string | null;
+  otherOccupation?: string | null;
+  skills?: string[] | null;
+  motivation?: string | null;
   [key: string]: unknown;
 }
 

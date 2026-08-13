@@ -12,6 +12,10 @@ export type {
   ButtonSize,
 } from './components/Button';
 
+export { DismissKeyboardPressable } from './components/DismissKeyboardPressable';
+export type { DismissKeyboardPressableProps } from './components/DismissKeyboardPressable';
+export { dismissKeyboard } from './utils/keyboard';
+
 export { Spinner } from './components/Spinner';
 export type { SpinnerProps } from './components/Spinner';
 
