@@ -1,9 +1,9 @@
 import { Children, Fragment, type ReactNode } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
-import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { ArrowRight2 } from './Icon';
+import { RipplePressable } from './RipplePressable';
 import { Text } from './Text';
-import { useThemeColors } from '../theme/ThemeProvider';
+import { useResolvedScheme, useThemeColors } from '../theme/ThemeProvider';
 import { triggerHapticFeedback } from '../utils/haptics';
 
 export type TileProps = {
@@ -32,9 +32,16 @@ export function Tile({
   style,
 }: TileProps) {
   const colors = useThemeColors();
+  const scheme = useResolvedScheme();
   const tint = destructive ? colors.danger : colors.fg;
   const mutedTint = destructive ? colors.danger : colors.muted;
   const isPressable = Boolean(onPress) && !disabled;
+
+  const rippleColor = destructive
+    ? `${colors.danger}40`
+    : scheme === 'dark'
+      ? 'rgba(255, 255, 255, 0.18)'
+      : 'rgba(1, 43, 21, 0.12)';
 
   const resolvedTrailing =
     trailing !== undefined ? (
@@ -44,23 +51,12 @@ export function Tile({
     ) : null;
 
   const content = (
-    <View
-      style={[
-        {
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 12,
-          paddingHorizontal: 16,
-          paddingVertical: 14,
-          opacity: disabled ? 0.5 : 1,
-        },
-        style,
-      ]}>
-      {leading ? <View style={{ justifyContent: 'center' }}>{leading}</View> : null}
-      <View style={{ flex: 1, gap: 2, minWidth: 0 }}>
+    <>
+      {leading ? <View style={styles.leading}>{leading}</View> : null}
+      <View style={styles.body}>
         {title != null ? (
           typeof title === 'string' ? (
-            <Text variant="open-bold-p" style={{ color: tint }} numberOfLines={1}>
+            <Text variant="open-regular-p" style={{ color: tint }} numberOfLines={1}>
               {title}
             </Text>
           ) : (
@@ -78,24 +74,30 @@ export function Tile({
         ) : null}
       </View>
       {resolvedTrailing}
-    </View>
+    </>
   );
 
   if (!isPressable) {
-    return content;
+    return (
+      <View style={[styles.row, { opacity: disabled ? 0.5 : 1 }, style]}>
+        {content}
+      </View>
+    );
   }
 
   return (
-    <DismissKeyboardPressable
+    <RipplePressable
       accessibilityRole="button"
       accessibilityState={{ disabled }}
       disabled={disabled}
+      rippleColor={rippleColor}
       onPressIn={() => {
         if (haptic) triggerHapticFeedback('selection');
       }}
-      onPress={onPress}>
+      onPress={onPress}
+      style={[styles.row, style]}>
       {content}
-    </DismissKeyboardPressable>
+    </RipplePressable>
   );
 }
 
@@ -138,3 +140,21 @@ export function TileGroup({ children, style }: TileGroupProps) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  leading: {
+    justifyContent: 'center',
+  },
+  body: {
+    flex: 1,
+    gap: 2,
+    minWidth: 0,
+  },
+});

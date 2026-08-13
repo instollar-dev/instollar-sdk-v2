@@ -14,6 +14,8 @@ export type {
 
 export { DismissKeyboardPressable } from './components/DismissKeyboardPressable';
 export type { DismissKeyboardPressableProps } from './components/DismissKeyboardPressable';
+export { RipplePressable } from './components/RipplePressable';
+export type { RipplePressableProps } from './components/RipplePressable';
 export { dismissKeyboard } from './utils/keyboard';
 
 export { Spinner } from './components/Spinner';
@@ -223,6 +225,20 @@ export type { SuccessPanelProps } from './components/SuccessPanel';
 export { SuccessModal } from './components/SuccessModal';
 export type { SuccessModalProps } from './components/SuccessModal';
 
+export {
+  ConfirmPanel,
+  ConfirmWarningIcon,
+  ConfirmDangerIcon,
+  ConfirmLogoutIcon,
+} from './components/ConfirmPanel';
+export type { ConfirmPanelProps } from './components/ConfirmPanel';
+
+export { ConfirmSheet } from './components/ConfirmSheet';
+export type { ConfirmSheetProps } from './components/ConfirmSheet';
+
+export { ConfirmProvider, useConfirm } from './confirm/ConfirmProvider';
+export { confirm, setConfirmHandler, clearConfirmHandler } from '@instollar-dev/instollar-core';
+
 export { FileUpload } from './components/FileUpload';
 export type {
   FileUploadProps,
@@ -297,6 +313,9 @@ export type {
   InitInstollarSDKOptions,
   ToastOptions,
   ToastType,
+  ConfirmOptions,
+  ConfirmVariant,
+  ConfirmIconPreset,
   IStorage,
 } from '@instollar-dev/instollar-core';
 

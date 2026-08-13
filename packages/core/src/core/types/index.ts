@@ -86,6 +86,20 @@ export interface ApiError {
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning' | 'default' | 'message';
 
+export type ConfirmVariant = 'default' | 'danger' | 'warning';
+
+export type ConfirmIconPreset = 'warning' | 'danger' | 'logout' | 'none';
+
+export interface ConfirmOptions {
+  title: string;
+  description?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  variant?: ConfirmVariant;
+  icon?: ConfirmIconPreset;
+  dismissible?: boolean;
+}
+
 export interface ToastOptions {
   message?: string;
   title?: string;
