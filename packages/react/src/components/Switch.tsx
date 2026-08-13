@@ -13,6 +13,8 @@ export interface SwitchProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   label?: ReactNode;
   description?: string;
   error?: string;
+  /** Shows a spinner in place of the track and blocks interaction (like Button.loading). */
+  loading?: boolean;
 }
 
 export function Switch({
@@ -25,6 +27,7 @@ export function Switch({
   className,
   id,
   disabled,
+  loading = false,
   onClick,
   ...props
 }: SwitchProps) {
@@ -32,10 +35,11 @@ export function Switch({
     id ?? (typeof label === 'string' ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
   const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
   const isChecked = checked ?? internalChecked;
+  const isDisabled = Boolean(disabled || loading);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onClick?.(event);
-    if (event.defaultPrevented || disabled) return;
+    if (event.defaultPrevented || isDisabled) return;
     const next = !isChecked;
     if (checked === undefined) {
       setInternalChecked(next);
@@ -46,6 +50,16 @@ export function Switch({
   return (
     <div className={cn('flex flex-col gap-1', className)}>
       <div className="inline-flex items-start gap-2.5">
+        {loading ? (
+          <span
+            role="status"
+            aria-busy="true"
+            aria-label={typeof label === 'string' ? label : 'Loading'}
+            className="mt-0.5 inline-flex h-5 w-9 shrink-0 items-center justify-center"
+          >
+            <span className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          </span>
+        ) : (
         <button
           type="button"
           role="switch"
@@ -59,7 +73,7 @@ export function Switch({
                 ? `${switchId}-desc`
                 : undefined
           }
-          disabled={disabled}
+          disabled={isDisabled}
           onClick={handleClick}
           className={cn(
             'relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full border-2 transition-colors duration-200 outline-none',
@@ -78,12 +92,13 @@ export function Switch({
             )}
           />
         </button>
+        )}
         {(label || description) && (
           <label
             htmlFor={switchId}
             className={cn(
               'flex min-w-0 flex-col gap-0.5',
-              disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+              disabled || loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
             )}
           >
             {label ? <span className={cn(formFieldLabelClass, 'font-medium')}>{label}</span> : null}

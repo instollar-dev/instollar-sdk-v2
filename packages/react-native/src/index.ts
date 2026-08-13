@@ -126,7 +126,10 @@ export {
   Gps,
   Gallery,
   Image,
+  Camera,
+  Star1,
   DocumentText,
+  ClipboardText,
   Folder2,
   Bag2,
   Box1,
@@ -139,6 +142,13 @@ export {
   Element3,
   TextalignLeft,
   Menu,
+  MessageQuestion,
+  MessageText,
+  VideoPlay,
+  Translate,
+  Global,
+  Headphone,
+  MedalStar,
   Sun,
   Sun1,
   Moon,
@@ -147,6 +157,9 @@ export type { IconProps, IconSize, IconColor } from './components/Icon';
 
 export { Card } from './components/Card';
 export type { CardProps, CardVariant } from './components/Card';
+
+export { Tile, TileGroup } from './components/Tile';
+export type { TileProps, TileGroupProps } from './components/Tile';
 
 export { Avatar, getAvatarInitials } from './components/Avatar';
 export type { AvatarProps, AvatarSize } from './components/Avatar';

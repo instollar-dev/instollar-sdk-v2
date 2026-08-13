@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { DismissKeyboardPressable } from './DismissKeyboardPressable';
+import { Spinner } from './Spinner';
 import { Text } from './Text';
 import { useThemeColors } from '../theme/ThemeProvider';
 import { fieldDescriptionStyle, fieldErrorStyle } from '../styles/formStyles';
@@ -14,6 +15,8 @@ export type SwitchProps = {
   description?: string;
   error?: string;
   disabled?: boolean;
+  /** Shows a spinner in place of the track and blocks interaction (like Button.loading). */
+  loading?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -25,15 +28,18 @@ export function Switch({
   description,
   error,
   disabled = false,
+  loading = false,
   style,
 }: SwitchProps) {
   const colors = useThemeColors();
   const controlled = checked !== undefined;
   const [internal, setInternal] = useState(defaultChecked);
   const isChecked = controlled ? Boolean(checked) : internal;
+  const isDisabled = Boolean(disabled || loading);
+  const hasCopy = Boolean(label || description);
 
   const toggle = () => {
-    if (disabled) return;
+    if (isDisabled) return;
     triggerHapticFeedback('selection');
     const next = !isChecked;
     if (!controlled) setInternal(next);
@@ -44,45 +50,65 @@ export function Switch({
     <View style={[{ gap: 4 }, style]}>
       <DismissKeyboardPressable
         accessibilityRole="switch"
-        accessibilityState={{ checked: isChecked, disabled }}
-        disabled={disabled}
+        accessibilityState={{ checked: isChecked, disabled: isDisabled, busy: loading }}
+        disabled={isDisabled}
         onPress={toggle}
-        style={{ flexDirection: 'row', alignItems: 'center', gap: 12, opacity: disabled ? 0.5 : 1 }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          opacity: isDisabled && !loading ? 0.5 : 1,
+        }}
       >
-        <View
-          style={{
-            width: 44,
-            height: 24,
-            borderRadius: 12,
-            padding: 2,
-            backgroundColor: isChecked ? colors.brand : colors.border,
-            justifyContent: 'center',
-          }}
-        >
+        {loading ? (
           <View
             style={{
-              width: 20,
-              height: 20,
-              borderRadius: 10,
-              backgroundColor: colors.white,
-              alignSelf: isChecked ? 'flex-end' : 'flex-start',
+              width: 44,
+              height: 24,
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-          />
-        </View>
-        <View style={{ flex: 1, gap: 2 }}>
-          {label ? (
-            typeof label === 'string' ? (
-              <Text variant="open-regular-p">{label}</Text>
-            ) : (
-              label
-            )
-          ) : null}
-          {description ? (
-            <Text variant="open-regular-tiny" style={fieldDescriptionStyle(colors)}>
-              {description}
-            </Text>
-          ) : null}
-        </View>
+          >
+            <Spinner size={18} color={colors.primary} />
+          </View>
+        ) : (
+          <View
+            style={{
+              width: 44,
+              height: 24,
+              borderRadius: 12,
+              padding: 2,
+              backgroundColor: isChecked ? colors.brand : colors.border,
+              justifyContent: 'center',
+            }}
+          >
+            <View
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: 10,
+                backgroundColor: colors.white,
+                alignSelf: isChecked ? 'flex-end' : 'flex-start',
+              }}
+            />
+          </View>
+        )}
+        {hasCopy ? (
+          <View style={{ flex: 1, gap: 2 }}>
+            {label ? (
+              typeof label === 'string' ? (
+                <Text variant="open-regular-p">{label}</Text>
+              ) : (
+                label
+              )
+            ) : null}
+            {description ? (
+              <Text variant="open-regular-tiny" style={fieldDescriptionStyle(colors)}>
+                {description}
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
       </DismissKeyboardPressable>
       {error ? (
         <Text variant="open-regular-tiny" style={fieldErrorStyle(colors)}>
