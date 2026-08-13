@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   clearToastHandler,
   setToastHandler,
@@ -46,29 +46,20 @@ export function ToastProvider({ children, topInset }: ToastProviderProps) {
     <View style={styles.root}>
       {children}
       {/*
-        Host toasts in their own transparent Modal so they stack above other
-        Modals (bottom sheets, dialogs). Absolute overlays in the app tree sit
-        under RN Modal windows and get dimmed by sheet backdrops.
+        Absolute overlay (not Modal) so empty space stays pressable.
+        pointerEvents="box-none" lets taps pass through to the app; only the
+        banner itself captures touches. Sheets that use RN Modal may still
+        cover toasts while open — prefer dismissing the sheet first.
       */}
-      <Modal
-        visible={activeToast != null}
-        transparent
-        animationType="none"
-        statusBarTranslucent
-        presentationStyle="overFullScreen"
-        onRequestClose={() => {
-          if (activeToast) handleDismiss(activeToast.id);
-        }}>
+      {activeToast ? (
         <View style={styles.toastLayer} pointerEvents="box-none">
-          {activeToast ? (
-            <ToastBanner
-              toast={activeToast}
-              topInset={resolvedTopInset}
-              onDismiss={handleDismiss}
-            />
-          ) : null}
+          <ToastBanner
+            toast={activeToast}
+            topInset={resolvedTopInset}
+            onDismiss={handleDismiss}
+          />
         </View>
-      </Modal>
+      ) : null}
     </View>
   );
 }
@@ -76,6 +67,12 @@ export function ToastProvider({ children, topInset }: ToastProviderProps) {
 const styles = StyleSheet.create({
   root: { flex: 1 },
   toastLayer: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 9999,
+    elevation: 9999,
   },
 });
