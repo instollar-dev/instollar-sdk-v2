@@ -59,6 +59,7 @@ export function RipplePressable({
   const opacity = useSharedValue(0);
 
   const rippleStyle = useAnimatedStyle(() => {
+    'worklet';
     const size = radius.value * 2;
     return {
       width: size,

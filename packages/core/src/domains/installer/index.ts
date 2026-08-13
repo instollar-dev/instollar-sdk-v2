@@ -34,6 +34,7 @@ export {
   installerOnboardingProgressPercent,
   isInstallerOnboardingComplete,
   experienceLevelFromAssessmentLevel,
+  normalizeDocumentUrlList,
   profileToInstallerOnboardingFormData,
   buildPersonalDetailsStepPayload,
   buildExperienceLevelStepPayload,

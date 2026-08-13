@@ -111,6 +111,21 @@ function assessmentLevelFromExperience(experienceLevel: string | null | undefine
     : 'NEW';
 }
 
+/** Coerce API/profile document fields into URL arrays (never spread strings). */
+export function normalizeDocumentUrlList(value: unknown): string[] {
+  if (value == null) return [];
+  if (Array.isArray(value)) {
+    return value.filter(
+      (item): item is string => typeof item === 'string' && item.trim().length > 0,
+    );
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed ? [trimmed] : [];
+  }
+  return [];
+}
+
 /** Prefer `experience`; fall back to onboarding-era assessmentLevel only (not LEVEL_*). */
 export function experienceLevelFromAssessmentLevel(
   assessmentLevel: string | null | undefined,
@@ -164,10 +179,10 @@ export function profileToInstallerOnboardingFormData(
     brands: brandUsed,
     projectType: [...(profile.projectType ?? [])],
     projectTypes: (profile.projectType ?? []).filter((type) => type !== 'SOLAR'),
-    cvUrl: [...(profile.cvUrl ?? [])],
-    eduCertUrl: [...(profile.eduCertUrl ?? [])],
-    trainCertUrl: [...(profile.trainCertUrl ?? [])],
-    prevProjectUrl: [...(profile.prevProjectUrl ?? [])],
+    cvUrl: normalizeDocumentUrlList(profile.cvUrl),
+    eduCertUrl: normalizeDocumentUrlList(profile.eduCertUrl),
+    trainCertUrl: normalizeDocumentUrlList(profile.trainCertUrl),
+    prevProjectUrl: normalizeDocumentUrlList(profile.prevProjectUrl),
     minCapacity: profile.minCapKva != null ? String(profile.minCapKva) : '',
     maxCapacity: profile.maxCapKva != null ? String(profile.maxCapKva) : '',
     experienceYears: profile.yoe != null ? String(profile.yoe) : '',

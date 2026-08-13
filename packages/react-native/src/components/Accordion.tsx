@@ -98,6 +98,7 @@ export function AccordionItem({
   const expanded = isOpen(value);
   const [contentHeight, setContentHeight] = useState(0);
   const open = useSharedValue(expanded ? 1 : 0);
+  const measuredHeight = useSharedValue(0);
   const borderColor = error ? colors.error : colors.border;
 
   useEffect(() => {
@@ -107,15 +108,26 @@ export function AccordionItem({
     });
   }, [expanded, open]);
 
-  const chevronStyle = useAnimatedStyle(() => ({
-    transform: [
-      { rotate: `${interpolate(open.value, [0, 1], [0, 180])}deg` },
-    ],
-  }));
+  useEffect(() => {
+    measuredHeight.value = contentHeight;
+  }, [contentHeight, measuredHeight]);
 
-  const bodyStyle = useAnimatedStyle(() => ({
-    height: contentHeight * open.value,
-  }));
+  // Explicit `worklet` directives: this package ships prebundled, and the
+  // bundler may rename the `useAnimatedStyle` import, which stops the Babel
+  // worklets plugin from auto-workletizing these closures.
+  const chevronStyle = useAnimatedStyle(() => {
+    'worklet';
+    return {
+      transform: [
+        { rotate: `${interpolate(open.value, [0, 1], [0, 180])}deg` },
+      ],
+    };
+  });
+
+  const bodyStyle = useAnimatedStyle(() => {
+    'worklet';
+    return { height: measuredHeight.value * open.value };
+  });
 
   return (
     <View

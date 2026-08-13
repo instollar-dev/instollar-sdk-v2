@@ -1,3 +1,5 @@
+import { normalizeDocumentUrlList } from '@instollar-dev/instollar-core';
+
 import { FileUpload } from './FileUpload';
 import type { FileUploadProps, FileUploadStrings } from './FileUpload.types';
 import { AccordionItem } from './Accordion';
@@ -68,10 +70,12 @@ export function AccordionFileUploadItem({
     ...strings,
   };
 
+  const safeFileUrls = normalizeDocumentUrlList(fileUrls);
+
   return (
     <AccordionItem value={value} title={title} error={error} disabled={disabled}>
       <FileUpload
-        key={fileUrls.join('|')}
+        key={safeFileUrls.join('|')}
         accept={accept}
         multiple
         autoUpload={autoUpload}
@@ -79,12 +83,12 @@ export function AccordionFileUploadItem({
         isOnline={isOnline}
         showAssetPreviewGrid={showPreviewGrid}
         maxSizeMB={maxSizeMB}
-        value={fileUrls}
+        value={safeFileUrls}
         uploadFn={uploadFn}
         offlineSaveFn={offlineSaveFn}
         onFileSelect={() => undefined}
         onUploadComplete={(assets) => {
-          const next = [...fileUrls, ...assets.map((asset) => asset.fileUrl)];
+          const next = [...safeFileUrls, ...assets.map((asset) => asset.fileUrl)];
           onFileUrlsChange(next);
           onFilesAdded?.(next);
         }}
@@ -93,7 +97,7 @@ export function AccordionFileUploadItem({
         }}
         onDeleteFile={() => onFileUrlsChange([])}
         onDeleteFileAtIndex={(index) => {
-          onFileUrlsChange(fileUrls.filter((_, itemIndex) => itemIndex !== index));
+          onFileUrlsChange(safeFileUrls.filter((_, itemIndex) => itemIndex !== index));
         }}
         strings={copy}
       />
