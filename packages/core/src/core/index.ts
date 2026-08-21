@@ -51,6 +51,7 @@ export {
   companyEndpoints,
   installerApi,
   installerEndpoints,
+  installerStorefrontApi,
   COMPANY_ONBOARD_STEPS,
   COMPANY_ONBOARD_STEP_ORDER,
   COMPANY_ONBOARDING_WELCOME_UI_STEP,
@@ -150,6 +151,7 @@ export type * from '../domains/company/workflow.types';
 export type * from '../domains/company/onboarding.types';
 export type * from '../domains/installer/types';
 export type * from '../domains/installer/finance.types';
+export type * from '../domains/installer/esg.types';
 export type * from '../domains/installer/job-requests.types';
 export type * from '../domains/installer/assessment.types';
 export type * from '../domains/installer/site-audit.types';

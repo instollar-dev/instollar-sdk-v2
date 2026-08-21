@@ -2,9 +2,10 @@ import api from '../../core/api/api-setup';
 import { apiUrl } from '../../core/api/base-urls';
 import { installerPaths } from '../../core/api/api-endpoints';
 import { unwrap } from '../../core/api/request';
-import type { ApiResponse } from '../../core/types';
+import type { ApiResponse, PaginatedApiResponse } from '../../core/types';
 import type { GuarantorFormPayload } from '../auth/types';
 import { installerFinanceApi } from './installer.finance.api';
+import { installerEsgApi } from './installer.esg.api';
 import { installerAssessmentApi } from './installer.assessment.api';
 import { installerJobRequestsApi } from './installer.job-requests.api';
 import { installerMiniGridApi } from './installer.mini-grid.api';
@@ -13,6 +14,7 @@ import { installerStorefrontApi } from './installer.storefront.api';
 import { installerNotificationsApi } from './installer.notifications.api';
 import { installerSiteAuditApi } from './installer.site-audit.api';
 import { installerWorkflowsApi } from './installer.workflows.api';
+import type { InstallerJobRequestListParams } from './job-requests.types';
 import type { InstallerOnboardingUpdatePayload } from './onboarding.types';
 import type {
   AssessmentModel,
@@ -21,6 +23,8 @@ import type {
   InstallerProfileRecordModel,
   ToggleInstallerAvailabilityModel,
 } from './types';
+
+const silent = { showSuccessToast: false, showErrorToast: false } as const;
 
 export const installerApi = {
   getInstallerProfile: async (): Promise<ApiResponse<InstallerProfileBundleModel>> => {
@@ -50,10 +54,20 @@ export const installerApi = {
       ),
     ),
 
-  getJobRequests: (): Promise<ApiResponse<InstallerJobRequestModel[]>> =>
+  /**
+   * Job request inbox and the projects list are the same endpoint — `status`
+   * decides which ("PENDING"/"DECLINED" vs "ON_GOING"/"COMPLETED"/"CANCELED").
+   */
+  getJobRequests: (
+    params?: InstallerJobRequestListParams,
+  ): Promise<PaginatedApiResponse<InstallerJobRequestModel>> =>
     unwrap(
-      api.get<ApiResponse<InstallerJobRequestModel[]>>(
+      api.get<PaginatedApiResponse<InstallerJobRequestModel>>(
         apiUrl('installer', installerPaths.jobRequestsGetAll),
+        params,
+        // `requestType` repeats without brackets: requestType=a&requestType=b
+        { paramsSerializer: { indexes: null } },
+        silent,
       ),
     ),
 
@@ -85,6 +99,7 @@ export const installerApi = {
     ),
 
   ...installerFinanceApi,
+  ...installerEsgApi,
   ...installerJobRequestsApi,
   ...installerMiniGridApi,
   ...installerAssessmentApi,

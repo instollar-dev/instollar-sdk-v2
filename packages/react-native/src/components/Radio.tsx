@@ -8,7 +8,7 @@ import {
 import { View, type StyleProp, type ViewStyle } from 'react-native';
 import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { Text } from './Text';
-import { useThemeColors } from '../theme/ThemeProvider';
+import { useResolvedScheme, useThemeColors } from '../theme/ThemeProvider';
 import { fieldDescriptionStyle, fieldErrorStyle, fieldLabelStyle } from '../styles/formStyles';
 import { triggerHapticFeedback } from '../utils/haptics';
 
@@ -94,9 +94,11 @@ export type RadioProps = {
 
 export function Radio({ value, label, description, disabled, style }: RadioProps) {
   const colors = useThemeColors();
+  const scheme = useResolvedScheme();
   const ctx = useContext(RadioContext);
   const isDisabled = Boolean(disabled || ctx.disabled);
   const selected = ctx.value === value;
+  const accent = scheme === 'dark' ? colors.destructive : colors.brand;
 
   return (
     <DismissKeyboardPressable
@@ -119,7 +121,7 @@ export function Radio({ value, label, description, disabled, style }: RadioProps
           height: 20,
           borderRadius: 10,
           borderWidth: 1.5,
-          borderColor: selected ? colors.brand : colors.border,
+          borderColor: selected ? accent : colors.border,
           alignItems: 'center',
           justifyContent: 'center',
           marginTop: 2,
@@ -131,7 +133,7 @@ export function Radio({ value, label, description, disabled, style }: RadioProps
               width: 10,
               height: 10,
               borderRadius: 5,
-              backgroundColor: colors.brand,
+              backgroundColor: accent,
             }}
           />
         ) : null}

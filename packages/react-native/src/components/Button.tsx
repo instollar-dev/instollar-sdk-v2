@@ -69,18 +69,19 @@ export function Button({
     backgroundColor = fill[variant];
     labelColor = variant === 'secondary' ? colors.brand : colors.white;
   } else {
-    // Ghost (outline) + underline: in dark mode default tone uses destructive.
+    // Ghost (outline) + underline (text): amber in dark mode; fg/border in light.
+    // `destructive` token is the amber accent; `danger` is red.
     borderWidth = variant === 'ghost' ? 1 : 0;
-    const softTone =
-      tone === 'default' && scheme === 'dark' ? 'destructive' : tone;
-    const toneColor =
-      softTone === 'destructive'
-        ? colors.destructive
-        : softTone === 'danger'
-          ? colors.danger
-          : colors.fg;
-    labelColor = toneColor;
-    borderColor = softTone === 'default' ? colors.border : toneColor;
+    if (tone === 'danger') {
+      labelColor = colors.danger;
+      borderColor = colors.danger;
+    } else if (scheme === 'dark' || tone === 'destructive') {
+      labelColor = colors.destructive;
+      borderColor = variant === 'ghost' ? colors.destructive : 'transparent';
+    } else {
+      labelColor = colors.fg;
+      borderColor = variant === 'ghost' ? colors.border : 'transparent';
+    }
   }
 
   return (

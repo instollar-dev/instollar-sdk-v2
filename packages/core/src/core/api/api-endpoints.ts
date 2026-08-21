@@ -306,6 +306,9 @@ export const installerPaths = {
   meshGridGetAll: '/mesh-grid/get-all',
   meshGridSingle: (id: string) => `/mesh-grid/single/${id}`,
   meshGridReportCreate: '/reports/create',
+  meshGridReportCreateNew: '/reports/create-new',
+  meshGridReportStepCreate: '/reports/report-step/create',
+  meshGridReportStepUpdate: (id: string) => `/reports/report-step/update/${id}`,
   meshGridPersonalSummary: (jobId: string) => `/reports/personal-summary/${jobId}`,
   meshGridProjectActivity: (jobId: string) => `/reports/project-activity/${jobId}`,
   meshGridReportCommission: (reportId: string) => `/reports/commission/${reportId}`,
@@ -318,6 +321,7 @@ export const installerPaths = {
   workflowSingle: (projectId: string, workflowId: string) =>
     `/workflow/single/${projectId}/${workflowId}`,
   workflowSubmit: (jobId: string) => `/workflow-content/submit/${jobId}`,
+  workflowContentDelete: (contentId: string) => `/workflow-content/${contentId}`,
   workflowStepChats: (stepId: string) => `/workflow/step-chats/${stepId}`,
   workflowsStepChats: (stepId: string) => `/workflows/step-chats/${stepId}`,
   jobRequestAcceptPrecautions: (requestId: string) =>
@@ -350,4 +354,6 @@ export const installerPaths = {
   assessmentStart: '/assessment/start',
   assessmentSubmit: '/assessment/submit',
   guarantorForm: '/installer/guarantor-form',
+  esgInstallerDashboard: '/esg/installer-esg-dashboard',
+  esgProject: (jobRequestId: string) => `/esg/project/${jobRequestId}`,
 } as const;

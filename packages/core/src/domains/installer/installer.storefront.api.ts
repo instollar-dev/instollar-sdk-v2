@@ -3,9 +3,11 @@ import { apiUrl } from '../../core/api/base-urls';
 import { basePaths, installerPaths } from '../../core/api/api-endpoints';
 import { unwrap } from '../../core/api/request';
 import type { ApiResponse, PaginatedApiResponse } from '../../core/types';
+import type { InstallerJobRequestListParams } from './job-requests.types';
 import type {
   CommissionMeshGridReportPayload,
   CreateMeshGridReportPayload,
+  CreateMeshGridReportStepPayload,
   GenerateOfflineSlotsPayload,
   InstallerMeshGridProjectModel,
   InterestDataModel,
@@ -15,6 +17,7 @@ import type {
   SyncOfflineReportPayload,
   ToolboxSubmissionModel,
   ToolboxTemplateModel,
+  UpdateMeshGridReportStepPayload,
   WorkflowActivityModel,
 } from './storefront.types';
 
@@ -52,13 +55,13 @@ export const installerStorefrontApi = {
     ),
 
   getMeshGrids: (
-    params?: Record<string, unknown>,
+    params?: InstallerJobRequestListParams,
   ): Promise<PaginatedApiResponse<InstallerMeshGridProjectModel>> =>
     unwrap(
       api.get<PaginatedApiResponse<InstallerMeshGridProjectModel>>(
         apiUrl('installer', installerPaths.meshGridGetAll),
         params,
-        {},
+        { paramsSerializer: { indexes: null } },
         silent,
       ),
     ),
@@ -79,6 +82,43 @@ export const installerStorefrontApi = {
     unwrap(
       api.post<ApiResponse<WorkflowActivityModel>>(
         apiUrl('installer', installerPaths.meshGridReportCreate),
+        payload,
+        {},
+        { showSuccessToast: true },
+      ),
+    ),
+
+  createMeshGridReportNew: (
+    payload: CreateMeshGridReportPayload,
+  ): Promise<ApiResponse<WorkflowActivityModel>> =>
+    unwrap(
+      api.post<ApiResponse<WorkflowActivityModel>>(
+        apiUrl('installer', installerPaths.meshGridReportCreateNew),
+        payload,
+        {},
+        { showSuccessToast: true },
+      ),
+    ),
+
+  createMeshGridReportStep: (
+    payload: CreateMeshGridReportStepPayload,
+  ): Promise<ApiResponse<WorkflowActivityModel>> =>
+    unwrap(
+      api.post<ApiResponse<WorkflowActivityModel>>(
+        apiUrl('installer', installerPaths.meshGridReportStepCreate),
+        payload,
+        {},
+        { showSuccessToast: true },
+      ),
+    ),
+
+  updateMeshGridReportStep: (
+    id: string,
+    payload: UpdateMeshGridReportStepPayload,
+  ): Promise<ApiResponse<WorkflowActivityModel>> =>
+    unwrap(
+      api.patch<ApiResponse<WorkflowActivityModel>>(
+        apiUrl('installer', installerPaths.meshGridReportStepUpdate(id)),
         payload,
         {},
         { showSuccessToast: true },

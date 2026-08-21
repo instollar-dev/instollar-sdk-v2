@@ -56,6 +56,17 @@ export const installerWorkflowsApi = {
       ),
     ),
 
+  /** Removes one uploaded asset from a step. `url` identifies which asset. */
+  deleteWorkflowContent: (contentId: string, url: string): Promise<ApiResponse<unknown>> =>
+    unwrap(
+      api.delete<ApiResponse<unknown>>(
+        apiUrl('installer', installerPaths.workflowContentDelete(contentId)),
+        { url },
+        {},
+        silent,
+      ),
+    ),
+
   acceptWorkflowPrecautions: (requestId: string): Promise<ApiResponse<unknown>> =>
     unwrap(
       api.post<ApiResponse<unknown>>(

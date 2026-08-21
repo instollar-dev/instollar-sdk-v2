@@ -1,6 +1,8 @@
 export { installerApi, installerEndpoints } from './installer.api';
 export { installerFinanceApi } from './installer.finance.api';
+export { installerEsgApi } from './installer.esg.api';
 export { installerJobRequestsApi } from './installer.job-requests.api';
+export { JOB_REQUEST_TYPES } from './job-requests.types';
 export { installerMiniGridApi } from './installer.mini-grid.api';
 export { installerAssessmentApi } from './installer.assessment.api';
 export { installerSiteAuditApi } from './installer.site-audit.api';
@@ -47,6 +49,7 @@ export {
 } from './onboarding';
 export type * from './types';
 export type * from './finance.types';
+export type * from './esg.types';
 export type * from './job-requests.types';
 export type * from './assessment.types';
 export type * from './site-audit.types';

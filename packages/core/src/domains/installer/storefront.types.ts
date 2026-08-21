@@ -25,6 +25,14 @@ export interface CreateMeshGridReportPayload {
   [key: string]: unknown;
 }
 
+export interface CreateMeshGridReportStepPayload {
+  [key: string]: unknown;
+}
+
+export interface UpdateMeshGridReportStepPayload {
+  [key: string]: unknown;
+}
+
 export interface CommissionMeshGridReportPayload {
   [key: string]: unknown;
 }
