@@ -217,6 +217,26 @@ const { openSection, isSectionOpen, toggleSection } = useSettingsAccordion();
   </SettingsItem>
 </div>`,
 
+  layout: `import { SharedScaffold, SidebarShell, DashboardHeader } from '@instollar-dev/instollar-sdk';
+
+<SharedScaffold
+  sidebar={
+    <SidebarShell
+      logo={<div className="font-bold">Logo</div>}
+      nav={<nav>Links</nav>}
+      footer={<div>Footer</div>}
+    />
+  }
+  header={
+    <DashboardHeader
+      title="Dashboard"
+      rightElement={<button>Profile</button>}
+    />
+  }
+>
+  <div className="p-5">Page content goes here</div>
+</SharedScaffold>`,
+
   input: `import { Input, Icon, SearchNormal1 } from '@instollar-dev/instollar-sdk';
 
 <Input label="Email" placeholder="you@example.com" />

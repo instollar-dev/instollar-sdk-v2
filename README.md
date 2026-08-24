@@ -179,6 +179,32 @@ import '@instollar-dev/instollar-react/styles.css';
 
 Without that app-side build, prefer named utilities from `styles.css`, inline styles, or CSS variables for one-offs.
 
+## Layout Components
+
+The SDK provides ready-to-use layout components: \`SharedScaffold\`, \`SidebarShell\`, and \`DashboardHeader\`. They handle responsive sidebar toggling automatically.
+
+\`\`\`tsx
+import { SharedScaffold, SidebarShell, DashboardHeader } from '@instollar-dev/instollar-sdk';
+
+<SharedScaffold
+  sidebar={
+    <SidebarShell
+      logo={<div className="font-bold">Logo</div>}
+      nav={<nav>Links</nav>}
+      footer={<div>Footer</div>}
+    />
+  }
+  header={
+    <DashboardHeader
+      title="Dashboard"
+      rightElement={<button>Profile</button>}
+    />
+  }
+>
+  <div className="p-5">Page content goes here</div>
+</SharedScaffold>
+\`\`\`
+
 ## Light / dark theme
 
 Tokens ship light (default) and dark themes. Dark activates when `<html>` has `data-theme="dark"` or a `.dark` class.

@@ -52,6 +52,9 @@ import {
   useTheme,
   Moon,
   Sun1,
+  SharedScaffold,
+  SidebarShell,
+  DashboardHeader,
   type StatusVariant,
   type TableHandle,
   type AddressComponents,
@@ -986,6 +989,41 @@ export function StyleGuidePanel() {
               </div>
             </SettingsItem>
           </div>
+        </DemoFrame>
+      </Section>
+
+      {/* ——— Layout ——— */}
+      <Section
+        id="sg-layout"
+        title="Layout"
+        description="SharedScaffold · SidebarShell · DashboardHeader"
+        code={snippets.layout}
+      >
+        <DemoFrame label="Preview" className="!p-0 h-[400px] overflow-hidden rounded-xl border-border bg-background">
+          <SharedScaffold
+            sidebar={
+              <SidebarShell
+                logo={<Text variant="spline-bold-h5">Instollar</Text>}
+                nav={
+                  <div className="flex flex-col gap-2">
+                    <button type="button" className="text-left px-3 py-2 bg-[var(--color-brand,#012b15)]/10 text-[var(--color-brand,#012b15)] rounded-lg text-open-regular-tiny font-medium">Dashboard</button>
+                    <button type="button" className="text-left px-3 py-2 text-foreground/70 hover:bg-muted/10 rounded-lg text-open-regular-tiny font-medium">Jobs</button>
+                  </div>
+                }
+                footer={<div className="p-3 text-muted text-[11px]">Settings</div>}
+              />
+            }
+            header={
+              <DashboardHeader
+                title="Dashboard"
+                rightElement={<Avatar initials="A" size="sm" />}
+              />
+            }
+          >
+            <div className="p-6">
+              <Text variant="open-regular-p">Your page content goes here.</Text>
+            </div>
+          </SharedScaffold>
         </DemoFrame>
       </Section>
 

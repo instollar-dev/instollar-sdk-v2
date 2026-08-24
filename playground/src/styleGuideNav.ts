@@ -39,6 +39,7 @@ export const styleGuideNav: TocGroup[] = [
       { id: 'sg-card', label: 'Card' },
       { id: 'sg-avatar', label: 'Avatar' },
       { id: 'sg-settings-item', label: 'SettingsItem' },
+      { id: 'sg-layout', label: 'Layout (Scaffold, Sidebar)' },
     ],
   },
   {
