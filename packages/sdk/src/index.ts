@@ -22,4 +22,19 @@ export type {
 } from '@instollar-dev/instollar-react';
 
 export * from '@instollar-dev/instollar-core';
+export {
+  configureGooglePlacesApiKey,
+  fetchPlaceAutocompleteSuggestions,
+  fetchPlaceDetailsAsAddress,
+  getConfiguredGooglePlacesApiKey,
+  parseAddressComponents,
+  resolveGooglePlacesApiKey,
+  countryCodeToFlagEmoji,
+  createPhoneValue,
+  formatNationalNumber,
+  formatPhoneValueForApi,
+  toE164,
+  validateNationalNumber,
+} from '@instollar-dev/instollar-core';
+export type { PhoneValue } from '@instollar-dev/instollar-core';
 export { cn } from './utils/cn';
