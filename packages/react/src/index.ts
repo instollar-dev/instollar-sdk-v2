@@ -271,3 +271,12 @@ export type { Theme, ResolvedTheme, ThemeProviderProps } from './theme/ThemeProv
 export { cn } from './utils/cn';
 export { toSelectOptions } from './utils/toSelectOptions';
 export type { NormalizedSelectOption } from './utils/toSelectOptions';
+
+export { SharedScaffold } from './components/SharedScaffold';
+export type { SharedScaffoldProps } from './components/SharedScaffold';
+
+export { DashboardHeader } from './components/DashboardHeader';
+export type { DashboardHeaderProps } from './components/DashboardHeader';
+
+export { SidebarShell } from './components/SidebarShell';
+export type { SidebarShellProps } from './components/SidebarShell';
