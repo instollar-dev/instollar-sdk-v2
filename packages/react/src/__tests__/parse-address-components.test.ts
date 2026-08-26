@@ -25,6 +25,7 @@ describe('parseAddressComponents', () => {
       lga: 'Santa Clara County',
       postalCode: '94043',
       country: 'United States',
+      countryCode: 'US',
       landmark: undefined,
       latitude: 37.422,
       longitude: -122.084,
