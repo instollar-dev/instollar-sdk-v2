@@ -1,4 +1,5 @@
-@import "tailwindcss/utilities" layer(utilities);
+@import "tailwindcss" theme;
+@import "tailwindcss/utilities";
 
 /* Scan SDK component sources for utility class usage */
 @source "../components/**/*.{tsx,ts}";
