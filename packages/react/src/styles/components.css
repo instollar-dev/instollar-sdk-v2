@@ -1,0 +1,7 @@
+@import "tailwindcss/utilities" layer(utilities);
+
+/* Scan SDK component sources for utility class usage */
+@source "../components/**/*.{tsx,ts}";
+@source "../theme/**/*.{tsx,ts}";
+@source "../hooks/**/*.{tsx,ts}";
+@source "../utils/**/*.{tsx,ts}";

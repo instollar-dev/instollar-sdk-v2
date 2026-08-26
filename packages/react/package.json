@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-react",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Instollar React web UI components",
   "type": "module",
   "main": "./dist/index.js",
@@ -23,6 +23,7 @@
       "require": "./dist/components/AlertText.cjs"
     },
     "./styles.css": "./dist/styles.css",
+    "./components.css": "./dist/components.css",
     "./theme.css": "./src/styles/theme.css"
   },
   "files": [
@@ -32,8 +33,9 @@
     "AGENTS.md"
   ],
   "scripts": {
-    "build": "tsup && pnpm build:css",
+    "build": "tsup && pnpm build:css && pnpm build:components-css",
     "build:css": "tailwindcss -i ./src/styles/index.css -o ./dist/styles.css --minify",
+    "build:components-css": "tailwindcss -i ./src/styles/components.css -o ./dist/components.css --minify",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

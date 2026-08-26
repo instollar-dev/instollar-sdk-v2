@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-sdk",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Instollar SDK — React web UI, HTTP client, storage, and shared app data",
   "type": "module",
   "main": "./dist/index.js",
@@ -28,6 +28,7 @@
       "require": "./dist/alert-text.cjs"
     },
     "./styles.css": "./dist/styles.css",
+    "./components.css": "./dist/components.css",
     "./theme.css": "./theme.css",
     "./countries": {
       "types": "./dist/countries.d.ts",
@@ -51,7 +52,7 @@
   ],
   "scripts": {
     "build": "tsup && pnpm build:assets",
-    "build:assets": "node -e \"require('fs').copyFileSync('../react/dist/styles.css', 'dist/styles.css')\"",
+    "build:assets": "node -e \"const fs=require('fs');fs.copyFileSync('../react/dist/styles.css','dist/styles.css');fs.copyFileSync('../react/dist/components.css','dist/components.css')\"",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
