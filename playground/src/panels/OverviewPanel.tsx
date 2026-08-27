@@ -199,6 +199,29 @@ import { ThemeProvider, Button, Text } from '@instollar-dev/instollar-sdk';`}</C
           demos.
         </Callout>
       </Section>
+      <Section title="Tailwind v4 Integration" description="Required setup for responsive utility classes to work in consumers.">
+        <Callout tone="note" title="The Problem">
+          Tailwind v4 is highly optimized to only scan local files and explicitly ignores <code>node_modules</code>. Critical utility classes used by the SDK (like <code>lg:hidden</code>) won't be generated unless the SDK is declared as a source. Also, importing precompiled CSS files directly ignores any embedded <code>@source</code> directives.
+        </Callout>
+        
+        <p className="mt-4 mb-2 text-open-regular-p text-foreground">
+          To fix this, explicitly tell Tailwind to scan the SDK by adding the following to your root CSS file (e.g., <code>globals.css</code>):
+        </p>
+
+        <CodeBlock label="CSS">{`/* 1. Import the Tailwind engine */
+@import "tailwindcss";
+
+/* 2. Import the SDK's baseline styles */
+@import "@instollar-dev/instollar-sdk/components.css";
+@import "@instollar-dev/instollar-sdk/theme.css";
+
+/* 3. Explicitly tell Tailwind to scan the SDK */
+@source "../../node_modules/@instollar-dev/instollar-react/dist/**/*.js";
+@source "../../node_modules/@instollar-dev/instollar-sdk/dist/**/*.js";`}</CodeBlock>
+        <p className="mt-2 text-open-regular-tiny text-muted">
+          * Note: The relative path <code>../../</code> depends on where your CSS file is located relative to the root node_modules folder.
+        </p>
+      </Section>
     </div>
   );
 }
