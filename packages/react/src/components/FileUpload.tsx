@@ -9,6 +9,7 @@ import {
   type FC,
 } from 'react';
 import { cn } from '../utils/cn';
+import { sharedApi } from '@instollar-dev/instollar-core';
 import { Button } from './Button';
 import {
   DEFAULT_FILE_UPLOAD_STRINGS,
@@ -72,6 +73,7 @@ export const FileUpload: FC<FileUploadProps> = ({
   showAssetPreviewGrid = false,
   applyWatermark = false,
   allowOfflineSave = false,
+  variant = 'default',
   uploadFn,
   offlineSaveFn,
   isOnline = true,
@@ -241,7 +243,13 @@ export const FileUpload: FC<FileUploadProps> = ({
   const uploadSelectedFiles = useCallback(
     async (files: File[], startIndex = 0) => {
       if (!autoUpload || files.length === 0) return;
-      if (!uploadFn && !offlineSaveFn) return;
+
+      const activeUploadFn = uploadFn || (async (fd: FormData, opts?: { applyWatermark?: boolean }) => {
+        const res = await sharedApi.uploadFiles(fd, opts);
+        return res.data ?? [];
+      });
+
+      if (!activeUploadFn && !offlineSaveFn) return;
 
       const runOfflineSave = async () => {
         if (!offlineSaveFn) {
@@ -264,8 +272,6 @@ export const FileUpload: FC<FileUploadProps> = ({
           throw new Error('Network offline');
         }
 
-        if (!uploadFn) return;
-
         const formData = new FormData();
         for (const file of files) {
           let uploadBlob: Blob = file;
@@ -275,7 +281,7 @@ export const FileUpload: FC<FileUploadProps> = ({
           }
           formData.append('files', uploadBlob, filename);
         }
-        const assets = await uploadFn(formData, { applyWatermark });
+        const assets = await activeUploadFn(formData, { applyWatermark });
         applyOfflineAssets(files, assets, startIndex);
       } catch (err) {
         if (allowOfflineSave && offlineSaveFn && isNetworkDisconnectError(err)) {
@@ -446,7 +452,7 @@ export const FileUpload: FC<FileUploadProps> = ({
           </div>
         )}
 
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2 text-white">
+        <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/70 to-transparent p-2 text-white">
           <p className="truncate text-[10px]">{item.name}</p>
         </div>
 
@@ -492,49 +498,77 @@ export const FileUpload: FC<FileUploadProps> = ({
       {label ? <label className={cn(formFieldLabelClass, 'mb-2 block')}>{label}</label> : null}
 
       {!hasFile ? (
-        <div
-          className={cn(
-            'relative flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center transition-colors',
-            dragActive ? 'border-primary bg-primary/5' : 'border-border bg-background hover:bg-muted/20',
-            displayError && 'border-error',
-          )}
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-          onClick={onButtonClick}
-        >
-          <input
-            ref={inputRef}
-            type="file"
-            className="hidden"
-            onChange={handleChange}
-            accept={accept}
-            multiple={multiple}
-          />
-
-          <div className="mb-4 text-secondary">
-            <Icon icon={DocumentUpload} size="xl" color="secondary" />
-          </div>
-          <p className="mb-2 text-open-regular-p text-muted">{strings.clickToUpload}</p>
-          <p className="mb-6 text-open-regular-tiny uppercase text-muted">
-            {helperText || acceptDisplay}
-          </p>
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onButtonClick();
-            }}
-            disabled={isUploading}
-            loading={isUploading}
+        variant === 'input' ? (
+          <div
+            className={cn(
+              'flex h-11 w-full cursor-pointer items-center justify-between rounded-sm border bg-background px-3 py-2 transition-colors',
+              dragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-muted',
+              displayError && 'border-error',
+            )}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            onClick={onButtonClick}
           >
-            {isUploading ? strings.browseUploading : strings.browse}
-          </Button>
-        </div>
+            <input
+              ref={inputRef}
+              type="file"
+              className="hidden"
+              onChange={handleChange}
+              accept={accept}
+              multiple={multiple}
+            />
+            <span className="flex-1 truncate pr-2 text-open-regular-p text-muted">
+              {helperText || strings.clickToUploadInput}
+            </span>
+            <Icon icon={DocumentUpload} size="sm" color="muted" />
+          </div>
+        ) : (
+          <div
+            className={cn(
+              'relative flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center transition-colors',
+              dragActive ? 'border-primary bg-primary/5' : 'border-border bg-background hover:bg-muted/20',
+              displayError && 'border-error',
+            )}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            onClick={onButtonClick}
+          >
+            <input
+              ref={inputRef}
+              type="file"
+              className="hidden"
+              onChange={handleChange}
+              accept={accept}
+              multiple={multiple}
+            />
+
+            <div className="mb-4 text-secondary">
+              <Icon icon={DocumentUpload} size="xl" color="secondary" />
+            </div>
+            <p className="mb-2 text-open-regular-p text-muted">{strings.clickToUpload}</p>
+            <p className="mb-6 text-open-regular-tiny uppercase text-muted">
+              {helperText || acceptDisplay}
+            </p>
+
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onButtonClick();
+              }}
+              disabled={isUploading}
+              loading={isUploading}
+            >
+              {isUploading ? strings.browseUploading : strings.browse}
+            </Button>
+          </div>
+        )
       ) : (
         <div className="flex flex-col gap-3 rounded-lg border border-border bg-background p-4">
           <input

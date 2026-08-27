@@ -22,6 +22,7 @@ export interface FileUploadStrings {
   invalidType: string;
   fileTooLarge: string;
   uploadFailed: string;
+  clickToUploadInput: string;
 }
 
 export const DEFAULT_FILE_UPLOAD_STRINGS: FileUploadStrings = {
@@ -40,6 +41,7 @@ export const DEFAULT_FILE_UPLOAD_STRINGS: FileUploadStrings = {
   invalidType: 'Invalid file type',
   fileTooLarge: 'File is too large',
   uploadFailed: 'Failed to upload file. Please try again.',
+  clickToUploadInput: 'Select file to upload...',
 };
 
 export interface FileUploadProps {
@@ -75,4 +77,5 @@ export interface FileUploadProps {
   }) => ReactNode;
   strings?: Partial<FileUploadStrings>;
   isNetworkDisconnectError?: (error: unknown) => boolean;
+  variant?: 'default' | 'input';
 }

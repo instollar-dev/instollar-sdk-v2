@@ -152,6 +152,41 @@ Reload the editor window after changing settings.
 
 **What you get:** standard Tailwind utilities, Instollar `@theme` colors/fonts, and typography `@utility` classes from `@instollar-dev/instollar-tokens`. Installing `tailwindcss` for IntelliSense alone does **not** generate arbitrary classes at runtime — see below.
 
+### Tailwind CSS v4 Integration
+
+#### The Challenge We Faced
+When consuming the SDK in a Next.js application running Tailwind v4, we noticed that complex responsive layouts (like sidebars toggling between mobile and desktop) were breaking. Both layouts were displaying at the same time. 
+
+**Why did this happen?**
+Tailwind v4 introduced a major architectural change: it completely removed JavaScript configuration files (like `tailwind.config.js`) in favor of a pure CSS engine. By default, Tailwind v4 is highly optimized to **only** scan the source files inside your local project (e.g., `src/**/*.tsx`). It explicitly **does not** scan files inside the `node_modules` directory to prevent massive performance slowdowns.
+
+Because the SDK's components live in `node_modules`, the consumer application's Tailwind compiler never scanned them. As a result, critical utility classes (like `lg:hidden`) used by the SDK were never generated, causing the UI to break.
+
+**The "Pre-compiled CSS" Trap**
+We initially attempted to solve this by having the SDK pre-compile its own CSS file containing all its utilities, which the consumer app could simply `@import`. 
+However, Tailwind v4 strictly isolated this: if a consumer imports an external CSS file, Tailwind pulls in the raw CSS, but by design, it **completely ignores any `@source` directives inside that imported file**. This meant the consumer app still couldn't dynamically match the SDK's classes to the consumer's local theme.
+
+#### The Official Solution (How to Tackle It)
+The official, documented standard by the Tailwind team for consuming UI libraries in v4 requires the consumer application to explicitly declare the library as a source. 
+
+To use `@instollar-dev/instollar-sdk`, developers must add these three lines to their root CSS file (e.g., `globals.css`):
+
+```css
+/* 1. Import the Tailwind engine */
+@import "tailwindcss";
+
+/* 2. Import the SDK's baseline styles (CSS variables, animations, etc.) */
+@import "@instollar-dev/instollar-sdk/components.css";
+@import "@instollar-dev/instollar-sdk/theme.css";
+
+/* 3. Explicitly tell Tailwind to scan the SDK for utility classes */
+@source "../../node_modules/@instollar-dev/instollar-react/dist/**/*.js";
+@source "../../node_modules/@instollar-dev/instollar-sdk/dist/**/*.js";
+```
+*(Note: The relative path `../../` depends on where your `globals.css` file is located relative to the root `node_modules` folder).*
+
+By doing this, the consumer app's Tailwind compiler scans the entire SDK package and dynamically generates the exact utility classes it needs, seamlessly matching the project's local theme. This is a one-time setup that guarantees all future SDK components will work flawlessly out of the box.
+
 ## Arbitrary values (optional)
 
 Most apps only need `styles.css`. Classes like `w-[37px]`, `grid-cols-[200px_1fr]`, or `bg-[#1a2b3c]` are **not** in that prebuilt file (Tailwind generates them from your source).

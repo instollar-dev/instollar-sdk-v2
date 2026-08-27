@@ -111,7 +111,7 @@ export function OverviewPanel({
               <button
                 type="button"
                 onClick={() => onNavigate('style', item.id)}
-                className="docs-focus-ring flex w-full flex-col rounded-xl border border-border bg-background px-3 py-2.5 text-left transition-colors hover:border-primary/25 hover:bg-primary/[0.03]"
+                className="docs-focus-ring flex w-full flex-col rounded-xl border border-border bg-background px-3 py-2.5 text-left transition-colors hover:border-primary/25"
               >
                 <span className="text-open-regular-label font-medium text-foreground">
                   {item.label}
@@ -203,7 +203,7 @@ import { ThemeProvider, Button, Text } from '@instollar-dev/instollar-sdk';`}</C
         <Callout tone="note" title="The Problem">
           Tailwind v4 is highly optimized to only scan local files and explicitly ignores <code>node_modules</code>. Critical utility classes used by the SDK (like <code>lg:hidden</code>) won't be generated unless the SDK is declared as a source. Also, importing precompiled CSS files directly ignores any embedded <code>@source</code> directives.
         </Callout>
-        
+
         <p className="mt-4 mb-2 text-open-regular-p text-foreground">
           To fix this, explicitly tell Tailwind to scan the SDK by adding the following to your root CSS file (e.g., <code>globals.css</code>):
         </p>
