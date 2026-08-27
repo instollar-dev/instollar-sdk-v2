@@ -1324,18 +1324,30 @@ export function StyleGuidePanel() {
         <DemoFrame className="max-w-xl space-y-6">
           <div className="space-y-2">
             <h4 className="text-sm font-medium text-foreground">Default Variant (Block)</h4>
+            {/* 
+              FileUpload Props Explained:
+              - variant="default": The standard large dropzone block (default if omitted)
+              - autoUpload: Defaults to true. Automatically uploads the file to sharedApi.uploadFiles. 
+                            Set to false if you want to handle the file upload manually via onFileSelect.
+              - onFileSelect: Fired when a file is selected (or when it is cleared). 
+              - allowOfflineSave: Set to true to cache files in IndexedDB when the network is offline.
+            */}
             <FileUpload
               label="Attachment"
-              onFileSelect={() => undefined}
+              onFileSelect={(file) => console.log('Selected file:', file)}
               helperText="Only PDF, JPG, PNG allowed"
             />
           </div>
           <div className="space-y-2">
             <h4 className="text-sm font-medium text-foreground">Input Variant (Compact)</h4>
+            {/* 
+              - variant="input": A compact, single-line input style ideal for tighter forms.
+              - multiple: Set to true to allow multiple file selections.
+            */}
             <FileUpload
               variant="input"
               label="Profile Picture"
-              onFileSelect={() => undefined}
+              onFileSelect={(file) => console.log('Selected file:', file)}
             />
           </div>
         </DemoFrame>
