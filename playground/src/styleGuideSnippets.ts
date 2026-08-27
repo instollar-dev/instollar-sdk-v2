@@ -351,6 +351,12 @@ const [query, setQuery] = useState('');
   type UploadedFileAsset,
 } from '@instollar-dev/instollar-sdk';
 
+// FileUpload Props Explained:
+// - variant: "default" (large block) or "input" (compact single-line).
+// - autoUpload: Defaults to true. Automatically uploads the file after selection.
+// - uploadFn: Optional. Override the default upload logic.
+// - allowOfflineSave: Set to true to cache files in IndexedDB when offline.
+// - onUploadComplete: Fires when auto-upload finishes successfully.
 <FileUpload
   label="ID document"
   accept={ALL_DOCUMENT_UPLOAD_ACCEPT}
