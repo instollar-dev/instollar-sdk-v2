@@ -1321,13 +1321,23 @@ export function StyleGuidePanel() {
         description="drag-drop · browse · autoUpload + injectable uploadFn · offline hooks from host app"
         code={snippets.fileUpload}
       >
-        <DemoFrame className="max-w-xl">
-          <FileUpload
-            label="Attachment"
-            autoUpload={false}
-            onFileSelect={() => undefined}
-            helperText="Playground uses autoUpload=false — wire uploadFn in your app shim"
-          />
+        <DemoFrame className="max-w-xl space-y-6">
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium text-foreground">Default Variant (Block)</h4>
+            <FileUpload
+              label="Attachment"
+              onFileSelect={() => undefined}
+              helperText="Only PDF, JPG, PNG allowed"
+            />
+          </div>
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium text-foreground">Input Variant (Compact)</h4>
+            <FileUpload
+              variant="input"
+              label="Profile Picture"
+              onFileSelect={() => undefined}
+            />
+          </div>
         </DemoFrame>
       </Section>
 

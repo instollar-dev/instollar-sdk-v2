@@ -478,6 +478,38 @@ function AfterCreate() {
 
 Or render `<SuccessModal … />` as `openModal({ content })` yourself.
 
+## FileUpload
+
+The SDK includes a built-in `FileUpload` component that automatically wires into `sharedApi.uploadFiles`.
+
+### Out-of-the-box usage (Auto Upload)
+By default, `<FileUpload autoUpload />` will upload files directly using the SDK's shared API. No need to pass `uploadFn`.
+
+```tsx
+import { FileUpload } from '@instollar-dev/instollar-sdk';
+
+<FileUpload 
+  label="Profile Picture" 
+  autoUpload={true} 
+  variant="input" // use "default" for the block drag-and-drop zone
+/>
+```
+
+### Manual Upload (via custom hook)
+Set `autoUpload={false}` to disable automatic uploading. It will capture the file and call `onFileSelect`, allowing you to pass the file to your own React Query mutation when submitting a form.
+
+```tsx
+import { FileUpload } from '@instollar-dev/instollar-sdk';
+
+const [file, setFile] = useState<File | null>(null);
+
+<FileUpload 
+  autoUpload={false} 
+  variant="default"
+  onFileSelect={(f) => setFile(f)}
+/>
+```
+
 ## Local development (this repo)
 
 ```bash

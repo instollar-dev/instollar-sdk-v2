@@ -26,9 +26,8 @@ import {
   offlineBlobIdFromUrl,
   validateFileAgainstAccept,
 } from './fileUploadUtils';
-import { DocumentText, DocumentUpload, Eye, Icon, TickCircle } from './Icon';
+import { DocumentText, Eye, Icon, TickCircle } from './Icon';
 import { Spinner } from './Spinner';
-import { formFieldErrorClass, formFieldLabelClass } from './formVariants';
 
 export type {
   FileUploadProps,
@@ -494,16 +493,20 @@ export const FileUpload: FC<FileUploadProps> = ({
   const displayError = errorProp || localError;
 
   return (
-    <div className={cn('w-full', className)}>
-      {label ? <label className={cn(formFieldLabelClass, 'mb-2 block')}>{label}</label> : null}
+    <div className={cn("w-full", className)}>
+      {label && (
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {label}
+        </label>
+      )}
 
       {!hasFile ? (
-        variant === 'input' ? (
+        variant === "input" ? (
           <div
             className={cn(
-              'flex h-11 w-full cursor-pointer items-center justify-between rounded-sm border bg-background px-3 py-2 transition-colors',
-              dragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-muted',
-              displayError && 'border-error',
+              "flex items-center justify-between border rounded-sm px-3 py-2 bg-white cursor-pointer transition-colors w-full h-11",
+              dragActive ? "border-primary bg-primary/5" : "border-border hover:border-gray-400",
+              displayError ? "border-red-500" : ""
             )}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -519,17 +522,34 @@ export const FileUpload: FC<FileUploadProps> = ({
               accept={accept}
               multiple={multiple}
             />
-            <span className="flex-1 truncate pr-2 text-open-regular-p text-muted">
+            <span className="text-sm text-gray-500 truncate flex-1 pr-2">
               {helperText || strings.clickToUploadInput}
             </span>
-            <Icon icon={DocumentUpload} size="sm" color="muted" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-muted shrink-0"
+            >
+              <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+              <path d="M12 12v9" />
+              <path d="m16 16-4-4-4 4" />
+            </svg>
           </div>
         ) : (
           <div
             className={cn(
-              'relative flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center transition-colors',
-              dragActive ? 'border-primary bg-primary/5' : 'border-border bg-background hover:bg-muted/20',
-              displayError && 'border-error',
+              "border border-dashed rounded-lg flex flex-col items-center justify-center p-8 text-center transition-colors relative cursor-pointer",
+              dragActive
+                ? "border-primary bg-primary/5"
+                : "border-gray-300 bg-white hover:bg-gray-50",
+              displayError ? "border-red-500" : "",
             )}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -546,31 +566,48 @@ export const FileUpload: FC<FileUploadProps> = ({
               multiple={multiple}
             />
 
-            <div className="mb-4 text-secondary">
-              <Icon icon={DocumentUpload} size="xl" color="secondary" />
+            <div className="mb-4 text-[#F49E0C]">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="40"
+                height="40"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+                <path d="M12 12v9" />
+                <path d="m16 16-4-4-4 4" />
+              </svg>
             </div>
-            <p className="mb-2 text-open-regular-p text-muted">{strings.clickToUpload}</p>
-            <p className="mb-6 text-open-regular-tiny uppercase text-muted">
+            <p className="text-gray-500 text-sm mb-2">
+              {strings.clickToUpload}
+            </p>
+            <p className="text-gray-500 text-xs mb-6 uppercase">
               {helperText || acceptDisplay}
             </p>
 
             <Button
               type="button"
               variant="ghost"
-              size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 onButtonClick();
               }}
+              className="px-6 py-2 text-xs font-light text-foreground border border-foreground pointer-events-auto hover:bg-muted/10 rounded-md"
               disabled={isUploading}
-              loading={isUploading}
             >
-              {isUploading ? strings.browseUploading : strings.browse}
+              {isUploading
+                ? strings.browseUploading
+                : strings.browse}
             </Button>
           </div>
         )
       ) : (
-        <div className="flex flex-col gap-3 rounded-lg border border-border bg-background p-4">
+        <div className="border border-border rounded-lg p-4 flex flex-col gap-3 bg-white">
           <input
             ref={inputRef}
             type="file"
@@ -579,60 +616,77 @@ export const FileUpload: FC<FileUploadProps> = ({
             accept={accept}
             multiple={multiple}
           />
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-open-regular-label font-medium text-muted">{strings.files}</p>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeFile();
-              }}
-              className="text-open-regular-tiny font-semibold text-destructive transition-colors hover:opacity-80 disabled:opacity-50"
-              disabled={isUploading}
-              aria-label={strings.clearAll}
-            >
-              {strings.clear}
-              {selectedFiles.length > 1 ? ` ${strings.all}` : ''}
-            </button>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-gray-500">{strings.files}</p>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeFile();
+                }}
+                className="text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                disabled={isUploading}
+                aria-label={strings.clearAll}
+              >
+                <span className="text-xs text-red-500 font-semibold">
+                  {strings.clear}
+                  {selectedFiles.length > 1 ? ` ${strings.all}` : ""}
+                </span>
+              </button>
+            </div>
           </div>
-
           {showAssetPreviewGrid ? (
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {displayItems.map((item, idx) => renderGridTile(item, idx))}
             </div>
           ) : (
             displayItems.map((item, idx) => {
-              const isSelected = item.source === 'selected';
-              const selectedIndex = isSelected ? item.index : idx - selectedOffset;
-              const showUploadedIcon = !isSelected || Boolean(uploadedLabels[item.index]);
+              const isSelected = item.source === "selected";
+              const selectedIndex = isSelected
+                ? item.index
+                : idx - selectedOffset;
+              const showUploadedIcon =
+                !isSelected || Boolean(uploadedLabels[item.index]);
 
               return (
-                <div key={item.key} className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 flex-1 items-center gap-4 overflow-hidden">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-muted text-primary">
-                      <Icon icon={DocumentText} size="sm" color="primary" />
+                <div
+                  key={item.key}
+                  className="flex items-center justify-between gap-3"
+                >
+                  <div className="flex items-center gap-4 flex-1 overflow-hidden">
+                    <div className="w-10 h-10 bg-gray-100 rounded-md flex items-center justify-center text-primary shrink-0">
+                      <Icon icon={DocumentText} size="sm" color="current" />
                     </div>
-                    <div className="flex min-w-0 flex-1 flex-col">
-                      <p className="truncate text-open-regular-p font-medium text-foreground">
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">
                         {item.name}
                       </p>
-                      <span className="text-open-regular-tiny text-muted">{item.sizeText}</span>
+                      <span className="text-xs text-gray-400">
+                        {item.sizeText}
+                      </span>
                     </div>
                   </div>
 
-                  {isSelected && isUploading && selectedIndex === selectedFiles.length - 1 ? (
-                    <Spinner size={20} className="shrink-0 text-primary" aria-label="Uploading" />
-                  ) : null}
+                  {isSelected &&
+                    isUploading &&
+                    selectedIndex === selectedFiles.length - 1 && (
+                      <div
+                        className="flex items-center justify-center shrink-0 text-primary"
+                        aria-label="Uploading"
+                      >
+                        <Spinner size={20} className="text-current" />
+                      </div>
+                    )}
 
-                  {showUploadedIcon ? (
-                    <Icon
-                      icon={TickCircle}
-                      size="sm"
-                      color="primary"
-                      variant="Bold"
+                  {showUploadedIcon && (
+                    <div
+                      className="flex items-center justify-center shrink-0 text-green-600"
                       aria-label="Uploaded"
-                    />
-                  ) : null}
+                    >
+                      <Icon icon={TickCircle} size="sm" color="current" variant="Bold" />
+                    </div>
+                  )}
 
                   <button
                     type="button"
@@ -640,7 +694,7 @@ export const FileUpload: FC<FileUploadProps> = ({
                       e.stopPropagation();
                       openPreview(item);
                     }}
-                    className="p-2 text-muted transition-colors hover:text-primary disabled:opacity-50"
+                    className="text-gray-500 hover:text-primary transition-colors p-2 disabled:opacity-50 flex items-center justify-center"
                     disabled={isUploading}
                     title={strings.preview}
                     aria-label={strings.preview}
@@ -653,7 +707,7 @@ export const FileUpload: FC<FileUploadProps> = ({
                       e.stopPropagation();
                       removeItem(item.source, item.index);
                     }}
-                    className="text-open-regular-tiny font-semibold text-destructive hover:opacity-80"
+                    className="text-xs text-red-500 hover:text-red-600 font-semibold"
                     disabled={isUploading}
                   >
                     {strings.remove}
@@ -662,8 +716,7 @@ export const FileUpload: FC<FileUploadProps> = ({
               );
             })
           )}
-
-          {multiple ? (
+          {multiple && (
             <div className="mt-2 flex justify-start">
               <button
                 type="button"
@@ -671,20 +724,20 @@ export const FileUpload: FC<FileUploadProps> = ({
                   e.stopPropagation();
                   onButtonClick();
                 }}
-                className="text-open-regular-tiny font-semibold text-primary hover:underline disabled:opacity-50"
+                className="text-xs text-primary font-semibold hover:underline disabled:opacity-50"
                 disabled={isUploading}
               >
                 {strings.addMore}
               </button>
             </div>
-          ) : null}
+          )}
         </div>
       )}
 
-      {displayError ? (
-        <div className="mt-1 flex flex-wrap items-center gap-2">
-          <p className={formFieldErrorClass}>{displayError}</p>
-          {selectedFiles.length > 0 && autoUpload ? (
+      {displayError && (
+        <div className="mt-1 flex items-center gap-2 flex-wrap">
+          <p className="text-xs text-red-500">{displayError}</p>
+          {selectedFiles.length > 0 && autoUpload && (
             <button
               type="button"
               onClick={() => {
@@ -692,13 +745,13 @@ export const FileUpload: FC<FileUploadProps> = ({
                 void uploadSelectedFiles(selectedFiles);
               }}
               disabled={isUploading}
-              className="text-open-regular-tiny font-medium text-primary hover:underline disabled:opacity-50"
+              className="text-xs font-medium text-primary hover:underline disabled:opacity-50"
             >
               {strings.retry}
             </button>
-          ) : null}
+          )}
         </div>
-      ) : null}
+      )}
     </div>
   );
 };
