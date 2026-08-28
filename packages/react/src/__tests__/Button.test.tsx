@@ -19,7 +19,7 @@ describe('Button', () => {
   it('applies secondary variant inline colors', () => {
     render(<Button variant="secondary">Secondary</Button>);
     const button = screen.getByRole('button', { name: 'Secondary' });
-    expect(button.style.backgroundColor).toBe('var(--color-secondary, #effe3e)');
+    expect(button.style.backgroundColor).toBe('var(--color-secondary, #f49e0c)');
     expect(button.style.color).toBe('var(--color-brand, #012b15)');
   });
 

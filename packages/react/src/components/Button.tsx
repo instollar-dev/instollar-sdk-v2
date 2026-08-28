@@ -37,7 +37,7 @@ const solidVariantStyles: Record<SolidVariant, CSSProperties> = {
     color: '#ffffff',
   },
   secondary: {
-    backgroundColor: 'var(--color-secondary, #effe3e)',
+    backgroundColor: 'var(--color-secondary, #f49e0c)',
     color: 'var(--color-brand, #012b15)',
   },
   destructive: {

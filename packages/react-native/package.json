@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-react-native",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "Instollar React Native UI components",
   "type": "module",
   "main": "./dist/index.js",

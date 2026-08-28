@@ -248,7 +248,7 @@ Tokens ship light (default) and dark themes. Dark activates when `<html>` has `d
 |-------|-------|------|
 | `--color-brand` | `#012b15` | `#012b15` (stable fills) |
 | `--color-primary` | `#012b15` | `#8fc9a5` (accents / text) |
-| `--color-secondary` | `#effe3e` | `#effe3e` |
+| `--color-secondary` | `#f49e0c` | `#f49e0c` |
 | `--color-bg` | `#ffffff` | `#24382f` |
 | `--color-fg` | brand green | `#edf6f0` |
 | `--color-destructive` | `#f49e0c` | `#fbbf24` |

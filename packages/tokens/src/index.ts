@@ -1,7 +1,7 @@
 /** Instollar brand anchors from the style guide (stable across themes). */
 export const brand = {
   primary: '#012b15',
-  secondary: '#effe3e',
+  secondary: '#f49e0c',
 } as const;
 
 export const fonts = {
