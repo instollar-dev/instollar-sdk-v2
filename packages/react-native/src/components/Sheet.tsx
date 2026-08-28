@@ -11,22 +11,19 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  initialWindowMetrics,
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { useThemeColors } from '../theme/ThemeProvider';
 
 const SLIDE_OFFSET = Dimensions.get('window').height;
 const ENTER_MS = 280;
 const EXIT_MS = 220;
-/** Design padding when the host reports no bottom inset. */
 const MIN_BOTTOM_PAD = 16;
-/**
- * The Modal window is translucent, so it draws under the Android navigation bar.
- * Host insets can't be trusted to describe that bar: they read `0` when the app
- * window is laid out above an opaque bar, and some devices report a small
- * gesture-sized inset even with three-key navigation. Reserve a full soft-key
- * bar (~48dp) as a floor so the sheet always clears it.
- */
+/** Soft-key / 3-button nav is typically ≥48dp; never go below this on Android. */
 const ANDROID_NAV_MIN = 48;
 
 export type SheetProps = Omit<RNModalProps, 'transparent'> & {
@@ -38,18 +35,75 @@ export type SheetProps = Omit<RNModalProps, 'transparent'> & {
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   /**
-   * Extra bottom padding under the sheet content. Defaults to the host
-   * `SafeAreaProvider` bottom inset (Android soft nav / iOS home indicator).
-   * Read from the tree *outside* the RN Modal — nested providers inside
-   * Modal often report `0` on Android.
+   * Override bottom clearance. Defaults to measured safe-area inset
+   * (seeded via `initialWindowMetrics` inside the Modal).
    */
   bottomInset?: number;
 };
+
+function sheetBottomClearance(insetBottom: number, override?: number): number {
+  const floor = Platform.OS === 'android' ? ANDROID_NAV_MIN : MIN_BOTTOM_PAD;
+  return Math.max(override ?? insetBottom, floor);
+}
+
+function SheetPanel({
+  children,
+  closeOnBackdrop,
+  onClose,
+  style,
+  contentContainerStyle,
+  bottomInset: bottomInsetProp,
+  translateY,
+}: {
+  children?: ReactNode;
+  closeOnBackdrop: boolean;
+  onClose?: () => void;
+  style?: StyleProp<ViewStyle>;
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  bottomInset?: number;
+  translateY: Animated.Value;
+}) {
+  const colors = useThemeColors();
+  // Inside the Modal's own SafeAreaProvider (seeded with initialWindowMetrics).
+  const insets = useSafeAreaInsets();
+  const bottomClearance = sheetBottomClearance(insets.bottom, bottomInsetProp);
+
+  return (
+    <View style={styles.root}>
+      <DismissKeyboardPressable
+        accessibilityRole="button"
+        accessibilityLabel="Close sheet"
+        style={[styles.backdrop, { backgroundColor: 'rgba(1, 43, 21, 0.45)' }]}
+        onPress={closeOnBackdrop ? onClose : undefined}
+      />
+      <Animated.View
+        style={[
+          styles.panel,
+          {
+            backgroundColor: colors.bg,
+            borderColor: colors.border,
+            transform: [{ translateY }],
+          },
+          style,
+        ]}
+      >
+        <View style={[styles.handle, { backgroundColor: colors.border }]} />
+        <View style={[styles.content, contentContainerStyle]}>{children}</View>
+        {/* Explicit spacer — more reliable than paddingBottom under native-driver transforms. */}
+        <View style={{ height: bottomClearance, backgroundColor: colors.bg }} />
+      </Animated.View>
+    </View>
+  );
+}
 
 /**
  * Lightweight bottom sheet built on RN Modal.
  * Backdrop appears instantly; panel slides up/down.
  * No @gorhom/bottom-sheet — used for long searchable pickers (e.g. PhoneInput country list).
+ *
+ * Soft-nav clearance: RN Modals are a separate window. A nested SafeAreaProvider
+ * without seed metrics often reports bottom: 0 on Android, so we seed with
+ * `initialWindowMetrics` and keep an Android floor of 48dp.
  */
 export function Sheet({
   open,
@@ -58,15 +112,9 @@ export function Sheet({
   closeOnBackdrop = true,
   style,
   contentContainerStyle,
-  bottomInset: bottomInsetProp,
+  bottomInset,
   ...props
 }: SheetProps) {
-  const colors = useThemeColors();
-  // Must run outside the Modal window — a nested SafeAreaProvider inside
-  // RN Modal often returns bottom: 0 on Android edge-to-edge.
-  const insets = useSafeAreaInsets();
-  const floor = Platform.OS === 'android' ? ANDROID_NAV_MIN : MIN_BOTTOM_PAD;
-  const bottomInset = Math.max(bottomInsetProp ?? insets.bottom, floor);
   const [mounted, setMounted] = useState(open);
   const translateY = useRef(new Animated.Value(SLIDE_OFFSET)).current;
 
@@ -116,30 +164,19 @@ export function Sheet({
       {...androidModalProps}
       {...props}
     >
-      <View style={styles.root}>
-        <DismissKeyboardPressable
-          accessibilityRole="button"
-          accessibilityLabel="Close sheet"
-          style={styles.backdrop}
-          onPress={closeOnBackdrop ? onClose : undefined}
-        />
-        <Animated.View
-          style={[
-            styles.panel,
-            {
-              backgroundColor: colors.bg,
-              borderColor: colors.border,
-              transform: [{ translateY }],
-            },
-            style,
-            // After `style` so callers cannot override soft-nav clearance.
-            { paddingBottom: bottomInset },
-          ]}
+      {/* Seed metrics from the host window — empty Modal providers report 0 insets. */}
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <SheetPanel
+          closeOnBackdrop={closeOnBackdrop}
+          onClose={onClose}
+          style={style}
+          contentContainerStyle={contentContainerStyle}
+          bottomInset={bottomInset}
+          translateY={translateY}
         >
-          <View style={[styles.handle, { backgroundColor: colors.border }]} />
-          <View style={[styles.content, contentContainerStyle]}>{children}</View>
-        </Animated.View>
-      </View>
+          {children}
+        </SheetPanel>
+      </SafeAreaProvider>
     </RNModal>
   );
 }
@@ -149,10 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
   },
-  backdrop: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(1, 43, 21, 0.45)',
-  },
+  backdrop: StyleSheet.absoluteFill,
   panel: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -160,6 +194,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
     maxHeight: '92%',
     zIndex: 1,
+    overflow: 'hidden',
   },
   handle: {
     alignSelf: 'center',
@@ -171,7 +206,6 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    // Safe-area / soft-nav clearance lives on the panel (`paddingBottom` above).
     paddingBottom: 12,
   },
 });
