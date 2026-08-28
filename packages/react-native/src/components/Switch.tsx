@@ -77,6 +77,9 @@ export function Switch({
               width: 44,
               height: 24,
               borderRadius: 12,
+              // Android drops rounded corners when the track backgroundColor flips
+              // unless the view clips its children.
+              overflow: 'hidden',
               padding: 2,
               backgroundColor: isChecked ? colors.brand : colors.border,
               justifyContent: 'center',

@@ -23,8 +23,8 @@ const SLIDE_OFFSET = Dimensions.get('window').height;
 const ENTER_MS = 280;
 const EXIT_MS = 220;
 const MIN_BOTTOM_PAD = 16;
-/** Soft-key / 3-button nav is typically ≥48dp; never go below this on Android. */
-const ANDROID_NAV_MIN = 48;
+/** Soft-key / 3-button nav is often taller than 48dp on real devices. */
+const ANDROID_NAV_MIN = 56;
 
 export type SheetProps = Omit<RNModalProps, 'transparent'> & {
   open: boolean;

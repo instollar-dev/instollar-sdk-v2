@@ -13,7 +13,12 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConfirmSheet } from '../components/ConfirmSheet';
+
+/** Same Android soft-nav floor as `Sheet` — host insets are more reliable than Modal ones. */
+const ANDROID_NAV_MIN = 56;
 
 type PendingConfirm = ConfirmOptions & {
   id: number;
@@ -33,8 +38,13 @@ function defaultDismissible(options: ConfirmOptions): boolean {
 }
 
 export function ConfirmProvider({ children }: { children: ReactNode }) {
+  const insets = useSafeAreaInsets();
   const [pending, setPending] = useState<PendingConfirm | null>(null);
   const idRef = useRef(0);
+  const hostBottomInset = Math.max(
+    insets.bottom,
+    Platform.OS === 'android' ? ANDROID_NAV_MIN : 16,
+  );
 
   const finish = useCallback((confirmed: boolean) => {
     setPending((current) => {
@@ -77,6 +87,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
           variant={pending.variant}
           icon={pending.icon}
           dismissible={defaultDismissible(pending)}
+          bottomInset={hostBottomInset}
           onClose={() => finish(false)}
           onCancel={() => finish(false)}
           onConfirm={() => finish(true)}
