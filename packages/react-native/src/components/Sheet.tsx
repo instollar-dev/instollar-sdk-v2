@@ -21,10 +21,13 @@ const EXIT_MS = 220;
 /** Design padding when the host reports no bottom inset. */
 const MIN_BOTTOM_PAD = 16;
 /**
- * Android soft-key bar is often ~48dp. Main-window insets can be `0` while a
- * translucent Modal still draws under the nav bar — fall back in that case.
+ * The Modal window is translucent, so it draws under the Android navigation bar.
+ * Host insets can't be trusted to describe that bar: they read `0` when the app
+ * window is laid out above an opaque bar, and some devices report a small
+ * gesture-sized inset even with three-key navigation. Reserve a full soft-key
+ * bar (~48dp) as a floor so the sheet always clears it.
  */
-const ANDROID_NAV_FALLBACK = 48;
+const ANDROID_NAV_MIN = 48;
 
 export type SheetProps = Omit<RNModalProps, 'transparent'> & {
   open: boolean;
@@ -62,14 +65,8 @@ export function Sheet({
   // Must run outside the Modal window — a nested SafeAreaProvider inside
   // RN Modal often returns bottom: 0 on Android edge-to-edge.
   const insets = useSafeAreaInsets();
-  const hostInset =
-    bottomInsetProp ??
-    (insets.bottom > 0
-      ? insets.bottom
-      : Platform.OS === 'android'
-        ? ANDROID_NAV_FALLBACK
-        : 0);
-  const bottomInset = Math.max(hostInset, MIN_BOTTOM_PAD);
+  const floor = Platform.OS === 'android' ? ANDROID_NAV_MIN : MIN_BOTTOM_PAD;
+  const bottomInset = Math.max(bottomInsetProp ?? insets.bottom, floor);
   const [mounted, setMounted] = useState(open);
   const translateY = useRef(new Animated.Value(SLIDE_OFFSET)).current;
 

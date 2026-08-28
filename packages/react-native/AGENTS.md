@@ -92,7 +92,7 @@ Centered dialog. Backdrop appears instantly; panel fades/slides in. Props: `open
 ### `Sheet`
 Lightweight bottom sheet (RN Modal). Backdrop appears instantly; panel slides up/down. No Gorhom dependency. Props: `open`, `onClose?`, `closeOnBackdrop?`, `children`, `style?`, `contentContainerStyle?`, `bottomInset?`.
 
-Clears Android soft nav / iOS home indicator by padding the panel with the host `SafeAreaProvider` bottom inset (override via `bottomInset`). Host apps must wrap with `SafeAreaProvider` (Expo Router does this by default).
+The panel clears the Android soft-key bar / iOS home indicator on its own: it pads by the host `SafeAreaProvider` bottom inset, with a 48dp floor on Android (the Modal window is translucent, and host insets don't reliably describe the nav bar). Override with `bottomInset`. Host apps must wrap with `SafeAreaProvider` (Expo Router does this by default).
 
 ---
 
