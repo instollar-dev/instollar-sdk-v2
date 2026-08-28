@@ -90,7 +90,9 @@ const [open, setOpen] = useState(false);
 Centered dialog. Backdrop appears instantly; panel fades/slides in. Props: `open`, `onClose?`, `closeOnBackdrop?` (default true), `children`, plus RN Modal props (except `transparent`).
 
 ### `Sheet`
-Lightweight bottom sheet (RN Modal). Backdrop appears instantly; panel slides up/down. No Gorhom dependency. Props: `open`, `onClose?`, `closeOnBackdrop?`, `children`, `style?`, `contentContainerStyle?`.
+Lightweight bottom sheet (RN Modal). Backdrop appears instantly; panel slides up/down. No Gorhom dependency. Props: `open`, `onClose?`, `closeOnBackdrop?`, `children`, `style?`, `contentContainerStyle?`, `bottomInset?`.
+
+Clears Android soft nav / iOS home indicator by padding the panel with the host `SafeAreaProvider` bottom inset (override via `bottomInset`). Host apps must wrap with `SafeAreaProvider` (Expo Router does this by default).
 
 ---
 

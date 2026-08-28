@@ -38,12 +38,14 @@ export function ConfirmSheet({
       open={open}
       onClose={allowDismiss ? handleCancel : undefined}
       closeOnBackdrop={allowDismiss}
+      bottomInset={bottomInset || undefined}
       contentContainerStyle={{ paddingBottom: 0 }}>
       <ConfirmPanel
         {...panelProps}
         variant={variant}
         loading={loading}
-        bottomInset={bottomInset}
+        // Sheet already clears the soft nav; keep a small design pad only.
+        bottomInset={0}
         onCancel={handleCancel}
         onConfirm={handleConfirm}
       />

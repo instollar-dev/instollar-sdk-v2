@@ -4,18 +4,27 @@ import {
   Dimensions,
   Easing,
   Modal as RNModal,
+  Platform,
   StyleSheet,
   View,
   type ModalProps as RNModalProps,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DismissKeyboardPressable } from './DismissKeyboardPressable';
 import { useThemeColors } from '../theme/ThemeProvider';
 
 const SLIDE_OFFSET = Dimensions.get('window').height;
 const ENTER_MS = 280;
 const EXIT_MS = 220;
+/** Design padding when the host reports no bottom inset. */
+const MIN_BOTTOM_PAD = 16;
+/**
+ * Android soft-key bar is often ~48dp. Main-window insets can be `0` while a
+ * translucent Modal still draws under the nav bar — fall back in that case.
+ */
+const ANDROID_NAV_FALLBACK = 48;
 
 export type SheetProps = Omit<RNModalProps, 'transparent'> & {
   open: boolean;
@@ -25,6 +34,13 @@ export type SheetProps = Omit<RNModalProps, 'transparent'> & {
   closeOnBackdrop?: boolean;
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  /**
+   * Extra bottom padding under the sheet content. Defaults to the host
+   * `SafeAreaProvider` bottom inset (Android soft nav / iOS home indicator).
+   * Read from the tree *outside* the RN Modal — nested providers inside
+   * Modal often report `0` on Android.
+   */
+  bottomInset?: number;
 };
 
 /**
@@ -39,9 +55,21 @@ export function Sheet({
   closeOnBackdrop = true,
   style,
   contentContainerStyle,
+  bottomInset: bottomInsetProp,
   ...props
 }: SheetProps) {
   const colors = useThemeColors();
+  // Must run outside the Modal window — a nested SafeAreaProvider inside
+  // RN Modal often returns bottom: 0 on Android edge-to-edge.
+  const insets = useSafeAreaInsets();
+  const hostInset =
+    bottomInsetProp ??
+    (insets.bottom > 0
+      ? insets.bottom
+      : Platform.OS === 'android'
+        ? ANDROID_NAV_FALLBACK
+        : 0);
+  const bottomInset = Math.max(hostInset, MIN_BOTTOM_PAD);
   const [mounted, setMounted] = useState(open);
   const translateY = useRef(new Animated.Value(SLIDE_OFFSET)).current;
 
@@ -72,12 +100,23 @@ export function Sheet({
 
   if (!mounted) return null;
 
+  const androidModalProps =
+    Platform.OS === 'android'
+      ? ({
+          statusBarTranslucent: true,
+          navigationBarTranslucent: true,
+        } as Pick<RNModalProps, 'statusBarTranslucent'> & {
+          navigationBarTranslucent?: boolean;
+        })
+      : undefined;
+
   return (
     <RNModal
       visible={mounted}
       transparent
       animationType="none"
       onRequestClose={onClose}
+      {...androidModalProps}
       {...props}
     >
       <View style={styles.root}>
@@ -96,6 +135,8 @@ export function Sheet({
               transform: [{ translateY }],
             },
             style,
+            // After `style` so callers cannot override soft-nav clearance.
+            { paddingBottom: bottomInset },
           ]}
         >
           <View style={[styles.handle, { backgroundColor: colors.border }]} />
@@ -133,6 +174,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 20,
-    paddingBottom: 28,
+    // Safe-area / soft-nav clearance lives on the panel (`paddingBottom` above).
+    paddingBottom: 12,
   },
 });
