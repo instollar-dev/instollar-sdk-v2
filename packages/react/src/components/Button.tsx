@@ -28,7 +28,7 @@ type SolidVariant = Exclude<ButtonVariant, 'ghost' | 'underline'>;
  * Hex fallbacks keep contrast even if CSS variables fail to resolve in the host app.
  * Primary fill uses `--color-brand` (stable forest green) so dark mode can lift
  * `--color-primary` for text/accents without washing out solid buttons.
- * Secondary = lime fill + brand label.
+ * Secondary = soft mint fill + brand label (light); amber in dark via tokens.
  * Inline styles are intentional — Iconsax/`text-*` alone can fail under host CSS resets.
  */
 const solidVariantStyles: Record<SolidVariant, CSSProperties> = {
@@ -37,7 +37,7 @@ const solidVariantStyles: Record<SolidVariant, CSSProperties> = {
     color: '#ffffff',
   },
   secondary: {
-    backgroundColor: 'var(--color-secondary, #f49e0c)',
+    backgroundColor: 'var(--color-secondary, #a8d9bc)',
     color: 'var(--color-brand, #012b15)',
   },
   destructive: {

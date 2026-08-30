@@ -13,7 +13,8 @@
 
   --color-brand: #012b15;
   --color-primary: #012b15;
-  --color-secondary: #f49e0c;
+  /* Soft mint — amber washes out on white; brand label stays high-contrast. */
+  --color-secondary: #a8d9bc;
 
   --color-bg: #ffffff;
   --color-fg: var(--color-brand);
