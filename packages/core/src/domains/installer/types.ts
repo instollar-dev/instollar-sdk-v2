@@ -34,6 +34,8 @@ export interface InstallerProfileRecordModel {
   otherOccupation?: string | null;
   skills?: string[] | null;
   motivation?: string | null;
+  /** Last registered device push token (FCM / APNs / Expo). */
+  fcmToken?: string | null;
   [key: string]: unknown;
 }
 
