@@ -1,36 +1,159 @@
-import { Add, ArrowDown2, ArrowLeft2, ArrowRight2, CloseCircle, Trash } from 'iconsax-react';
 import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useRef,
   useState,
-  type CSSProperties,
-  type ReactNode,
-  type RefObject,
-} from 'react';
-import { createPortal } from 'react-dom';
-import { useClickOutside } from '../hooks/useClickOutside';
-import { useFloatingPosition } from '../hooks/useFloatingPosition';
-import { useMediaQuery } from '../hooks/useMediaQuery';
-import { cn } from '../utils/cn';
-import { iconPaint } from '../utils/iconPaint';
-import { toSelectOptions } from '../utils/toSelectOptions';
-import { Select } from './Select';
-import { createDefaultRow, rowsToCSV, stripRowIds } from './tableUtils';
+  ReactNode,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useEffect,
+  FC,
+  createRef,
+} from "react";
+import { Plus, Trash2, ChevronRight, ChevronLeft, X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { createPortal } from "react-dom";
+import Modal, { ModalContent } from "./Modal";
+import Select from "./Select";
+import { toSelectOptions } from "../utils/toSelectOptions";
+import { useMediaQuery } from "../hooks/useMediaQuery";
+
+/**
+ * Table Component
+ *
+ * A sophisticated, reusable table component with dynamic rows, columns, and cell types.
+ *
+ * @example
+ * // Basic usage with column definitions
+ * const columns: ColumnDef[] = [
+ *   { key: "itemName", label: "Item name", type: "text", placeholder: "Input item name" },
+ *   { key: "description", label: "Description", type: "text", placeholder: "Input description" },
+ *   { key: "qty", label: "Qty", type: "number", placeholder: "0", align: "center", width: "80px" },
+ * ];
+ *
+ * <Table
+ *   columns={columns}
+ *   rows={rows}
+ *   onRowsChange={setRows}
+ * />
+ *
+ * @example
+ * // With select dropdown
+ * const columns: ColumnDef[] = [
+ *   { key: "status", label: "Status", type: "select", options: ["Active", "Inactive"] },
+ * ];
+ *
+ * @example
+ * // With custom cell renderer
+ * const columns: ColumnDef[] = [
+ *   {
+ *     key: "custom",
+ *     label: "Custom",
+ *     renderCell: (row, onChange) => (
+ *       <CustomComponent value={row.custom} onChange={onChange} />
+ *     )
+ *   },
+ * ];
+ *
+ * @example
+ * // With string/display type
+ * const columns: ColumnDef[] = [
+ *   {
+ *     key: "status",
+ *     label: "Status",
+ *     type: "string",
+ *     format: (value) => value.toUpperCase()
+ *   },
+ * ];
+ *
+ * @example
+ * // With component prop
+ * const CustomCell = ({ value, row, onChange }) => (
+ *   <div className="custom-cell">{value}</div>
+ * );
+ *
+ * const columns: ColumnDef[] = [
+ *   {
+ *     key: "custom",
+ *     label: "Custom",
+ *     component: CustomCell
+ *   },
+ * ];
+ *
+ * @example
+ * // Get structured data using ref
+ * const tableRef = useRef<TableHandle>(null);
+ *
+ * const handleSubmit = () => {
+ *   const data = tableRef.current?.getData();
+ *   const isValid = tableRef.current?.validate();
+ *   console.log("Table data:", data);
+ * };
+ *
+ * <Table
+ *   ref={tableRef}
+ *   columns={columns}
+ *   rows={rows}
+ *   onRowsChange={setRows}
+ * />
+ *
+ * @example
+ * // With extended cell (dropdown/popover that extends outside table)
+ * const columns: ColumnDef[] = [
+ *   {
+ *     key: "actions",
+ *     label: "Actions",
+ *     type: "display",
+ *     renderExtendedCell: (row, rowIndex, isOpen, onToggle, cellRef) => (
+ *       <>
+ *         <button onClick={onToggle}>More</button>
+ *         {isOpen && (
+ *           <div className="absolute top-full left-0 mt-1 bg-white shadow-lg rounded border p-2 z-50">
+ *             <button onClick={() => console.log("Edit", row)}>Edit</button>
+ *             <button onClick={() => console.log("Delete", row)}>Delete</button>
+ *           </div>
+ *         )}
+ *       </>
+ *     ),
+ *   },
+ * ];
+ *
+ * @example
+ * // With extra cells in a column (e.g., for totals/summaries)
+ * const grandTotal = items.reduce((sum, item) => sum + item.total, 0);
+ * const columns: ColumnDef[] = [
+ *   { key: "itemName", label: "Item", type: "string" },
+ *   { key: "qty", label: "Qty", type: "number", align: "center" },
+ *   {
+ *     key: "total",
+ *     label: "Total",
+ *     type: "string",
+ *     align: "right",
+ *     format: (value) => `$${value.toLocaleString()}`,
+ *     extraCells: [
+ *       {
+ *         content: (
+ *           <div className="flex justify-between items-center">
+ *             <span className="font-bold">GRAND TOTAL</span>
+ *             <span className="font-bold">${grandTotal.toLocaleString()}</span>
+ *           </div>
+ *         ),
+ *         className: "bg-gray-50",
+ *         align: "right"
+ *       }
+ *     ]
+ *   },
+ * ];
+ */
 
 export type CellType =
-  | 'text'
-  | 'number'
-  | 'select'
-  | 'date'
-  | 'email'
-  | 'tel'
-  | 'readonly'
-  | 'string'
-  | 'display';
+  | "text"
+  | "number"
+  | "select"
+  | "date"
+  | "email"
+  | "tel"
+  | "readonly"
+  | "string"
+  | "display";
 
 export interface ColumnOption {
   label: string;
@@ -38,33 +161,52 @@ export interface ColumnOption {
 }
 
 export interface ColumnDef {
+  /** Unique key for the column (maps to row data property) */
   key: string;
+  /** Column header label */
   label: string;
+  /** Cell input type */
   type?: CellType;
+  /** Placeholder text for inputs */
   placeholder?: string;
+  /** Options for select type cells */
   options?: (string | number | ColumnOption)[];
-  align?: 'left' | 'center' | 'right';
+  /** Column alignment */
+  align?: "left" | "center" | "right";
+  /** Column width */
   width?: string;
+  /** Minimum width for responsive tables */
   minWidth?: string;
+  /** Whether column is editable */
   editable?: boolean;
+  /** Custom cell renderer function */
   renderCell?: (
     row: Record<string, any>,
     rowIndex: number,
     onChange: (value: any) => void,
   ) => ReactNode;
+  /** React component to render in cell (alternative to renderCell) */
   component?: React.ComponentType<{
     row: Record<string, any>;
     rowIndex: number;
     value: any;
     onChange: (value: any) => void;
   }>;
+  /** Custom header renderer */
   renderHeader?: () => ReactNode;
+  /** Validation function */
   validate?: (value: any) => string | null;
+  /** Default value for new rows */
   defaultValue?: any;
+  /** Format function for string/display types */
   format?: (value: any, row: Record<string, any>) => string;
+  /** Optional classes merged into string/display cell content (after defaults). */
   cellClassName?: string;
+  /** Optional classes merged into the column header `<th>`. */
   headerClassName?: string;
+  /** Optional classes merged into body `<td>` for this column (background, e.g. `bg-[#F3F4F6]`). Does not affect `<th>`. */
   cellBackgroundClassName?: string;
+  /** Render extended cell content that appears outside table boundaries (e.g., dropdowns, popovers) */
   renderExtendedCell?: (
     row: Record<string, any>,
     rowIndex: number,
@@ -72,1015 +214,1278 @@ export interface ColumnDef {
     onToggle: () => void,
     cellRef: React.RefObject<HTMLTableCellElement | null>,
   ) => ReactNode;
+  /** Whether extended cell should be controlled externally */
   extendedCellControlled?: boolean;
+  /** Initial state for extended cell (if controlled) */
   extendedCellOpen?: (rowIndex: number) => boolean;
+  /** Extra cells to render below the regular rows for this column (e.g., totals, summaries) */
   extraCells?: Array<{
     content: ReactNode;
     className?: string;
-    align?: 'left' | 'center' | 'right';
+    align?: "left" | "center" | "right";
   }>;
 }
 
-export interface TableLabels {
-  details?: string;
-  serialNumber?: string;
-  action?: string;
-  pageOf?: (page: number, total: number) => string;
-  rows?: string;
-}
-
 export interface TableProps {
+  /** Column definitions */
   columns: ColumnDef[];
+  /** Array of table rows. If provided, component is controlled. */
   rows?: Record<string, any>[];
+  /** Callback fired when rows change. Required if using controlled mode. */
   onRowsChange?: (rows: Record<string, any>[]) => void;
+  /** Whether to show serial numbers column */
   showSerialNumbers?: boolean;
+  /** Whether to show delete row button */
   showDeleteButton?: boolean;
+  /** Whether table is editable (shows "Add another row" button) */
   editable?: boolean;
+  /** Whether to show inline delete button on each row (only when rows > 1) */
   showInlineDelete?: boolean;
+  /** Custom add row button text */
   addRowText?: string;
+  /** Custom empty state message */
   emptyMessage?: string;
-  onRowDelete?: (rowIndex: number) => void;
-  footer?: ReactNode;
-  onDataRequest?: (data: Record<string, any>[]) => void;
-  extendedCellZIndex?: number;
-  extendedCellContainer?: HTMLElement;
-  paginated?: boolean;
-  currentPage?: number;
-  totalPages?: number;
-  rowsPerPage?: number;
-  onPageChange?: (page: number) => void;
-  onRowsPerPageChange?: (rowsPerPage: number) => void;
-  showRowsPerPage?: boolean;
-  customPagination?: ReactNode;
-  hideHorizontalBorders?: boolean;
-  hideVerticalBorders?: boolean;
-  hideTopBorder?: boolean;
-  hideBottomBorder?: boolean;
-  mobileResponsive?: boolean;
-  mobileColumnsCount?: number;
-  getRowClassName?: (row: Record<string, any>, index: number) => string;
+  /** Additional CSS classes */
   className?: string;
-  tableClassName?: string;
-  theadClassName?: string;
-  tbodyClassName?: string;
-  trClassName?: string;
-  thClassName?: string;
-  tdClassName?: string;
-  minWidth?: string;
-  labels?: TableLabels;
+  /** Callback when a row is deleted */
+  onRowDelete?: (rowIndex: number) => void;
+  /** Custom footer content */
+  footer?: ReactNode;
+  /** Callback when data is requested via ref */
+  onDataRequest?: (data: Record<string, any>[]) => void;
+  /** Z-index for extended cells (default: 50) */
+  extendedCellZIndex?: number;
+  /** Container for extended cells (default: document.body) */
+  extendedCellContainer?: HTMLElement;
+  /** Enable pagination */
+  paginated?: boolean;
+  /** Current page (1-indexed) */
+  currentPage?: number;
+  /** Total number of pages */
+  totalPages?: number;
+  /** Number of rows per page */
+  rowsPerPage?: number;
+  /** Callback when page changes */
+  onPageChange?: (page: number) => void;
+  /** Callback when rows per page changes */
+  onRowsPerPageChange?: (rowsPerPage: number) => void;
+  /** Show rows per page selector */
+  showRowsPerPage?: boolean;
+  /** Custom pagination footer */
+  customPagination?: ReactNode;
+  /** Hide horizontal cell borders (top and bottom borders) */
+  hideHorizontalBorders?: boolean;
+  /** Hide vertical cell borders (left and right borders) */
+  hideVerticalBorders?: boolean;
+  /** Hide top cell borders only */
+  hideTopBorder?: boolean;
+  /** Hide bottom cell borders only */
+  hideBottomBorder?: boolean;
+  /** Enable mobile responsive mode (collapse columns + detail modal) */
+  mobileResponsive?: boolean;
+  /** Number of columns to show on mobile before collapsing into modal */
+  mobileColumnsCount?: number;
+  /** Optional callback to provide custom CSS classes for a row */
+  getRowClassName?: (row: Record<string, any>, index: number) => string;
 }
 
 export interface TableHandle {
+  /** Get all table data as structured array */
   getData: () => Record<string, any>[];
+  /** Get data without internal IDs */
   getDataWithoutIds: () => Record<string, any>[];
+  /** Validate all rows and return validation errors */
   validate: () => {
     isValid: boolean;
     errors: Array<{ rowIndex: number; field: string; message: string }>;
   };
+  /** Get row count */
   getRowCount: () => number;
+  /** Add a new row programmatically */
   addRow: () => void;
+  /** Clear all rows */
   clearRows: () => void;
+  /** Get specific row by index */
   getRow: (index: number) => Record<string, any> | undefined;
+  /** Update specific row by index */
   updateRow: (index: number, data: Partial<Record<string, any>>) => void;
+  /** Export data as JSON string */
   exportJSON: () => string;
+  /** Export data as CSV string */
   exportCSV: () => string;
 }
 
-const ROWS_PER_PAGE_OPTIONS = [5, 10, 25];
-
-const alignClasses: Record<NonNullable<ColumnDef['align']>, string> = {
-  left: 'text-left',
-  center: 'text-center',
-  right: 'text-right',
-};
-
-function alignClass(align?: 'left' | 'center' | 'right') {
-  return align ? alignClasses[align] : 'text-left';
-}
-
-function autoResizeTextarea(el: HTMLTextAreaElement) {
-  el.style.height = 'auto';
-  el.style.height = `${Math.max(24, el.scrollHeight)}px`;
-}
-
-const inputBaseClass =
-  'w-full border-none bg-transparent text-open-regular-p text-foreground outline-none placeholder:text-muted';
-
-/* ------------------------------------------------------------------ */
-/* Extended cell portal                                                */
-/* ------------------------------------------------------------------ */
-
-function ExtendedCellPortal({
-  cellRef,
-  container,
-  zIndex,
-  children,
-}: {
-  cellRef: RefObject<HTMLTableCellElement | null>;
-  container?: HTMLElement;
-  zIndex: number;
-  children: ReactNode;
-}) {
-  const [rect, setRect] = useState<{ top: number; left: number; width: number } | null>(null);
-
-  useLayoutEffect(() => {
-    const update = () => {
-      const cell = cellRef.current;
-      if (!cell) return;
-      const bounds = cell.getBoundingClientRect();
-      setRect({ top: bounds.bottom, left: bounds.left, width: bounds.width });
-    };
-    update();
-    window.addEventListener('scroll', update, true);
-    window.addEventListener('resize', update);
-    return () => {
-      window.removeEventListener('scroll', update, true);
-      window.removeEventListener('resize', update);
-    };
-  }, [cellRef]);
-
-  if (!rect || typeof document === 'undefined') return null;
-
-  const style: CSSProperties = {
-    position: 'fixed',
-    top: rect.top,
-    left: rect.left,
-    width: rect.width,
-    zIndex,
-  };
-
-  return createPortal(<div style={style}>{children}</div>, container ?? document.body);
-}
-
-/* ------------------------------------------------------------------ */
-/* Mobile detail modal (internal — intentionally not a public Modal)   */
-/* ------------------------------------------------------------------ */
-
-function TableDetailModal({
-  title,
-  onClose,
-  children,
-}: {
-  title: string;
-  onClose: () => void;
-  children: ReactNode;
-}) {
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
-
-  if (typeof document === 'undefined') return null;
-
-  return createPortal(
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-6">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden />
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="relative flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-background shadow-xl"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
-          <span className="text-open-bold-p text-foreground">{title}</span>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="cursor-pointer text-muted transition-colors hover:text-foreground"
-          >
-            <CloseCircle size={20} color={iconPaint.current} aria-hidden />
-          </button>
-        </div>
-        <div className="flex min-h-0 flex-col gap-4 overflow-y-auto p-6">{children}</div>
-      </div>
-    </div>,
-    document.body,
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Rows-per-page dropdown (portal + viewport collision handling)       */
-/* ------------------------------------------------------------------ */
-
-function RowsPerPageDropdown({
-  rowsPerPage,
-  rowsLabel,
-  onSelect,
-}: {
-  rowsPerPage: number;
-  rowsLabel: string;
-  onSelect: (value: number) => void;
-}) {
-  const anchorRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
-  const position = useFloatingPosition(anchorRef, open, 140);
-
-  const close = useCallback(() => setOpen(false), []);
-  useClickOutside([anchorRef, menuRef], close, open);
-
-  const menu =
-    open && position ? (
-      <div
-        ref={menuRef}
-        style={{
-          position: 'fixed',
-          left: position.left,
-          width: position.width,
-          zIndex: 2147483646,
-          ...(position.placement === 'bottom'
-            ? { top: position.top }
-            : { bottom: position.bottom }),
-        }}
-        className="overflow-hidden rounded-lg border border-border bg-background py-1 shadow-lg"
-      >
-        {ROWS_PER_PAGE_OPTIONS.map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() => {
-              onSelect(option);
-              setOpen(false);
-            }}
-            className={cn(
-              'block w-full cursor-pointer px-3 py-2 text-left text-open-regular-tiny transition-colors hover:bg-foreground/5',
-              option === rowsPerPage ? 'font-semibold text-primary' : 'text-foreground',
-            )}
-          >
-            {option} rows
-          </button>
-        ))}
-      </div>
-    ) : null;
-
-  return (
-    <>
-      <button
-        ref={anchorRef}
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        onClick={() => setOpen((current) => !current)}
-        className="flex cursor-pointer items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-open-regular-tiny text-foreground transition-colors hover:bg-foreground/5"
-      >
-        <span>
-          {rowsLabel}: {rowsPerPage} rows
-        </span>
-        <ArrowDown2
-          size={14}
-          color={iconPaint.muted}
-          className={cn('transition-transform duration-200', open && 'rotate-180')}
-          aria-hidden
-        />
-      </button>
-      {typeof document !== 'undefined' && menu ? createPortal(menu, document.body) : null}
-    </>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Table                                                               */
-/* ------------------------------------------------------------------ */
-
-const Table = forwardRef<TableHandle, TableProps>(function Table(
-  {
-    columns,
-    rows,
-    onRowsChange,
-    showSerialNumbers = false,
-    showDeleteButton = false,
-    editable = false,
-    showInlineDelete = false,
-    addRowText = 'Add another row',
-    emptyMessage,
-    onRowDelete,
-    footer,
-    onDataRequest,
-    extendedCellZIndex = 50,
-    extendedCellContainer,
-    paginated = false,
-    currentPage = 1,
-    totalPages = 1,
-    rowsPerPage = 10,
-    onPageChange,
-    onRowsPerPageChange,
-    showRowsPerPage = true,
-    customPagination,
-    hideHorizontalBorders = false,
-    hideVerticalBorders = false,
-    hideTopBorder = false,
-    hideBottomBorder = false,
-    mobileResponsive = true,
-    mobileColumnsCount = 2,
-    getRowClassName,
-    className,
-    tableClassName,
-    theadClassName,
-    tbodyClassName,
-    trClassName,
-    thClassName,
-    tdClassName,
-    minWidth = '600px',
-    labels,
-  },
-  ref,
-) {
-  const isControlled = rows !== undefined;
-  const [internalRows, setInternalRows] = useState<Record<string, any>[]>(() => [
-    createDefaultRow(columns),
-  ]);
-  const currentRows = isControlled ? (rows as Record<string, any>[]) : internalRows;
-
-  const [cellErrors, setCellErrors] = useState<Record<number, Record<string, string>>>({});
-  const [extendedOpen, setExtendedOpen] = useState<Record<string, boolean>>({});
-  const [detailRowIndex, setDetailRowIndex] = useState<number | null>(null);
-
-  const extendedCellRefs = useRef(new Map<string, RefObject<HTMLTableCellElement | null>>());
-
-  const isMobileViewport = useMediaQuery('(max-width: 767px)');
-  const isMobile = mobileResponsive && isMobileViewport;
-
-  const visibleColumns = isMobile ? columns.slice(0, mobileColumnsCount) : columns;
-  const showSerialColumn = showSerialNumbers && !isMobile;
-  const showInlineDeleteColumn = showInlineDelete && currentRows.length > 1;
-
-  const detailsLabel = labels?.details ?? 'Details';
-  const serialLabel = labels?.serialNumber ?? 'S/N';
-  const actionLabel = labels?.action ?? 'Action';
-  const rowsLabel = labels?.rows ?? 'Rows';
-  const pageOfLabel = labels?.pageOf ?? ((page: number, total: number) => `Page ${page} of ${total}`);
-
-  const commitRows = useCallback(
-    (next: Record<string, any>[]) => {
-      if (!isControlled) setInternalRows(next);
-      onRowsChange?.(next);
+const Table = forwardRef<TableHandle, TableProps>(
+  (
+    {
+      columns,
+      rows: controlledRows,
+      onRowsChange,
+      showSerialNumbers = true,
+      showDeleteButton = false,
+      editable = true,
+      showInlineDelete = false,
+      addRowText = "Add another row",
+      emptyMessage,
+      className = "",
+      onRowDelete,
+      footer,
+      onDataRequest,
+      extendedCellZIndex = 50,
+      extendedCellContainer,
+      paginated = false,
+      currentPage = 1,
+      totalPages = 1,
+      rowsPerPage = 10,
+      onPageChange,
+      onRowsPerPageChange,
+      showRowsPerPage = true,
+      customPagination,
+      hideHorizontalBorders = false,
+      hideVerticalBorders = false,
+      hideTopBorder = false,
+      hideBottomBorder = false,
+      mobileResponsive = true,
+      mobileColumnsCount = 2,
+      getRowClassName,
     },
-    [isControlled, onRowsChange],
-  );
+    ref,
+  ) => {
+    const isMobile = useMediaQuery("(max-width: 767px)");
+    const [selectedMobileRowIndex, setSelectedMobileRowIndex] = useState<
+      number | null
+    >(null);
 
-  const handleCellChange = useCallback(
-    (rowIndex: number, column: ColumnDef, value: any) => {
-      const next = currentRows.map((row, index) =>
-        index === rowIndex ? { ...row, [column.key]: value } : row,
+    // Helper function to generate border classes
+    const getBorderClasses = (options?: {
+      includeTop?: boolean;
+      includeBottom?: boolean;
+      includeLeft?: boolean;
+      includeRight?: boolean;
+      isFirst?: boolean;
+    }) => {
+      const {
+        includeTop = false,
+        includeBottom = false,
+        includeLeft = false,
+        includeRight = false,
+        isFirst = false,
+      } = options || {};
+
+      const classes: string[] = [];
+
+      // Top border: hide if hideHorizontalBorders OR hideTopBorder is true
+      if (includeTop && !hideHorizontalBorders && !hideTopBorder) {
+        classes.push("border-t");
+      }
+
+      // Bottom border: hide if hideHorizontalBorders OR hideBottomBorder is true
+      if (includeBottom && !hideHorizontalBorders && !hideBottomBorder) {
+        classes.push("border-b");
+      }
+
+      // Vertical borders (left and right)
+      if (!hideVerticalBorders) {
+        if (includeRight) classes.push("border-r");
+        if (includeLeft || isFirst) {
+          classes.push("border-l");
+        }
+      }
+
+      // Always add border-gray if any borders are present
+      if (classes.length > 0) {
+        classes.push("border-gray-100");
+      }
+
+      return classes.join(" ");
+    };
+
+    // Create default row from column definitions
+    const createDefaultRow = (): Record<string, any> => {
+      const row: Record<string, any> = { id: Date.now() };
+      columns.forEach((col) => {
+        row[col.key] =
+          col.defaultValue !== undefined
+            ? col.defaultValue
+            : col.type === "number"
+              ? 0
+              : "";
+      });
+      return row;
+    };
+
+    const [internalRows, setInternalRows] = useState<Record<string, any>[]>([
+      createDefaultRow(),
+    ]);
+
+    // Per-cell validation errors: rowIndex -> { [columnKey]: message }
+    const [cellErrors, setCellErrors] = useState<
+      Record<number, Record<string, string>>
+    >({});
+
+    // Track extended cell states: "columnKey-rowIndex" -> boolean
+    const [extendedCellStates, setExtendedCellStates] = useState<
+      Record<string, boolean>
+    >({});
+
+    // Refs for cells with extended content
+    const cellRefs = useRef<
+      Record<string, React.RefObject<HTMLTableCellElement | null>>
+    >({});
+
+    // State and ref for rows per page dropdown
+    const [isRowsPerPageOpen, setIsRowsPerPageOpen] = useState(false);
+    const rowsPerPageButtonRef = useRef<HTMLButtonElement>(null);
+
+    // Use controlled rows if provided, otherwise use internal state
+    const rows = controlledRows || internalRows;
+    const setRows = onRowsChange
+      ? (newRows: Record<string, any>[]) => {
+        onRowsChange(newRows);
+      }
+      : setInternalRows;
+
+    // Initialize cell refs
+    useEffect(() => {
+      columns.forEach((col) => {
+        if (col.renderExtendedCell) {
+          rows.forEach((_, rowIndex) => {
+            const key = `${col.key}-${rowIndex}`;
+            if (!cellRefs.current[key]) {
+              cellRefs.current[key] = createRef<HTMLTableCellElement>();
+            }
+          });
+        }
+      });
+    }, [columns, rows.length]);
+
+    const getExtendedCellKey = (columnKey: string, rowIndex: number) => {
+      return `${columnKey}-${rowIndex}`;
+    };
+
+    const isExtendedCellOpen = (columnKey: string, rowIndex: number) => {
+      const key = getExtendedCellKey(columnKey, rowIndex);
+      const column = columns.find((col) => col.key === columnKey);
+
+      if (column?.extendedCellControlled && column.extendedCellOpen) {
+        return column.extendedCellOpen(rowIndex);
+      }
+
+      return extendedCellStates[key] || false;
+    };
+
+    const toggleExtendedCell = (columnKey: string, rowIndex: number) => {
+      const key = getExtendedCellKey(columnKey, rowIndex);
+      const column = columns.find((col) => col.key === columnKey);
+
+      if (column?.extendedCellControlled) {
+        // Controlled mode - don't update internal state
+        return;
+      }
+
+      setExtendedCellStates((prev) => ({
+        ...prev,
+        [key]: !prev[key],
+      }));
+    };
+
+    const handleAddRow = () => {
+      const newRow = createDefaultRow();
+      setRows([...rows, newRow]);
+    };
+
+    const handleDeleteRow = (rowIndex: number) => {
+      const updatedRows = rows.filter((_, index) => index !== rowIndex);
+      setRows(updatedRows);
+      onRowDelete?.(rowIndex);
+    };
+
+    const handleFieldChange = (
+      rowIndex: number,
+      fieldKey: string,
+      value: any,
+    ) => {
+      const updatedRows = rows.map((row, index) =>
+        index === rowIndex ? { ...row, [fieldKey]: value } : row,
       );
-      commitRows(next);
+      setRows(updatedRows);
 
-      if (column.validate) {
-        const message = column.validate(value);
-        setCellErrors((previous) => {
-          const rowErrors = { ...(previous[rowIndex] ?? {}) };
-          if (message) {
-            rowErrors[column.key] = message;
-          } else {
-            delete rowErrors[column.key];
+      const column = columns.find((col) => col.key === fieldKey);
+      if (column?.validate) {
+        const error = column.validate(value);
+        setCellErrors((prev) => {
+          const prevRowErrors = prev[rowIndex] ?? {};
+          // Remove existing error for this field
+          const { [fieldKey]: _removed, ...restRow } = prevRowErrors;
+          if (!error) {
+            // No error for this field; keep other fields' errors
+            return {
+              ...prev,
+              [rowIndex]: restRow,
+            };
           }
-          const nextErrors = { ...previous };
-          if (Object.keys(rowErrors).length > 0) {
-            nextErrors[rowIndex] = rowErrors;
-          } else {
-            delete nextErrors[rowIndex];
-          }
-          return nextErrors;
+          // Set new error for this field
+          return {
+            ...prev,
+            [rowIndex]: {
+              ...restRow,
+              [fieldKey]: error,
+            },
+          };
         });
       }
-    },
-    [commitRows, currentRows],
-  );
+    };
 
-  const addRow = useCallback(() => {
-    commitRows([...currentRows, createDefaultRow(columns)]);
-  }, [columns, commitRows, currentRows]);
+    const renderCell = (
+      column: ColumnDef,
+      row: Record<string, any>,
+      rowIndex: number,
+    ) => {
+      const value = row[column.key];
+      const cellValue = value ?? "";
 
-  const deleteRow = useCallback(
-    (rowIndex: number) => {
-      commitRows(currentRows.filter((_, index) => index !== rowIndex));
-      setCellErrors((previous) => {
-        const next: Record<number, Record<string, string>> = {};
-        for (const [key, value] of Object.entries(previous)) {
-          const index = Number(key);
-          if (index === rowIndex) continue;
-          next[index > rowIndex ? index - 1 : index] = value;
-        }
-        return next;
-      });
-      onRowDelete?.(rowIndex);
-    },
-    [commitRows, currentRows, onRowDelete],
-  );
-
-  const validateAll = useCallback(() => {
-    const errors: Array<{ rowIndex: number; field: string; message: string }> = [];
-    const nextCellErrors: Record<number, Record<string, string>> = {};
-    currentRows.forEach((row, rowIndex) => {
-      for (const column of columns) {
-        if (!column.validate) continue;
-        const message = column.validate(row[column.key]);
-        if (message) {
-          errors.push({ rowIndex, field: column.key, message });
-          nextCellErrors[rowIndex] = { ...(nextCellErrors[rowIndex] ?? {}), [column.key]: message };
-        }
-      }
-    });
-    setCellErrors(nextCellErrors);
-    return { isValid: errors.length === 0, errors };
-  }, [columns, currentRows]);
-
-  useImperativeHandle(ref, () => ({
-    getData: () => {
-      onDataRequest?.(currentRows);
-      return currentRows;
-    },
-    getDataWithoutIds: () => stripRowIds(currentRows),
-    validate: validateAll,
-    getRowCount: () => currentRows.length,
-    addRow,
-    clearRows: () => commitRows([]),
-    getRow: (index: number) => currentRows[index],
-    updateRow: (index: number, data: Partial<Record<string, any>>) => {
-      commitRows(currentRows.map((row, i) => (i === index ? { ...row, ...data } : row)));
-    },
-    exportJSON: () => JSON.stringify(stripRowIds(currentRows), null, 2),
-    exportCSV: () => rowsToCSV(columns, currentRows),
-  }));
-
-  const getExtendedCellRef = (key: string): RefObject<HTMLTableCellElement | null> => {
-    let cellRef = extendedCellRefs.current.get(key);
-    if (!cellRef) {
-      cellRef = { current: null };
-      extendedCellRefs.current.set(key, cellRef);
-    }
-    return cellRef;
-  };
-
-  const isExtendedCellOpen = (column: ColumnDef, rowIndex: number, key: string) =>
-    column.extendedCellControlled
-      ? Boolean(column.extendedCellOpen?.(rowIndex))
-      : Boolean(extendedOpen[key]);
-
-  const toggleExtendedCell = (column: ColumnDef, key: string) => {
-    if (column.extendedCellControlled) return;
-    setExtendedOpen((previous) => ({ ...previous, [key]: !previous[key] }));
-  };
-
-  /* ---------------------------- cell rendering ---------------------------- */
-
-  const renderCellContent = (column: ColumnDef, row: Record<string, any>, rowIndex: number) => {
-    const value = row[column.key];
-    const onChange = (nextValue: any) => handleCellChange(rowIndex, column, nextValue);
-
-    if (column.component) {
-      const CellComponent = column.component;
-      return <CellComponent row={row} rowIndex={rowIndex} value={value} onChange={onChange} />;
-    }
-
-    if (column.renderCell) {
-      return column.renderCell(row, rowIndex, onChange);
-    }
-
-    const displayText = column.format ? column.format(value, row) : String(value || '');
-
-    if (
-      column.type === 'string' ||
-      column.type === 'display' ||
-      column.type === 'readonly' ||
-      column.editable === false
-    ) {
-      return (
-        <span className={cn('text-open-regular-p text-foreground', column.cellClassName)}>
-          {displayText}
-        </span>
-      );
-    }
-
-    if (column.type === 'select') {
-      const selectValue = value === '' || value === null || value === undefined ? undefined : String(value);
-      return (
-        <div className={cn('mx-0 -my-4 w-full', !isMobile && 'min-w-[150px]')}>
-          <Select
-            options={toSelectOptions(column.options ?? [])}
-            value={selectValue}
-            onValueChange={(nextValue) => {
-              const single = Array.isArray(nextValue) ? nextValue[0] : nextValue;
-              onChange(single === null || single === undefined ? '' : String(single));
-            }}
-            placeholder={column.placeholder}
-            searchable={false}
-            variant="inline"
-            containerClassName="w-full"
-            dropdownClassName="min-w-[200px]"
-          />
-        </div>
-      );
-    }
-
-    if (column.type === 'number') {
-      return (
-        <input
-          type="number"
-          value={value === 0 || value === '' || value === null || value === undefined ? '' : value}
-          placeholder={column.placeholder}
-          onChange={(event) => {
-            const raw = event.target.value;
-            onChange(raw === '' ? 0 : parseFloat(raw) || 0);
-          }}
-          className={cn(
-            inputBaseClass,
-            '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
-            column.align === 'center' && 'text-center',
-            column.align === 'right' && 'text-right',
-          )}
-        />
-      );
-    }
-
-    if (column.type === 'date') {
-      return (
-        <input
-          type="date"
-          value={value ?? ''}
-          placeholder={column.placeholder}
-          onChange={(event) => onChange(event.target.value)}
-          className={inputBaseClass}
-        />
-      );
-    }
-
-    if (column.type === 'text' || column.type === undefined) {
-      return (
-        <textarea
-          rows={1}
-          value={value ?? ''}
-          placeholder={column.placeholder}
-          ref={(el) => {
-            if (el) autoResizeTextarea(el);
-          }}
-          onChange={(event) => {
-            autoResizeTextarea(event.target);
-            onChange(event.target.value);
-          }}
-          onFocus={(event) => autoResizeTextarea(event.target)}
-          className={cn(inputBaseClass, 'resize-none overflow-hidden')}
-        />
-      );
-    }
-
-    return (
-      <input
-        type={column.type}
-        value={value ?? ''}
-        placeholder={column.placeholder}
-        onChange={(event) => onChange(event.target.value)}
-        className={inputBaseClass}
-      />
-    );
-  };
-
-  /* ------------------------------- borders -------------------------------- */
-
-  const cellBorders = (options: {
-    isFirstColumn: boolean;
-    isHeader?: boolean;
-    isLastRow?: boolean;
-  }) =>
-    cn(
-      'border-border',
-      !hideHorizontalBorders && !(options.isLastRow && hideBottomBorder) && 'border-b',
-      !hideVerticalBorders && 'border-r',
-      !hideVerticalBorders && options.isFirstColumn && 'border-l',
-      options.isHeader && !hideTopBorder && 'border-t',
-    );
-
-  const columnStyle = (column: ColumnDef): CSSProperties => ({
-    width: column.width,
-    minWidth: isMobile ? undefined : column.minWidth || column.width || '150px',
-  });
-
-  const tdBaseClass = 'relative px-6 py-4 align-middle transition-colors';
-  const editableCellFocusClass =
-    'focus-within:z-10 focus-within:[outline:1px_solid_var(--color-primary)] focus-within:[outline-offset:-1px]';
-  const errorCellClass =
-    'border-t border-t-red-500 [outline:1px_solid_#ef4444] [outline-offset:-1px]';
-
-  const isEditableColumn = (column: ColumnDef) => {
-    if (column.editable === false) return false;
-    if (
-      column.type === 'string' ||
-      column.type === 'display' ||
-      column.type === 'readonly'
-    ) {
-      return false;
-    }
-    return true;
-  };
-
-  const totalColumnCount =
-    visibleColumns.length +
-    (showSerialColumn ? 1 : 0) +
-    (isMobile ? 1 : 0) +
-    (showDeleteButton ? 1 : 0) +
-    (showInlineDeleteColumn ? 1 : 0);
-
-  const maxExtraCells = columns.reduce(
-    (max, column) => Math.max(max, column.extraCells?.length ?? 0),
-    0,
-  );
-
-  /* -------------------------------- render -------------------------------- */
-
-  const renderBodyCell = (
-    column: ColumnDef,
-    row: Record<string, any>,
-    rowIndex: number,
-    columnIndexInRow: number,
-    isLastRow: boolean,
-  ) => {
-    const hasError = Boolean(cellErrors[rowIndex]?.[column.key]);
-    const extendedKey = `${column.key}-${rowIndex}`;
-    const hasExtendedCell = Boolean(column.renderExtendedCell);
-    const extendedRef = hasExtendedCell ? getExtendedCellRef(extendedKey) : undefined;
-    const extendedIsOpen = hasExtendedCell && isExtendedCellOpen(column, rowIndex, extendedKey);
-    const onToggle = () => toggleExtendedCell(column, extendedKey);
-
-    return (
-      <td
-        key={column.key}
-        ref={extendedRef}
-        style={columnStyle(column)}
-        onClick={hasExtendedCell && !column.extendedCellControlled ? onToggle : undefined}
-        className={cn(
-          tdBaseClass,
-          isEditableColumn(column) && editableCellFocusClass,
-          cellBorders({ isFirstColumn: columnIndexInRow === 0, isLastRow }),
-          alignClass(column.align),
-          hasExtendedCell && !column.extendedCellControlled && 'cursor-pointer',
-          hasError && errorCellClass,
-          column.cellBackgroundClassName,
-          tdClassName,
-        )}
-      >
-        {renderCellContent(column, row, rowIndex)}
-        {hasExtendedCell && extendedIsOpen && extendedRef ? (
-          <ExtendedCellPortal
-            cellRef={extendedRef}
-            container={extendedCellContainer}
-            zIndex={extendedCellZIndex}
-          >
-            {column.renderExtendedCell!(row, rowIndex, extendedIsOpen, onToggle, extendedRef)}
-          </ExtendedCellPortal>
-        ) : null}
-      </td>
-    );
-  };
-
-  const renderExtraRows = () => {
-    if (maxExtraCells === 0) return null;
-
-    const leadingSpacerCount =
-      (showSerialColumn ? 1 : 0) + (isMobile ? 1 : 0);
-    const trailingSpacerCount =
-      (showDeleteButton ? 1 : 0) + (showInlineDeleteColumn ? 1 : 0);
-
-    return Array.from({ length: maxExtraCells }, (_, extraIndex) => {
-      const rowHasContent = visibleColumns.some((column) => column.extraCells?.[extraIndex]);
-      const firstContentIndex = visibleColumns.findIndex(
-        (column) => column.extraCells?.[extraIndex],
-      );
-      const spacerClass = rowHasContent ? 'border-none bg-transparent' : '';
-
-      return (
-        <tr key={`extra-${extraIndex}`} className={trClassName}>
-          {Array.from({ length: leadingSpacerCount }, (_, i) => (
-            <td key={`lead-${i}`} className={cn('px-6 py-4', spacerClass, tdClassName)} />
-          ))}
-          {visibleColumns.map((column, columnIndex) => {
-            const extraCell = column.extraCells?.[extraIndex];
-            if (!extraCell) {
-              return (
-                <td
-                  key={column.key}
-                  className={cn('px-6 py-4', spacerClass, tdClassName)}
-                />
-              );
+      // Use custom component if provided
+      if (column.component) {
+        const Component = column.component;
+        return (
+          <Component
+            row={row}
+            rowIndex={rowIndex}
+            value={cellValue}
+            onChange={(newValue) =>
+              handleFieldChange(rowIndex, column.key, newValue)
             }
-            return (
-              <td
-                key={column.key}
-                style={columnStyle(column)}
-                className={cn(
-                  'px-6 py-4',
-                  'border-b border-r border-border',
-                  columnIndex === firstContentIndex && 'border-l',
-                  alignClass(extraCell.align ?? column.align),
-                  extraCell.className,
-                  tdClassName,
-                )}
-              >
-                {extraCell.content}
-              </td>
-            );
-          })}
-          {Array.from({ length: trailingSpacerCount }, (_, i) => (
-            <td key={`trail-${i}`} className={cn('px-6 py-4', spacerClass, tdClassName)} />
-          ))}
-        </tr>
+          />
+        );
+      }
+
+      // Use custom renderer if provided
+      if (column.renderCell) {
+        return column.renderCell(row, rowIndex, (value) =>
+          handleFieldChange(rowIndex, column.key, value),
+        );
+      }
+
+      const isEditable =
+        column.editable !== false &&
+        column.type !== "readonly" &&
+        column.type !== "string" &&
+        column.type !== "display";
+
+      // String/Display type - display as string
+      if (column.type === "string" || column.type === "display") {
+        const displayValue = column.format
+          ? column.format(cellValue, row)
+          : String(cellValue || "");
+        return (
+          <span
+            className={`text-spline-regular-label text-foreground ${column.cellClassName ?? ""}`}
+          >
+            {displayValue}
+          </span>
+        );
+      }
+
+      // Readonly cells
+      if (column.type === "readonly" || !isEditable) {
+        const displayValue = column.format
+          ? column.format(cellValue, row)
+          : String(cellValue || "");
+        return (
+          <span
+            className={`text-spline-regular-p text-foreground ${column.cellClassName ?? ""}`}
+          >
+            {displayValue}
+          </span>
+        );
+      }
+
+      // Select dropdown
+      if (column.type === "select") {
+        const selectOptions = toSelectOptions(column.options || []);
+        const strVal =
+          cellValue === null || cellValue === undefined ? "" : String(cellValue);
+        return (
+          <div className="w-full min-w-0 max-w-full">
+            <Select
+              options={selectOptions}
+              value={strVal === "" ? null : strVal}
+              onChange={(v) =>
+                handleFieldChange(
+                  rowIndex,
+                  column.key,
+                  v === null || v === undefined ? "" : String(v),
+                )
+              }
+              placeholder={column.placeholder || "Select..."}
+              searchable={false}
+              variant="inline"
+              containerClassName="w-full min-w-0 max-w-full mx-0 -my-4"
+              className="min-h-0 min-w-0 w-full py-4 pl-0 pr-0 text-spline-regular-p text-foreground"
+              dropdownClassName="z-[100] min-w-[200px]"
+            />
+          </div>
+        );
+      }
+
+      // Number input
+      if (column.type === "number") {
+        return (
+          <input
+            type="number"
+            className={`w-full bg-transparent border-none focus:outline-none rounded py-1 px-2 text-spline-regular-p text-foreground [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${column.align === "center" ? "text-center" : ""
+              }`}
+            value={cellValue === 0 ? "" : cellValue}
+            placeholder={column.placeholder || "0"}
+            onChange={(e) =>
+              handleFieldChange(
+                rowIndex,
+                column.key,
+                e.target.value === "" ? 0 : parseFloat(e.target.value) || 0,
+              )
+            }
+          />
+        );
+      }
+
+      // Date input
+      if (column.type === "date") {
+        return (
+          <input
+            type="date"
+            className="w-full bg-transparent focus:outline-none rounded py-1 px-2 text-spline-regular-p text-foreground"
+            value={cellValue}
+            placeholder={column.placeholder}
+            onChange={(e) =>
+              handleFieldChange(rowIndex, column.key, e.target.value)
+            }
+          />
+        );
+      }
+
+      // Default text input (text, email, tel)
+      // Use textarea for text type to allow wrapping, input for email/tel
+      if (column.type === "text" || !column.type) {
+        return (
+          <textarea
+            className="w-full bg-transparent focus:outline-none rounded py-1 px-2 text-spline-regular-p text-foreground placeholder:text-gray-400 resize-none overflow-hidden"
+            value={cellValue}
+            placeholder={column.placeholder}
+            onChange={(e) => {
+              handleFieldChange(rowIndex, column.key, e.target.value);
+              // Auto-resize textarea
+              const target = e.target as HTMLTextAreaElement;
+              target.style.height = "auto";
+              target.style.height = `${Math.max(24, target.scrollHeight)}px`;
+            }}
+            rows={1}
+            style={{ minHeight: "24px" }}
+            onFocus={(e) => {
+              // Auto-resize on focus
+              const target = e.target as HTMLTextAreaElement;
+              target.style.height = "auto";
+              target.style.height = `${Math.max(24, target.scrollHeight)}px`;
+            }}
+          />
+        );
+      }
+
+      return (
+        <input
+          type={column.type}
+          className="w-full bg-transparent focus:outline-none rounded py-1 px-2 text-spline-regular-p text-foreground placeholder:text-gray-400"
+          value={cellValue}
+          placeholder={column.placeholder}
+          onChange={(e) =>
+            handleFieldChange(rowIndex, column.key, e.target.value)
+          }
+        />
       );
-    });
-  };
+    };
 
-  const renderPagination = () => {
-    if (!paginated) return null;
-    if (customPagination) return <>{customPagination}</>;
+    const getColumnStyle = (column: ColumnDef) => {
+      const styles: React.CSSProperties = {};
+      if (column.width) styles.width = column.width;
+      // Set default minWidth if not explicitly provided
+      styles.minWidth = column.minWidth || column.width || "150px";
+      return styles;
+    };
 
-    const pages = Array.from({ length: Math.max(1, totalPages) }, (_, i) => i + 1);
+    const totalColumns =
+      columns.length +
+      (showSerialNumbers ? 1 : 0) +
+      (showDeleteButton ? 1 : 0) +
+      (showInlineDelete && rows.length > 1 ? 1 : 0);
+
+    // Calculate max number of extra cells across all columns
+    const maxExtraCells = Math.max(
+      0,
+      ...columns.map((col) => col.extraCells?.length || 0),
+    );
+
+    // Expose methods via ref
+    useImperativeHandle(ref, () => ({
+      getData: () => {
+        const data = rows;
+        onDataRequest?.(data);
+        return data;
+      },
+      getDataWithoutIds: () => {
+        return rows.map(({ id, ...rest }) => rest);
+      },
+      validate: () => {
+        const errors: Array<{
+          rowIndex: number;
+          field: string;
+          message: string;
+        }> = [];
+        const newCellErrors: Record<number, Record<string, string>> = {};
+        rows.forEach((row, rowIndex) => {
+          columns.forEach((column) => {
+            if (column.validate) {
+              const value = row[column.key];
+              const error = column.validate(value);
+              if (error) {
+                errors.push({
+                  rowIndex,
+                  field: column.key,
+                  message: error,
+                });
+                if (!newCellErrors[rowIndex]) {
+                  newCellErrors[rowIndex] = {};
+                }
+                newCellErrors[rowIndex][column.key] = error;
+              }
+            }
+          });
+        });
+        // Update per-cell error state so UI shows red borders even if user hasn't edited the cell.
+        setCellErrors(newCellErrors);
+        return {
+          isValid: errors.length === 0,
+          errors,
+        };
+      },
+      getRowCount: () => rows.length,
+      addRow: () => {
+        handleAddRow();
+      },
+      clearRows: () => {
+        setRows([]);
+      },
+      getRow: (index: number) => {
+        return rows[index];
+      },
+      updateRow: (index: number, data: Partial<Record<string, any>>) => {
+        const updatedRows = rows.map((row, i) =>
+          i === index ? { ...row, ...data } : row,
+        );
+        setRows(updatedRows);
+      },
+      exportJSON: () => {
+        return JSON.stringify(
+          rows.map(({ id, ...rest }) => rest),
+          null,
+          2,
+        );
+      },
+      exportCSV: () => {
+        if (rows.length === 0) return "";
+
+        // Get headers from columns
+        const headers = columns.map((col) => col.label).join(",");
+
+        // Get data rows
+        const dataRows = rows.map((row) =>
+          columns
+            .map((col) => {
+              const value = row[col.key] ?? "";
+              // Escape commas and quotes in CSV
+              if (
+                typeof value === "string" &&
+                (value.includes(",") || value.includes('"'))
+              ) {
+                return `"${value.replace(/"/g, '""')}"`;
+              }
+              return value;
+            })
+            .join(","),
+        );
+
+        return [headers, ...dataRows].join("\n");
+      },
+    }));
 
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-background px-6 py-4">
-        <span className="text-open-regular-tiny text-muted">
-          {pageOfLabel(currentPage, totalPages)}
-        </span>
-
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            aria-label="Previous page"
-            disabled={currentPage <= 1}
-            onClick={() => onPageChange?.(currentPage - 1)}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-foreground transition-colors hover:bg-foreground/5 disabled:cursor-not-allowed disabled:opacity-40"
+      <div className="w-full h-full flex flex-col">
+        <div className="flex-1 flex flex-col overflow-hidden bg-white">
+          <div
+            className={`flex-1 overflow-y-auto overflow-x-auto custom-scrollbar ${className}`}
           >
-            <ArrowLeft2 size={16} color={iconPaint.current} aria-hidden />
-          </button>
-
-          {pages.map((page) => (
-            <button
-              key={page}
-              type="button"
-              aria-current={page === currentPage ? 'page' : undefined}
-              onClick={() => onPageChange?.(page)}
-              className={cn(
-                'flex size-8 cursor-pointer items-center justify-center rounded-md text-open-regular-tiny transition-colors',
-                page === currentPage
-                  ? 'bg-[#F49E0C] font-semibold text-white'
-                  : 'text-muted hover:bg-foreground/5 hover:text-foreground',
-              )}
+            <table
+              className="w-full border-separate border-spacing-y-px border-spacing-x-px"
+              style={{
+                minWidth: isMobile && mobileResponsive ? "unset" : "600px",
+              }}
             >
-              {page}
-            </button>
-          ))}
-
-          <button
-            type="button"
-            aria-label="Next page"
-            disabled={currentPage >= totalPages}
-            onClick={() => onPageChange?.(currentPage + 1)}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md text-foreground transition-colors hover:bg-foreground/5 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <ArrowRight2 size={16} color={iconPaint.current} aria-hidden />
-          </button>
-        </div>
-
-        {showRowsPerPage ? (
-          <RowsPerPageDropdown
-            rowsPerPage={rowsPerPage}
-            rowsLabel={rowsLabel}
-            onSelect={(value) => onRowsPerPageChange?.(value)}
-          />
-        ) : null}
-      </div>
-    );
-  };
-
-  const detailRow = detailRowIndex !== null ? currentRows[detailRowIndex] : undefined;
-
-  return (
-    <div className="flex w-full flex-col">
-      <div className={cn('custom-scrollbar w-full overflow-x-auto', className)}>
-        <table
-          className={cn('w-full border-separate [border-spacing:1px]', tableClassName)}
-          style={isMobile ? undefined : { minWidth }}
-        >
-          <thead
-            className={cn(
-              'sticky top-0 z-10 bg-background shadow-[0_1px_0_0_var(--color-border)]',
-              theadClassName,
-            )}
-          >
-            <tr className={trClassName}>
-              {isMobile ? (
-                <th
-                  className={cn(
-                    'w-[48px] px-3 py-4',
-                    cellBorders({ isFirstColumn: true, isHeader: true }),
-                    thClassName,
-                  )}
-                  aria-label={detailsLabel}
-                />
-              ) : null}
-              {showSerialColumn ? (
-                <th
-                  style={{ width: '60px', minWidth: '60px' }}
-                  className={cn(
-                    'px-3 py-4 text-center text-open-bold-tiny text-foreground',
-                    cellBorders({ isFirstColumn: !isMobile, isHeader: true }),
-                    thClassName,
-                  )}
+              <thead className="sticky top-0 z-10">
+                <tr
+                  className="text-left bg-white border-b border-gray-200"
+                  style={{ boxShadow: "0 1px 0 0 rgb(229, 231, 235)" }}
                 >
-                  {serialLabel}
-                </th>
-              ) : null}
-              {visibleColumns.map((column, columnIndex) => (
-                <th
-                  key={column.key}
-                  style={columnStyle(column)}
-                  className={cn(
-                    'px-6 py-4 text-open-bold-tiny text-foreground',
-                    cellBorders({
-                      isFirstColumn: columnIndex === 0 && !showSerialColumn && !isMobile,
-                      isHeader: true,
-                    }),
-                    alignClass(column.align),
-                    column.headerClassName,
-                    thClassName,
+                  {isMobile && mobileResponsive && (
+                    <th
+                      className={`py-4 px-4 text-spline-bold-label text-foreground w-[48px] ${getBorderClasses({ includeTop: true, includeBottom: true, includeRight: true, isFirst: true })}`}
+                    >
+                      {/* Plus Icon Header */}
+                    </th>
                   )}
-                >
-                  {column.renderHeader ? column.renderHeader() : column.label}
-                </th>
-              ))}
-              {showDeleteButton ? (
-                <th
-                  className={cn(
-                    'px-6 py-4 text-center text-open-bold-tiny text-foreground',
-                    cellBorders({ isFirstColumn: false, isHeader: true }),
-                    thClassName,
+                  {showSerialNumbers && (!isMobile || !mobileResponsive) && (
+                    <th
+                      className={`py-4 px-6 text-spline-bold-label text-foreground w-[60px] ${getBorderClasses({ includeTop: true, includeBottom: true, includeRight: true, isFirst: true })}`}
+                      style={{ width: "60px" }}
+                    >
+                      S/N
+                    </th>
                   )}
-                >
-                  {actionLabel}
-                </th>
-              ) : null}
-              {showInlineDeleteColumn ? (
-                <th
-                  className={cn(
-                    'w-[48px] px-3 py-4',
-                    cellBorders({ isFirstColumn: false, isHeader: true }),
-                    thClassName,
+                  {(isMobile && mobileResponsive
+                    ? columns.slice(0, mobileColumnsCount)
+                    : columns
+                  ).map((column, colIndex) => (
+                    <th
+                      key={column.key}
+                      className={`py-4 px-6 text-spline-bold-label text-foreground ${column.headerClassName ?? ""} ${getBorderClasses({ includeTop: true, includeBottom: true, includeRight: true, isFirst: colIndex === 0 && (!showSerialNumbers || (isMobile && mobileResponsive)) })} ${column.align === "center"
+                        ? "text-center"
+                        : column.align === "right"
+                          ? "text-right"
+                          : ""
+                        }`}
+                      style={getColumnStyle(column)}
+                    >
+                      {column.renderHeader
+                        ? column.renderHeader()
+                        : column.label}
+                    </th>
+                  ))}
+                  {showDeleteButton && (!isMobile || !mobileResponsive) && (
+                    <th className="py-4 px-6 text-spline-bold-label text-foreground w-[60px] text-center">
+                      Action
+                    </th>
                   )}
-                />
-              ) : null}
-            </tr>
-          </thead>
-
-          <tbody className={tbodyClassName}>
-            {currentRows.length === 0 ? (
-              <tr className={trClassName}>
-                <td
-                  colSpan={totalColumnCount}
-                  className={cn(
-                    'px-6 py-8 text-center text-open-regular-p text-muted',
-                    cellBorders({ isFirstColumn: true, isLastRow: maxExtraCells === 0 }),
-                    tdClassName,
-                  )}
-                >
-                  {emptyMessage ?? 'No data available'}
-                </td>
-              </tr>
-            ) : (
-              currentRows.map((row, rowIndex) => {
-                const isLastRow = rowIndex === currentRows.length - 1 && maxExtraCells === 0;
-                return (
-                  <tr
-                    key={row.id ?? rowIndex}
-                    className={cn(
-                      'transition-colors hover:bg-foreground/5',
-                      getRowClassName?.(row, rowIndex),
-                      trClassName,
+                  {showInlineDelete &&
+                    rows.length > 1 &&
+                    (!isMobile || !mobileResponsive) && (
+                      <th className="py-4 px-2 text-spline-bold-label text-foreground w-[40px] text-center border-b-0">
+                        {/* Empty header for inline delete column */}
+                      </th>
                     )}
-                  >
-                    {isMobile ? (
-                      <td
-                        className={cn(
-                          'px-3 py-4 text-center',
-                          cellBorders({ isFirstColumn: true, isLastRow }),
-                          tdClassName,
-                        )}
-                      >
-                        <button
-                          type="button"
-                          aria-label={detailsLabel}
-                          onClick={() => setDetailRowIndex(rowIndex)}
-                          className="inline-flex size-6 cursor-pointer items-center justify-center rounded-full bg-primary transition-opacity hover:opacity-90"
-                        >
-                          <Add size={14} color={iconPaint.inverse} aria-hidden />
-                        </button>
-                      </td>
-                    ) : null}
-                    {showSerialColumn ? (
-                      <td
-                        style={{ width: '60px', minWidth: '60px' }}
-                        className={cn(
-                          'px-3 py-4 text-center text-open-regular-p text-foreground',
-                          cellBorders({ isFirstColumn: !isMobile, isLastRow }),
-                          tdClassName,
-                        )}
-                      >
-                        {rowIndex + 1}
-                      </td>
-                    ) : null}
-                    {visibleColumns.map((column, columnIndex) =>
-                      renderBodyCell(
-                        column,
-                        row,
-                        rowIndex,
-                        showSerialColumn || isMobile ? columnIndex + 1 : columnIndex,
-                        isLastRow,
-                      ),
-                    )}
-                    {showDeleteButton ? (
-                      <td
-                        className={cn(
-                          'px-6 py-4 text-center',
-                          cellBorders({ isFirstColumn: false, isLastRow }),
-                          tdClassName,
-                        )}
-                      >
-                        <button
-                          type="button"
-                          aria-label={`Delete row ${rowIndex + 1}`}
-                          onClick={() => deleteRow(rowIndex)}
-                          className="cursor-pointer text-muted transition-colors hover:text-destructive"
-                        >
-                          <Trash size={18} color={iconPaint.current} aria-hidden />
-                        </button>
-                      </td>
-                    ) : null}
-                    {showInlineDeleteColumn ? (
-                      <td
-                        className={cn(
-                          'px-3 py-4 text-center',
-                          cellBorders({ isFirstColumn: false, isLastRow }),
-                          tdClassName,
-                        )}
-                      >
-                        <button
-                          type="button"
-                          aria-label={`Delete row ${rowIndex + 1}`}
-                          onClick={() => deleteRow(rowIndex)}
-                          className="cursor-pointer text-muted transition-colors hover:text-destructive"
-                        >
-                          <Trash size={16} color={iconPaint.current} aria-hidden />
-                        </button>
-                      </td>
-                    ) : null}
+                </tr>
+              </thead>
+              <tbody>
+                {rows.length === 0 && emptyMessage ? (
+                  <tr>
+                    <td
+                      colSpan={
+                        isMobile && mobileResponsive
+                          ? mobileColumnsCount + 1
+                          : totalColumns
+                      }
+                      className="py-8 text-center text-spline-regular-p text-gray-400"
+                    >
+                      {emptyMessage}
+                    </td>
                   </tr>
-                );
-              })
-            )}
-            {renderExtraRows()}
-          </tbody>
-        </table>
-      </div>
+                ) : (
+                  rows.map((row, index) => (
+                    <tr
+                      key={row.id || index}
+                      className={`hover:bg-gray-50 transition-colors relative group ${getRowClassName ? getRowClassName(row, index) : ""}`}
+                    >
+                      {isMobile && mobileResponsive && (
+                        <td
+                          className={`py-4 px-4 text-center ${getBorderClasses({ includeBottom: true, includeRight: true, isFirst: true })}`}
+                        >
+                          <button
+                            onClick={() => setSelectedMobileRowIndex(index)}
+                            className="w-6 h-6 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dark transition-all scale-100 hover:scale-110 active:scale-95 shadow-sm"
+                            aria-label="View Details"
+                          >
+                            <Plus size={14} strokeWidth={3} />
+                          </button>
+                        </td>
+                      )}
+                      {showSerialNumbers &&
+                        (!isMobile || !mobileResponsive) && (
+                          <td
+                            className={`py-4 px-6 text-spline-regular-p text-secondary-text ${getBorderClasses({ includeBottom: true, includeRight: true, isFirst: true })} text-center`}
+                          >
+                            {index + 1}
+                          </td>
+                        )}
+                      {(isMobile && mobileResponsive
+                        ? columns.slice(0, mobileColumnsCount)
+                        : columns
+                      ).map((column, colIndex) => {
+                        const isEditable =
+                          column.editable !== false &&
+                          column.type !== "readonly" &&
+                          column.type !== "string" &&
+                          column.type !== "display";
+                        const cellKey = getExtendedCellKey(column.key, index);
+                        const hasExtendedCell = !!column.renderExtendedCell;
+                        const hasError = !!cellErrors[index]?.[column.key];
 
-      {footer ? (
-        <div className="bg-background px-6 py-4">{footer}</div>
-      ) : editable ? (
-        <div className="bg-background">
-          <button
-            type="button"
-            onClick={addRow}
-            className="flex cursor-pointer items-center gap-2 px-6 py-4 text-open-bold-tiny text-foreground transition-colors hover:text-primary"
-          >
-            <Add size={16} color={iconPaint.current} aria-hidden />
-            {addRowText}
-          </button>
-        </div>
-      ) : null}
+                        // Initialize ref if needed
+                        if (hasExtendedCell && !cellRefs.current[cellKey]) {
+                          cellRefs.current[cellKey] =
+                            createRef<HTMLTableCellElement>();
+                        }
 
-      {renderPagination()}
-
-      {detailRow ? (
-        <TableDetailModal title={detailsLabel} onClose={() => setDetailRowIndex(null)}>
-          {columns.map((column) => (
-            <div key={column.key} className="flex flex-col gap-1">
-              <span className="text-open-bold-tiny text-muted">{column.label}</span>
-              <div
-                className={cn(
-                  'rounded-lg border border-border px-3 py-2',
-                  cellErrors[detailRowIndex!]?.[column.key] && 'border-red-500',
+                        return (
+                          <td
+                            key={column.key}
+                            ref={
+                              hasExtendedCell
+                                ? cellRefs.current[cellKey]
+                                : undefined
+                            }
+                            className={`py-4 px-6 ${getBorderClasses({ includeBottom: true, includeRight: true, isFirst: colIndex === 0 })} relative transition-colors ${isEditable
+                              ? "focus-within:outline-1 focus-within:outline-primary focus-within:-outline-offset-1 focus-within:z-10"
+                              : ""
+                              } ${column.align === "center"
+                                ? "text-center"
+                                : column.align === "right"
+                                  ? "text-right"
+                                  : ""
+                              } ${hasExtendedCell ? "overflow-visible" : ""} ${hasError
+                                ? "outline outline-red-500 -outline-offset-1 border-t border-red-500"
+                                : ""
+                              } ${column.cellBackgroundClassName ?? ""}`}
+                            style={getColumnStyle(column)}
+                          >
+                            {renderCell(column, row, index)}
+                            {hasExtendedCell &&
+                              cellRefs.current[cellKey]?.current && (
+                                <ExtendedCellPortal
+                                  cellRef={cellRefs.current[cellKey]}
+                                  isOpen={isExtendedCellOpen(column.key, index)}
+                                  onToggle={() =>
+                                    toggleExtendedCell(column.key, index)
+                                  }
+                                  zIndex={extendedCellZIndex}
+                                  container={extendedCellContainer}
+                                >
+                                  {column.renderExtendedCell?.(
+                                    row,
+                                    index,
+                                    isExtendedCellOpen(column.key, index),
+                                    () => toggleExtendedCell(column.key, index),
+                                    cellRefs.current[cellKey],
+                                  )}
+                                </ExtendedCellPortal>
+                              )}
+                          </td>
+                        );
+                      })}
+                      {showDeleteButton && (
+                        <td className="py-4 px-6 text-center">
+                          <button
+                            onClick={() => handleDeleteRow(index)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                            type="button"
+                            aria-label="Delete row"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </td>
+                      )}
+                      {/* Inline delete button - shows on the side when rows > 1 */}
+                      {showInlineDelete && rows.length > 1 && (
+                        <td className="py-4 px-2 text-center w-[40px]">
+                          <button
+                            onClick={() => handleDeleteRow(index)}
+                            className="text-red-500 hover:text-red-700 transition-colors p-1 rounded hover:bg-red-50"
+                            type="button"
+                            aria-label="Delete row"
+                            title="Delete row"
+                          >
+                            <Trash2 size={16} strokeWidth={2} />
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))
                 )}
-              >
-                {renderCellContent(column, detailRow, detailRowIndex!)}
+                {/* Extra cells rows for columns that need them */}
+                {maxExtraCells > 0 &&
+                  Array.from({ length: maxExtraCells }).map(
+                    (_, extraRowIndex) => {
+                      // Check if any column has an extra cell in this row
+                      const hasExtraCellInRow = columns.some(
+                        (col) => col.extraCells?.[extraRowIndex],
+                      );
+
+                      // Find the first column with an extra cell to add left border
+                      const firstExtraCellColumnKey = columns.find(
+                        (col) => col.extraCells?.[extraRowIndex],
+                      )?.key;
+
+                      return (
+                        <tr key={`extra-${extraRowIndex}`} className="relative">
+                          {showSerialNumbers && (
+                            <td
+                              className={`py-4 px-6 ${hasExtraCellInRow
+                                ? "border-none bg-transparent"
+                                : `${getBorderClasses({ includeBottom: true, includeRight: true, includeLeft: true })} bg-white`
+                                }`}
+                            ></td>
+                          )}
+                          {columns.map((column, colIndex) => {
+                            const extraCell =
+                              column.extraCells?.[extraRowIndex];
+                            const isFirstExtraCell =
+                              column.key === firstExtraCellColumnKey;
+
+                            if (!extraCell) {
+                              // Empty cell - hide borders and background if there's an extra cell in this row
+                              return (
+                                <td
+                                  key={column.key}
+                                  className={`py-4 px-6 ${hasExtraCellInRow
+                                    ? "border-none bg-transparent"
+                                    : getBorderClasses({
+                                      includeBottom: true,
+                                      includeRight: true,
+                                      includeLeft: true,
+                                      isFirst: colIndex === 0,
+                                    })
+                                    }`}
+                                  style={getColumnStyle(column)}
+                                ></td>
+                              );
+                            }
+
+                            // Cell with content - show borders, add left border if it's the first extra cell
+                            return (
+                              <td
+                                key={column.key}
+                                className={`py-4 px-6 ${getBorderClasses({ includeBottom: true, includeRight: true, includeLeft: isFirstExtraCell, isFirst: colIndex === 0 })} bg-white ${extraCell.align === "center"
+                                  ? "text-center"
+                                  : extraCell.align === "right"
+                                    ? "text-right"
+                                    : ""
+                                  } ${extraCell.className || ""}`}
+                                style={getColumnStyle(column)}
+                              >
+                                {extraCell.content}
+                              </td>
+                            );
+                          })}
+                          {showDeleteButton && (
+                            <td
+                              className={`py-4 px-6 ${hasExtraCellInRow
+                                ? "border-none bg-transparent"
+                                : `${getBorderClasses({ includeBottom: true, includeRight: true })} bg-white`
+                                }`}
+                            ></td>
+                          )}
+                          {showInlineDelete && rows.length > 1 && (
+                            <td
+                              className={`py-4 px-2 ${hasExtraCellInRow
+                                ? "border-none bg-transparent"
+                                : `${getBorderClasses({ includeBottom: true, includeRight: true })} bg-white`
+                                }`}
+                            ></td>
+                          )}
+                        </tr>
+                      );
+                    },
+                  )}
+              </tbody>
+            </table>
+          </div>
+          {/* Footer section - fixed at bottom of table area */}
+          {(footer || editable) && (
+            <div className="shrink-0 bg-white px-6 py-4">
+              {footer ? (
+                footer
+              ) : (
+                <button
+                  onClick={handleAddRow}
+                  className="flex items-center gap-2 text-spline-bold-label text-foreground hover:text-primary transition-colors cursor-pointer"
+                  type="button"
+                >
+                  <Plus size={18} strokeWidth={3} /> {addRowText}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Pagination - fixed at bottom */}
+        {paginated &&
+          (customPagination || (
+            <div className="shrink-0 flex flex-col md:flex-row items-center justify-between px-6 py-4 border-t border-b border-gray gap-3 bg-white rounded">
+              <div className="flex items-center gap-3 text-spline-regular-p text-secondary-text">
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <div className="inline-flex items-center gap-2">
+                  <button
+                    onClick={() => onPageChange?.(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-white text-foreground hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        onClick={() => onPageChange?.(page)}
+                        className={`w-7 h-7 flex items-center justify-center rounded-lg transition-colors ${page === currentPage
+                          ? "bg-accent-yellow text-white"
+                          : "bg-white text-foreground hover:bg-gray-100"
+                          }`}
+                        aria-label={`Go to page ${page}`}
+                      >
+                        {page}
+                      </button>
+                    ),
+                  )}
+                  <button
+                    onClick={() =>
+                      onPageChange?.(Math.min(totalPages, currentPage + 1))
+                    }
+                    disabled={currentPage === totalPages}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-white text-foreground hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Next page"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
               </div>
+              {showRowsPerPage && (
+                <div className="flex items-center gap-2 text-spline-regular-p text-secondary-text relative">
+                  <span>Rows:</span>
+                  <button
+                    ref={rowsPerPageButtonRef}
+                    onClick={() => setIsRowsPerPageOpen(!isRowsPerPageOpen)}
+                    className="px-2 py-1 rounded-lg bg-white text-foreground inline-flex items-center gap-1 hover:bg-gray-100 transition-colors border border-gray-200"
+                  >
+                    {rowsPerPage} rows
+                    <ChevronDown
+                      size={16}
+                      className={`text-secondary-text transition-transform ${isRowsPerPageOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {isRowsPerPageOpen && (
+                    <RowsPerPageDropdown
+                      currentValue={rowsPerPage}
+                      onSelect={(value) => {
+                        onRowsPerPageChange?.(value);
+                        setIsRowsPerPageOpen(false);
+                      }}
+                      onClose={() => setIsRowsPerPageOpen(false)}
+                      buttonRef={rowsPerPageButtonRef}
+                      zIndex={extendedCellZIndex}
+                    />
+                  )}
+                </div>
+              )}
             </div>
           ))}
-        </TableDetailModal>
-      ) : null}
+
+        {/* Detail Modal for Mobile Responsive View */}
+        {isMobile && mobileResponsive && selectedMobileRowIndex !== null && (
+          <Modal
+            isOpen={true}
+            onClose={() => setSelectedMobileRowIndex(null)}
+            size="md"
+            className="rounded-xl overflow-hidden"
+            closeOnBackdrop={true}
+          >
+            <div className="flex items-center justify-between mb-6 bg-white shrink-0">
+              <h3 className="text-xl font-bold text-foreground">
+                {"Details"}
+              </h3>
+              <button
+                onClick={() => setSelectedMobileRowIndex(null)}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={20} className="text-secondary-text" />
+              </button>
+            </div>
+            <ModalContent className="mt-0 p-0">
+              <div className="flex flex-col border-t border-gray-100">
+                {columns.map((column) => {
+                  const row = rows[selectedMobileRowIndex];
+                  if (!row) return null;
+
+                  return (
+                    <div
+                      key={column.key}
+                      className="flex justify-between py-4 border-b border-gray-100 items-start gap-4"
+                    >
+                      <span className="text-sm font-semibold text-secondary-text min-w-[120px]">
+                        {column.label}:
+                      </span>
+                      <div className="text-sm text-foreground text-right flex-1 wrap-break-word">
+                        {renderCell(column, row, selectedMobileRowIndex)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </ModalContent>
+          </Modal>
+        )}
+      </div>
+    );
+  },
+);
+
+Table.displayName = "Table";
+
+/**
+ * Extended Cell Portal Component
+ * Renders extended cell content positioned relative to the cell
+ */
+interface ExtendedCellPortalProps {
+  cellRef: React.RefObject<HTMLTableCellElement | null>;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+  zIndex: number;
+  container?: HTMLElement;
+}
+
+const ExtendedCellPortal: FC<ExtendedCellPortalProps> = ({
+  cellRef,
+  isOpen,
+  children,
+  zIndex,
+  container,
+}) => {
+  const [position, setPosition] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!isOpen || !cellRef.current) {
+      setPosition(null);
+      return;
+    }
+
+    const updatePosition = () => {
+      if (cellRef.current) {
+        const rect = cellRef.current.getBoundingClientRect();
+        setPosition({
+          top: rect.bottom,
+          left: rect.left,
+          width: rect.width,
+        });
+      }
+    };
+
+    updatePosition();
+
+    // Update position on scroll/resize
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [isOpen, cellRef]);
+
+  if (!isOpen || !position) {
+    return null;
+  }
+
+  const portalContent = (
+    <div
+      className="fixed"
+      style={{
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        width: `${position.width}px`,
+        zIndex,
+      }}
+    >
+      {children}
     </div>
   );
-});
 
-Table.displayName = 'Table';
+  return createPortal(portalContent, container || document.body);
+};
 
-export { Table };
+/**
+ * Rows Per Page Dropdown Component
+ * Renders a dropdown menu for selecting rows per page
+ */
+interface RowsPerPageDropdownProps {
+  currentValue: number;
+  onSelect: (value: number) => void;
+  onClose: () => void;
+  buttonRef: React.RefObject<HTMLButtonElement | null>;
+  zIndex: number;
+}
+
+const RowsPerPageDropdown: FC<RowsPerPageDropdownProps> = ({
+  currentValue,
+  onSelect,
+  onClose,
+  buttonRef,
+  zIndex,
+}) => {
+  const [position, setPosition] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const rowOptions = [5, 10, 25];
+
+  useEffect(() => {
+    if (!buttonRef.current) {
+      return;
+    }
+
+    const updatePosition = () => {
+      if (!buttonRef.current) {
+        return;
+      }
+
+      const rect = buttonRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Dropdown dimensions (approximate)
+      const dropdownMinWidth = 120;
+      const estimatedDropdownHeight = rowOptions.length * 40 + 8; // Approximate height per option + padding
+      const gap = 4; // Gap between button and dropdown
+      const edgePadding = 8; // Padding from viewport edges
+
+      // Calculate preferred position (below button, left-aligned)
+      // Using getBoundingClientRect() gives viewport-relative coordinates, perfect for fixed positioning
+      let top = rect.bottom + gap;
+      let left = rect.left;
+      let width = Math.max(rect.width, dropdownMinWidth);
+
+      // Check right edge overflow
+      const rightEdge = left + width;
+      if (rightEdge > viewportWidth - edgePadding) {
+        // Try aligning to right edge of button
+        left = rect.right - width;
+
+        // If still overflowing, constrain to viewport
+        if (left < edgePadding) {
+          left = edgePadding;
+          width = Math.min(width, viewportWidth - left - edgePadding);
+        }
+      }
+
+      // Check left edge overflow
+      if (left < edgePadding) {
+        left = edgePadding;
+        width = Math.min(width, viewportWidth - left - edgePadding);
+      }
+
+      // Check bottom edge overflow
+      const bottomEdge = top + estimatedDropdownHeight;
+      if (bottomEdge > viewportHeight - edgePadding) {
+        // Check if there's more space above
+        const spaceAbove = rect.top;
+        const spaceBelow = viewportHeight - rect.bottom;
+
+        if (
+          spaceAbove > spaceBelow &&
+          spaceAbove >= estimatedDropdownHeight + gap
+        ) {
+          // Show above button
+          top = rect.top - estimatedDropdownHeight - gap;
+        } else {
+          // Constrain to viewport bottom
+          top = viewportHeight - estimatedDropdownHeight - edgePadding;
+        }
+      }
+
+      // Ensure top doesn't go above viewport
+      if (top < edgePadding) {
+        top = edgePadding;
+      }
+
+      setPosition({
+        top,
+        left,
+        width,
+      });
+    };
+
+    updatePosition();
+
+    // Update position on scroll/resize
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+
+    // Handle click outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [buttonRef, onClose, rowOptions.length]);
+
+  if (!position) {
+    return null;
+  }
+
+  const dropdownContent = (
+    <div
+      ref={dropdownRef}
+      className="fixed bg-white border border-gray rounded-lg shadow-lg py-1 min-w-[120px]"
+      style={{
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        width: `${position.width}px`,
+        zIndex,
+      }}
+    >
+      {rowOptions.map((option) => (
+        <button
+          key={option}
+          onClick={() => onSelect(option)}
+          className={`w-full text-left px-3 py-2 text-spline-regular-p transition-colors hover:bg-gray-100 ${currentValue === option
+            ? "text-foreground bg-gray-50"
+            : "text-secondary-text"
+            }`}
+        >
+          {option} rows
+        </button>
+      ))}
+    </div>
+  );
+
+  return createPortal(dropdownContent, document.body);
+};
+
 export default Table;

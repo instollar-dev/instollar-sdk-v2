@@ -55,8 +55,8 @@ export type { RadioProps, RadioGroupProps } from './components/Radio';
 export { Switch } from './components/Switch';
 export type { SwitchProps } from './components/Switch';
 
-export { Select, selectOptionsPropsFromQuery } from './components/Select';
-export type { SelectProps, SelectOption, SelectVariant } from './components/Select';
+export { default as Select } from './components/Select';
+export type { SelectProps, SelectOption } from './components/Select';
 
 export { StatusBadge, createStatusResolver } from './components/StatusBadge';
 export type {
@@ -211,15 +211,23 @@ export type { ChipProps } from './components/Chip';
 export { LoadBoundary, loadBoundaryPropsFromQuery } from './components/LoadBoundary';
 export type { LoadBoundaryProps } from './components/LoadBoundary';
 
-export { Table } from './components/Table';
+export { default as Table } from './components/Table';
 export type {
   CellType,
   ColumnDef,
   ColumnOption,
   TableHandle,
-  TableLabels,
   TableProps,
 } from './components/Table';
+
+export { OverviewCard } from './components/OverviewCard';
+export type { OverviewCardProps } from './components/OverviewCard';
+
+export { ProductCard } from './components/ProductCard';
+export type { ProductCardProps, Product } from './components/ProductCard';
+
+export { ProductDetailsLayout } from './components/ProductDetailsLayout';
+export type { ProductDetailsLayoutProps } from './components/ProductDetailsLayout';
 
 export { Tabs } from './components/Tabs';
 export type {

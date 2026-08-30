@@ -1,702 +1,644 @@
-import { Add, ArrowDown2, Refresh, SearchNormal1, TickCircle, Warning2 } from 'iconsax-react';
 import {
-  useCallback,
-  useId,
-  useMemo,
   useRef,
   useState,
-  type CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  type KeyboardEvent,
+  type ReactElement,
   type ReactNode,
-} from 'react';
-import { createPortal } from 'react-dom';
-import { useClickOutside } from '../hooks/useClickOutside';
-import { useFloatingPosition } from '../hooks/useFloatingPosition';
-import { cn } from '../utils/cn';
-import { iconPaint } from '../utils/iconPaint';
-import { Button } from './Button';
-import { CheckmarkIcon } from './CheckmarkIcon';
-import { FieldControl } from './FieldControl';
-import { formFieldErrorClass, formFieldLabelClass } from './formVariants';
-import { Spinner } from './Spinner';
-import {
-  defaultCompareValue,
-  defaultCreateOptionLabel,
-  defaultFormatCreateValue,
-  defaultGetOptionKey,
-  defaultGetOptionLabel,
-  defaultIsValidCreateInput,
-  defaultNormalizeCreateInput,
-  deriveCustomOptionsFromSelection,
-  findOptionByInput,
-  getSelectDisplayLabel,
-  isOptionSelected,
-  mergeSelectOptions,
-  type SelectOption,
-} from './selectUtils';
+} from "react";
+import { createPortal } from "react-dom";
+import { ChevronDown, X, Check, Loader2, Plus } from "lucide-react";
+import { useOnClickOutside } from "../hooks/useOnClickOutside";
+import { cn } from "../utils/cn";
+import InfoTooltip from "./infoTooltip";
 
-export type { SelectOption };
-export type SelectVariant = 'default' | 'inline';
-export { selectOptionsPropsFromQuery } from './selectUtils';
-
-const PORTAL_ROOT_ID = 'instollar-select-portal-root';
-
-function getPortalRoot(): HTMLElement {
-  if (typeof document === 'undefined') {
-    return null as unknown as HTMLElement;
-  }
-  let root = document.getElementById(PORTAL_ROOT_ID);
-  if (!root) {
-    root = document.createElement('div');
-    root.id = PORTAL_ROOT_ID;
-    root.setAttribute('data-instollar-portal', 'select');
-    document.body.appendChild(root);
-  }
-  return root;
-}
-
-export interface SelectProps<T = string> {
-  label?: string;
-  /** Form validation error */
-  error?: string;
-  /** API/options fetch failure message */
-  optionsError?: string;
-  /** Options list is loading (e.g. from an API) */
-  optionsLoading?: boolean;
-  optionsLoadingLabel?: string;
-  optionsErrorLabel?: string;
-  onReloadOptions?: () => void;
-  reloadLabel?: string;
-  variant?: SelectVariant;
-  options: SelectOption<T>[];
-  placeholder?: string;
-  multiple?: boolean;
-  searchable?: boolean;
-  /** Allow typing a value that is not in `options` — adds it to the list and selects it */
-  creatable?: boolean;
-  /** Shows an "Add new" action at the top of the dropdown — use for modal / route create flows */
-  onAddNew?: () => void;
-  addNewLabel?: string;
-  createOptionLabel?: (input: string) => string;
-  formatCreateValue?: (input: string) => T;
-  getOptionLabel?: (value: T) => string;
-  normalizeCreateInput?: (input: string) => string;
-  isValidCreateInput?: (input: string) => boolean;
-  onCreateOption?: (input: string) => T;
-  customInputPlaceholder?: string;
+/**
+ * Option shape for Select: display label and generic value T.
+ * Use getOptionKey when T is an object so keys and equality work correctly.
+ */
+export interface SelectOption<T> {
+  label: string;
+  value: T;
   prefix?: ReactNode;
   suffix?: ReactNode;
-  value?: T | T[];
-  defaultValue?: T | T[];
-  onValueChange?: (value: T | T[]) => void;
-  compareValue?: (a: T, b: T) => boolean;
-  getOptionKey?: (value: T) => string;
+  description?: string;
+}
+
+/**
+ * Props for the generic Select component.
+ * T is the type of the option value (string, number, or object).
+ * For object T, provide getOptionKey so selection and keys work correctly.
+ */
+export interface SelectProps<T> {
+  /** Options to display. Each has a label (display) and value (generic T). */
+  options: SelectOption<T>[];
+  /** Current value. Single: T | null. Multiple: T[]. */
+  value: T | null | T[];
+  /** Called when selection changes. Single: (value: T | null). Multiple: (value: T[]). */
+  onChange: (value: T | null | T[]) => void;
+  /** Allow selecting multiple options. Default false. */
+  multiple?: boolean;
+  /** Enable search/filter by label. Default true. */
+  searchable?: boolean;
+  /** Placeholder when nothing selected. */
+  placeholder?: string;
+  /** Label above the trigger. */
+  label?: string;
+  /** Optional extra information shown beside the label. */
+  labelInfo?: ReactNode;
+  /** Error message (e.g. validation, shows below trigger, red). */
+  error?: string;
+  /**
+   * Controls whether the error message is rendered under the trigger.
+   * Useful when you only want the red border styling.
+   */
+  showErrorMessage?: boolean;
+  /** When true, shows loading state and prevents opening. Use when options are being fetched. */
+  loading?: boolean;
+  /** Error message when options failed to load (e.g. API error). Shows below trigger with Retry. */
+  loadError?: string;
+  /** Called when user clicks Retry after a load error. */
+  onRetry?: () => void;
+  /** Disable the select. */
   disabled?: boolean;
-  /** Additional class for the outer container. */
-  containerClassName?: string;
-  /** Additional class for the portalled dropdown. */
-  dropdownClassName?: string;
+  /** Optional: unique key for value (required when T is object). Used for keys and equality. */
+  getOptionKey?: (value: T) => string | number;
+  /** Optional: custom equality. Default uses getOptionKey or ===. */
+  isOptionEqual?: (a: T, b: T) => boolean;
+  /** Optional class for the trigger. */
   className?: string;
+  /**
+   * `inline` — borderless, compact trigger for embedding in tables/grids
+   * (no boxed field look; still keyboard-focusable).
+   */
+  variant?: "default" | "inline";
+  /** Optional class for the dropdown. */
+  dropdownClassName?: string;
+  /** Optional class for the root container. */
+  containerClassName?: string;
+  /** Id for the trigger (for label association). */
   id?: string;
+  /** Optional content rendered at the start of the trigger (e.g. icon or prefix). */
+  prefix?: ReactNode;
+  /** Optional content rendered before the chevron/spinner at the end of the trigger. */
+  suffix?: ReactNode;
+  /** Optional class for the label. */
+  labelClassName?: string;
+  /** Allow adding custom values not in options. Only works when searchable is true. */
+  creatable?: boolean;
+  /** Optional custom search callback. If provided, internal filtering is skipped. */
+  onSearch?: (query: string) => void;
+  /**
+   * Optional persistent action pinned to the bottom of the dropdown
+   * (e.g. "Create new workflow"). Unlike a regular option, selecting it does
+   * not change the value — it runs `onClick` and closes the dropdown.
+   */
+  createAction?: {
+    label: string;
+    onClick: () => void;
+    /** Optional leading icon. Defaults to a Plus icon. */
+    icon?: ReactNode;
+  };
 }
 
-function SelectOptionsLoading({ message }: { message: string }) {
-  return (
-    <li className="flex flex-col items-center justify-center gap-3 px-4 py-8 text-center">
-      <Spinner size={20} className="text-primary" />
-      <span className="text-open-regular-p text-muted">{message}</span>
-    </li>
-  );
+const defaultGetOptionKey = <T,>(value: T): string => {
+  if (value === null) return "__null__";
+  if (value === undefined) return "__undefined__";
+  if (typeof value === "string" || typeof value === "number")
+    return String(value);
+  return JSON.stringify(value);
+};
+
+function defaultIsOptionEqual<T>(
+  a: T,
+  b: T,
+  getKey: (v: T) => string | number,
+): boolean {
+  return getKey(a) === getKey(b);
 }
 
-function SelectOptionsError({
-  message,
-  reloadLabel,
-  onReload,
-}: {
-  message: string;
-  reloadLabel: string;
-  onReload?: () => void;
-}) {
-  return (
-    <li className="flex flex-col items-center justify-center gap-3 px-4 py-6 text-center">
-      <span
-        className="flex size-10 items-center justify-center rounded-full bg-(--destructive-muted) text-destructive"
-        aria-hidden
-      >
-        <Warning2 size={22} variant="TwoTone" color={iconPaint.destructive} />
-      </span>
-      <p className="max-w-[16rem] text-open-regular-p text-foreground">{message}</p>
-      {onReload ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          prefix={<Refresh size={14} color={iconPaint.current} aria-hidden />}
-          onClick={onReload}
-        >
-          {reloadLabel}
-        </Button>
-      ) : null}
-    </li>
-  );
-}
-
-export function Select<T = string>({
-  label,
-  error,
-  optionsError,
-  optionsLoading = false,
-  optionsLoadingLabel = 'Loading options…',
-  optionsErrorLabel = "Couldn't load options",
-  onReloadOptions,
-  reloadLabel = 'Try again',
-  variant,
+function SelectInner<T>({
   options,
-  placeholder,
+  value,
+  onChange,
   multiple = false,
   searchable = false,
-  creatable = false,
-  onAddNew,
-  addNewLabel = 'Add new',
-  createOptionLabel = defaultCreateOptionLabel,
-  formatCreateValue = defaultFormatCreateValue as (input: string) => T,
-  getOptionLabel = defaultGetOptionLabel as (value: T) => string,
-  normalizeCreateInput = defaultNormalizeCreateInput,
-  isValidCreateInput = defaultIsValidCreateInput,
-  onCreateOption,
-  customInputPlaceholder = 'Add custom…',
+  placeholder = "Select...",
+  label,
+  labelInfo,
+  error,
+  showErrorMessage = true,
+  loading = false,
+  loadError,
+  onRetry,
+  disabled = false,
+  getOptionKey,
+  isOptionEqual: isOptionEqualProp,
+  className,
+  variant = "default",
+  dropdownClassName,
+  containerClassName,
+  id: idProp,
   prefix,
   suffix,
-  value,
-  defaultValue,
-  onValueChange,
-  compareValue = defaultCompareValue,
-  getOptionKey = defaultGetOptionKey,
-  disabled,
-  containerClassName,
-  dropdownClassName,
-  className,
-  id,
-}: SelectProps<T>) {
-  const isInline = variant === 'inline';
-  const selectId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
-  const listboxId = useId();
-  const rootRef = useRef<HTMLDivElement>(null);
-  const anchorRef = useRef<HTMLDivElement>(null);
-  const portalRef = useRef<HTMLDivElement>(null);
+  labelClassName,
+  creatable = false,
+  onSearch,
+  createAction,
+}: SelectProps<T>): ReactElement {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const [customInput, setCustomInput] = useState('');
-  const [internalValue, setInternalValue] = useState<T | T[] | undefined>(defaultValue);
-  const [customOptions, setCustomOptions] = useState<SelectOption<T>[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
 
-  const dropdownMaxHeight = searchable || creatable ? 264 : 224;
-  const position = useFloatingPosition(anchorRef, open, dropdownMaxHeight);
-
-  const selected = value ?? internalValue;
-
-  const derivedCustomOptions = useMemo(
-    () =>
-      deriveCustomOptionsFromSelection(
-        options,
-        selected,
-        multiple,
-        compareValue,
-        getOptionLabel,
-      ),
-    [options, selected, multiple, compareValue, getOptionLabel],
+  const getKey = useMemo(
+    () => getOptionKey ?? (defaultGetOptionKey as (v: T) => string | number),
+    [getOptionKey],
   );
 
-  const allOptions = useMemo(
-    () => mergeSelectOptions(options, [...customOptions, ...derivedCustomOptions], compareValue),
-    [options, customOptions, derivedCustomOptions, compareValue],
+  const isEqual = useCallback(
+    (a: T, b: T) => {
+      if (a === null && b === null) return true;
+      if (a === undefined && b === undefined) return true;
+      if (a === null || a === undefined || b === null || b === undefined)
+        return false;
+      return isOptionEqualProp
+        ? isOptionEqualProp(a, b)
+        : defaultIsOptionEqual(a, b, getKey);
+    },
+    [isOptionEqualProp, getKey],
   );
 
-  const displayLabel = optionsLoading
-    ? optionsLoadingLabel
-    : optionsError
-      ? optionsErrorLabel
-      : getSelectDisplayLabel(
-          allOptions,
-          selected,
-          multiple,
-          placeholder,
-          compareValue,
-          getOptionLabel,
-        );
+  const selectedValues = useMemo((): T[] => {
+    if (value === null || value === undefined) return [];
+    return Array.isArray(value) ? value : [value];
+  }, [value]);
+
+  const isSelected = useCallback(
+    (option: SelectOption<T>) =>
+      selectedValues.some((v) => isEqual(v, option.value)),
+    [selectedValues, isEqual],
+  );
 
   const filteredOptions = useMemo(() => {
-    if (!searchable || !search.trim()) return allOptions;
-    const query = search.trim().toLowerCase();
-    return allOptions.filter((option) => {
-      const valueKey =
-        typeof option.value === 'string' || typeof option.value === 'number'
-          ? String(option.value).toLowerCase()
-          : '';
-      return (
-        option.label.toLowerCase().includes(query) ||
-        option.description?.toLowerCase().includes(query) ||
-        valueKey.includes(query)
+    let results = options;
+
+    if (!onSearch) {
+      const q = searchQuery.trim().toLowerCase();
+      results = !searchQuery.trim()
+        ? options
+        : options.filter((opt) => (opt.label || "").toLowerCase().includes(q));
+    }
+
+    // Handle creatable logic
+    if (creatable && searchQuery.trim()) {
+      const exactMatch = results.find(
+        (opt) => (opt.label || "").toLowerCase() === searchQuery.trim().toLowerCase(),
       );
-    });
-  }, [allOptions, searchable, search]);
-
-  const createInputValue = searchable ? search : customInput;
-  const normalizedCreateInput = normalizeCreateInput(createInputValue);
-  const showCreateOption =
-    creatable &&
-    !optionsLoading &&
-    !optionsError &&
-    isValidCreateInput(normalizedCreateInput) &&
-    !findOptionByInput(allOptions, normalizedCreateInput, getOptionLabel);
-
-  const showAddNew = Boolean(onAddNew) && !optionsLoading && !optionsError;
-  const showCustomInputFooter = creatable && !searchable && !optionsLoading && !optionsError;
-  const dropdownChromeHeight =
-    (searchable && !optionsLoading && !optionsError ? 40 : 0) +
-    (showAddNew ? 44 : 0) +
-    (showCustomInputFooter ? 44 : 0);
-
-  const toggleOpen = useCallback(() => {
-    if (disabled || optionsLoading) return;
-    setOpen((current) => !current);
-    if (open) {
-      setSearch('');
-      setCustomInput('');
+      if (!exactMatch) {
+        // Add "Create..." option at the top
+        return [
+          {
+            label: `Add "${searchQuery}"`,
+            value: searchQuery as unknown as T,
+            prefix: <Plus size={14} className="text-primary" />,
+          } as SelectOption<T>,
+          ...results,
+        ];
+      }
     }
-  }, [disabled, open, optionsLoading]);
 
-  const close = useCallback(() => {
-    setOpen(false);
-    setSearch('');
-    setCustomInput('');
-  }, []);
+    return results;
+  }, [options, searchQuery, creatable, onSearch]);
 
-  const handleAddNew = useCallback(() => {
-    if (!onAddNew || disabled || optionsLoading || optionsError) return;
-    onAddNew();
-    close();
-  }, [close, disabled, onAddNew, optionsError, optionsLoading]);
-
-  useClickOutside([rootRef, portalRef], close, open);
-
-  const commitValue = (next: T | T[]) => {
-    if (value === undefined) {
-      setInternalValue(next);
+  useOnClickOutside(containerRef, (event) => {
+    if (dropdownRef.current && dropdownRef.current.contains(event.target as Node)) {
+      return;
     }
-    onValueChange?.(next);
-  };
+    setIsOpen(false);
+    setSearchQuery("");
+    setHighlightedIndex(0);
+  });
 
-  const addCustomValue = useCallback(
-    (rawInput: string) => {
-      if (!creatable || disabled || optionsLoading || optionsError) return;
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      const dropdownHeight = 280; // max-h matches the existing 280px cap
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
 
-      const input = normalizeCreateInput(rawInput);
-      if (!isValidCreateInput(input)) return;
+      const showAbove = spaceBelow < dropdownHeight && spaceAbove > spaceBelow;
 
-      const existing = findOptionByInput(allOptions, input, getOptionLabel);
-      if (existing) {
-        if (multiple) {
-          const current = Array.isArray(selected) ? selected : [];
-          const exists = current.some((item) => compareValue(item, existing.value));
-          const next = exists
-            ? current.filter((item) => !compareValue(item, existing.value))
-            : [...current, existing.value];
-          commitValue(next);
-        } else {
-          commitValue(existing.value);
-          close();
+      setDropdownStyle(showAbove ? {
+        position: "fixed",
+        bottom: window.innerHeight - rect.top + 4,
+        left: rect.left,
+        width: rect.width,
+        zIndex: 9999,
+      } : {
+        position: "fixed",
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+        zIndex: 9999,
+      });
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery("");
+      return;
+    }
+    const handleScroll = (e: Event) => {
+      // Don't close if scrolling inside the dropdown itself
+      if (dropdownRef.current?.contains(e.target as Node)) return;
+      setIsOpen(false);
+    };
+    // Use capture: true to catch scrolls on nested scrollable containers
+    window.addEventListener("scroll", handleScroll, { capture: true });
+    return () => window.removeEventListener("scroll", handleScroll, { capture: true });
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setHighlightedIndex(0);
+    if (searchable) {
+      setSearchQuery("");
+      setTimeout(() => searchInputRef.current?.focus(), 0);
+    }
+  }, [isOpen, searchable]);
+
+  useEffect(() => {
+    const list = listRef.current;
+    const item = list?.querySelector(`[data-index="${highlightedIndex}"]`);
+    item?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [highlightedIndex]);
+
+  const handleSelect = useCallback(
+    (option: SelectOption<T>) => {
+      if (multiple) {
+        const next = isSelected(option)
+          ? selectedValues.filter((v) => !isEqual(v, option.value))
+          : [...selectedValues, option.value];
+        (onChange as (v: T[]) => void)(next);
+      } else {
+        (onChange as (v: T | null) => void)(option.value);
+        setIsOpen(false);
+      }
+    },
+    [multiple, isSelected, selectedValues, isEqual, onChange],
+  );
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (!isOpen) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setIsOpen(true);
         }
-        setSearch('');
-        setCustomInput('');
         return;
       }
 
-      const newValue = onCreateOption?.(input) ?? formatCreateValue(input);
-      const newOption: SelectOption<T> = { value: newValue, label: input };
-
-      setCustomOptions((current) => {
-        if (current.some((option) => compareValue(option.value, newValue))) {
-          return current;
-        }
-        return [...current, newOption];
-      });
-
-      if (multiple) {
-        const current = Array.isArray(selected) ? selected : [];
-        if (!current.some((item) => compareValue(item, newValue))) {
-          commitValue([...current, newValue]);
-        }
-      } else {
-        commitValue(newValue);
-        close();
+      switch (e.key) {
+        case "Escape":
+          e.preventDefault();
+          setIsOpen(false);
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          setHighlightedIndex((i) =>
+            i < filteredOptions.length - 1 ? i + 1 : 0,
+          );
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setHighlightedIndex((i) =>
+            i > 0 ? i - 1 : filteredOptions.length - 1,
+          );
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (filteredOptions[highlightedIndex]) {
+            handleSelect(filteredOptions[highlightedIndex]);
+          }
+          break;
+        default:
+          break;
       }
-
-      setSearch('');
-      setCustomInput('');
     },
-    [
-      allOptions,
-      close,
-      compareValue,
-      creatable,
-      disabled,
-      formatCreateValue,
-      getOptionLabel,
-      isValidCreateInput,
-      multiple,
-      normalizeCreateInput,
-      onCreateOption,
-      optionsError,
-      optionsLoading,
-      selected,
-      onValueChange,
-      value,
-    ],
+    [isOpen, filteredOptions, highlightedIndex, handleSelect],
   );
 
-  const toggleOption = (option: SelectOption<T>) => {
-    if (option.disabled || disabled || optionsLoading || optionsError) return;
+  const handleRemoveChip = useCallback(
+    (e: React.MouseEvent, valueToRemove: T) => {
+      e.stopPropagation();
+      const next = selectedValues.filter((v) => !isEqual(v, valueToRemove));
+      (onChange as (v: T[]) => void)(next);
+    },
+    [selectedValues, isEqual, onChange],
+  );
 
-    if (multiple) {
-      const current = Array.isArray(selected) ? selected : [];
-      const exists = current.some((item) => compareValue(item, option.value));
-      const next = exists
-        ? current.filter((item) => !compareValue(item, option.value))
-        : [...current, option.value];
-      commitValue(next);
-      return;
+  const triggerId =
+    idProp ?? `select-${Math.random().toString(36).slice(2, 9)}`;
+  const isTriggerDisabled = disabled || loading;
+  const isInline = variant === "inline";
+
+  const displayLabel = useMemo(() => {
+    if (selectedValues.length === 0) return placeholder;
+    if (multiple && selectedValues.length > 1) {
+      return `${selectedValues.length} selected`;
     }
-
-    commitValue(option.value);
-    close();
-  };
-
-  const hasSelection =
-    !optionsLoading &&
-    !optionsError &&
-    (multiple
-      ? Array.isArray(selected) && selected.length > 0
-      : selected !== undefined && !Array.isArray(selected));
-
-  const fieldError = !!error || !!optionsError;
-  const describedBy = [
-    error ? `${selectId}-error` : null,
-    optionsError ? `${selectId}-options-error` : null,
-  ]
-    .filter(Boolean)
-    .join(' ') || undefined;
-
-  const dropdownStyle: CSSProperties | undefined = position
-    ? {
-        position: 'fixed',
-        left: position.left,
-        width: position.width,
-        zIndex: 2147483646,
-        ...(position.placement === 'bottom'
-          ? { top: position.top, bottom: 'auto' }
-          : { bottom: position.bottom, top: 'auto' }),
-      }
-    : undefined;
-
-  const dropdown =
-    open && position ? (
-      <div
-        ref={portalRef}
-        role="presentation"
-        style={dropdownStyle}
-        className={cn(
-          'overflow-hidden rounded-lg border shadow-lg',
-          'border-border bg-background',
-          dropdownClassName,
-        )}
-      >
-        {searchable && !optionsLoading && !optionsError && (
-          <div
-            className={cn(
-              'flex items-center gap-2 border-b px-3 py-2',
-              'border-border',
-            )}
-          >
-            <SearchNormal1 size={16} className="shrink-0" color={iconPaint.muted} aria-hidden />
-            <input
-              type="search"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' && creatable && showCreateOption) {
-                  event.preventDefault();
-                  addCustomValue(search);
-                }
-              }}
-              placeholder={creatable ? 'Search or add…' : 'Search…'}
-              className={cn(
-                'w-full bg-transparent text-open-regular-p outline-none placeholder:text-muted',
-              )}
-              autoFocus
-            />
-          </div>
-        )}
-
-        {showAddNew && (
-          <div
-            className={cn(
-              'border-b px-2 py-2',
-              'border-border bg-background',
-            )}
-          >
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start"
-              prefix={<Add size={14} color={iconPaint.current} aria-hidden />}
-              onClick={handleAddNew}
-            >
-              {addNewLabel}
-            </Button>
-          </div>
-        )}
-
-        <ul
-          id={listboxId}
-          role="listbox"
-          aria-multiselectable={multiple || undefined}
-          aria-busy={optionsLoading || undefined}
-          className="overflow-y-auto py-1"
-          style={{ maxHeight: position.maxHeight - dropdownChromeHeight }}
-        >
-          {optionsLoading ? (
-            <SelectOptionsLoading message={optionsLoadingLabel} />
-          ) : optionsError ? (
-            <SelectOptionsError
-              message={optionsError}
-              reloadLabel={reloadLabel}
-              onReload={() => {
-                onReloadOptions?.();
-              }}
-            />
-          ) : (
-            <>
-              {showCreateOption && (
-                <li role="option" aria-selected={false}>
-                  <button
-                    type="button"
-                    onClick={() => addCustomValue(normalizedCreateInput)}
-                    className={cn(
-                      'flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-open-regular-p outline-none transition-colors duration-150',
-                      'text-primary hover:cursor-pointer hover:bg-primary/14',
-                    )}
-                  >
-                    <Add size={16} className="shrink-0" color={iconPaint.primary} aria-hidden />
-                    <span className="min-w-0 flex-1 truncate">
-                      {createOptionLabel(normalizedCreateInput)}
-                    </span>
-                  </button>
-                </li>
-              )}
-              {filteredOptions.length === 0 && !showCreateOption ? (
-                <li className="px-3 py-2 text-open-regular-p text-muted">No options found</li>
-              ) : (
-                filteredOptions.map((option) => {
-                  const selectedOption = isOptionSelected(option, selected, multiple, compareValue);
-                  return (
-                    <li key={getOptionKey(option.value)} role="option" aria-selected={selectedOption}>
-                      <button
-                        type="button"
-                        disabled={option.disabled}
-                        onClick={() => toggleOption(option)}
-                        className={cn(
-                          'flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-open-regular-p outline-none transition-colors duration-150',
-                          'hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50',
-                          selectedOption
-                            ? 'bg-primary/14 text-foreground'
-                            : 'text-foreground hover:bg-primary/5',
-                                  )}
-                      >
-                        {multiple && (
-                          <span
-                            className={cn(
-                              'flex size-4 shrink-0 items-center justify-center rounded border-2 transition-colors duration-150',
-                              selectedOption
-                                ? 'border-primary bg-primary'
-                                : 'border-border bg-background',
-                            )}
-                          >
-                            {selectedOption ? (
-                              <CheckmarkIcon
-                                color={
-                                  iconPaint.inverse
-                                }
-                              />
-                            ) : null}
-                          </span>
-                        )}
-                        {option.prefix ? (
-                          <span className="flex shrink-0 items-center text-muted [&>svg]:size-4">
-                            {option.prefix}
-                          </span>
-                        ) : null}
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate">{option.label}</span>
-                          {option.description ? (
-                            <span className="block truncate text-open-regular-tiny text-muted">
-                              {option.description}
-                            </span>
-                          ) : null}
-                        </span>
-                        {option.suffix ? (
-                          <span className="flex shrink-0 items-center text-muted [&>svg]:size-4">
-                            {option.suffix}
-                          </span>
-                        ) : null}
-                        {!multiple && selectedOption && (
-                          <TickCircle
-                            size={16}
-                            variant="Bold"
-                            className="shrink-0"
-                            color={iconPaint.primary}
-                            aria-hidden
-                          />
-                        )}
-                      </button>
-                    </li>
-                  );
-                })
-              )}
-            </>
-          )}
-        </ul>
-
-        {showCustomInputFooter && (
-          <div
-            className={cn(
-              'flex items-center gap-2 border-t px-3 py-2',
-              'border-border',
-            )}
-          >
-            <input
-              type="text"
-              value={customInput}
-              onChange={(event) => setCustomInput(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  addCustomValue(customInput);
-                }
-              }}
-              placeholder={customInputPlaceholder}
-              className={cn(
-                'min-w-0 flex-1 bg-transparent text-open-regular-p outline-none placeholder:text-muted',
-              )}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              disabled={!showCreateOption}
-              prefix={<Add size={14} color={iconPaint.current} aria-hidden />}
-              onClick={() => addCustomValue(customInput)}
-            >
-              Add
-            </Button>
-          </div>
-        )}
-      </div>
-    ) : null;
+    const first = options.find((o) => isEqual(o.value, selectedValues[0]));
+    return first?.label ?? placeholder;
+  }, [selectedValues, multiple, options, isEqual, placeholder]);
 
   return (
-    <div ref={rootRef} className={cn('flex flex-col gap-1', containerClassName, className)}>
+    <div
+      className={cn("w-full relative", containerClassName)}
+      ref={containerRef}
+    >
       {label && (
-        <label
-          id={`${selectId}-label`}
-          htmlFor={selectId}
-          className={cn(
-            formFieldLabelClass,
-            disabled || optionsLoading ? 'cursor-not-allowed' : 'cursor-pointer',
-          )}
-        >
-          {label}
-        </label>
-      )}
-
-      <FieldControl
-        ref={anchorRef}
-        error={fieldError}
-        disabled={disabled || optionsLoading}
-        prefix={prefix}
-        className={isInline ? 'rounded-none border-0 bg-transparent' : undefined}
-      >
-        <button
-          id={selectId}
-          type="button"
-          disabled={disabled || optionsLoading}
-          aria-haspopup="listbox"
-          aria-expanded={open}
-          aria-busy={optionsLoading || undefined}
-          aria-labelledby={label ? `${selectId}-label` : undefined}
-          aria-controls={listboxId}
-          aria-invalid={fieldError ? true : undefined}
-          aria-describedby={describedBy}
-          onClick={toggleOpen}
-          className={cn(
-            'flex w-full cursor-pointer items-center gap-2 px-3 py-2 text-left text-open-regular-p outline-none',
-            'hover:cursor-pointer disabled:cursor-not-allowed',
-            isInline && 'px-0',
-            !hasSelection && 'text-muted',
-            optionsError && !optionsLoading && 'text-error',
-          )}
-        >
-          <span className="min-w-0 flex-1 truncate">{displayLabel}</span>
-          <span className="flex shrink-0 items-center gap-1.5 text-muted">
-            {suffix}
-            {optionsLoading ? (
-              <Spinner size={16} className="text-primary" />
-            ) : optionsError ? (
-              <Warning2 size={16} color={iconPaint.destructive} aria-hidden />
-            ) : (
-              <ArrowDown2
-                size={16}
-                variant="Linear"
-                color={iconPaint.muted}
-                className={cn('shrink-0 transition-transform duration-200', open && 'rotate-180')}
-                aria-hidden
-              />
+        <div className="flex items-center gap-1 mb-1">
+          <label
+            htmlFor={triggerId}
+            className={cn(
+              "block text-sm md:text-base font-normal text-foreground",
+              labelClassName,
             )}
-          </span>
-        </button>
-      </FieldControl>
-
-      {typeof document !== 'undefined' && dropdown
-        ? createPortal(dropdown, getPortalRoot())
-        : null}
-
-      {error && (
-        <p id={`${selectId}-error`} role="alert" className={formFieldErrorClass}>
-          {error}
-        </p>
+          >
+            {label}
+          </label>
+          {labelInfo && <InfoTooltip content={labelInfo} />}
+        </div>
       )}
 
-      {optionsError && !error && (
-        <p
-          id={`${selectId}-options-error`}
-          role="alert"
-          className={cn(formFieldErrorClass, 'flex flex-wrap items-center gap-x-2 gap-y-1')}
+      <div
+        ref={triggerRef}
+        id={triggerId}
+        role="combobox"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-controls={`${triggerId}-listbox`}
+        aria-disabled={isTriggerDisabled}
+        aria-busy={loading}
+        aria-label={label ?? placeholder}
+        tabIndex={isTriggerDisabled ? -1 : 0}
+        onKeyDown={handleKeyDown}
+        onClick={() => !isTriggerDisabled && setIsOpen((open) => !open)}
+        className={cn(
+          "w-full flex text-left text-foreground focus:outline-none",
+          isInline
+            ? cn(
+              "items-center min-h-[36px] gap-2 border-0 rounded-none bg-transparent shadow-none ring-0 text-sm",
+              multiple ? "flex-wrap" : "flex-nowrap",
+              "py-1 px-0 outline-none focus:outline-none focus:ring-0 focus-visible:ring-0",
+              className,
+            )
+            : cn(
+              "items-center min-h-[44px] py-2.5 px-3 md:py-3 md:px-4 flex-wrap gap-2",
+              "border-[0.5px] rounded-[4px] bg-white transition-shadow",
+              className || "text-sm md:text-base",
+              "focus:ring-1 focus:ring-primary",
+              error ? "border-red-500 focus:ring-red-500" : "border-border-light",
+              loadError && "border-red-500",
+              (disabled || loading) && "cursor-not-allowed opacity-60 bg-gray-50",
+              !isTriggerDisabled && "cursor-pointer hover:border-gray-400",
+            ),
+          isInline && error && "ring-1 ring-inset ring-red-500 focus:ring-red-500",
+          isInline && loadError && "ring-1 ring-inset ring-red-500",
+          isInline &&
+          (disabled || loading) &&
+          "cursor-not-allowed opacity-60 bg-transparent",
+          isInline && !isTriggerDisabled && "cursor-pointer hover:bg-gray-50/60",
+        )}
+      >
+        {prefix && (
+          <span className="shrink-0 flex items-center gap-1">{prefix}</span>
+        )}
+
+        {multiple && selectedValues.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
+            {selectedValues.map((v) => {
+              const opt = options.find((o) => isEqual(o.value, v));
+              return (
+                <span
+                  key={getKey(v)}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary max-w-full min-w-0 text-xs md:text-sm"
+                >
+                  <span className="truncate">{opt?.label ?? String(v)}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => handleRemoveChip(e, v)}
+                    className="shrink-0 p-0.5 rounded hover:bg-primary/20 focus:outline-none focus:ring-1 focus:ring-primary"
+                    aria-label={`Remove ${opt?.label ?? String(v)}`}
+                  >
+                    <X size={12} />
+                  </button>
+                </span>
+              );
+            })}
+          </div>
+        ) : (
+          <span
+            className={cn(
+              "flex-1 min-w-0 truncate",
+              selectedValues.length === 0 && !loading && "text-gray-500",
+            )}
+          >
+            {loading ? "Loading..." : displayLabel}
+          </span>
+        )}
+
+        {suffix && (
+          <span className="shrink-0 flex items-center gap-1">{suffix}</span>
+        )}
+
+        {loading ? (
+          <Loader2
+            size={20}
+            className={cn(
+              "shrink-0 text-primary animate-spin",
+              isInline && "ml-auto",
+            )}
+            aria-hidden
+          />
+        ) : (
+          <ChevronDown
+            size={20}
+            className={cn(
+              "shrink-0 text-gray-500 transition-transform",
+              isOpen && "rotate-180",
+              isInline && "ml-auto",
+            )}
+          />
+        )}
+      </div>
+
+      {isOpen && createPortal(
+        <div
+          ref={dropdownRef}
+          style={dropdownStyle}
+          className={cn(
+            "select-dropdown-portal",
+            "bg-white border-[0.5px] border-border-light rounded-[4px] shadow-lg",
+            "max-h-[min(280px,60vh)] overflow-hidden flex flex-col",
+            dropdownClassName,
+          )}
         >
-          <span className="min-w-0 flex-1">{optionsError}</span>
-          {onReloadOptions ? (
+          {searchable && (
+            <div className="p-2 border-b border-gray-100 shrink-0">
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setHighlightedIndex(0);
+                  onSearch?.(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "ArrowDown" ||
+                    e.key === "ArrowUp" ||
+                    e.key === "Enter"
+                  ) {
+                    e.preventDefault();
+                    (e.target as HTMLInputElement)?.blur?.();
+                    setTimeout(() => containerRef.current?.focus(), 0);
+                  }
+                }}
+                placeholder="Search..."
+                className={cn(
+                  "w-full py-2 px-3 text-sm rounded border-[0.5px] border-border-light",
+                  "focus:outline-none focus:ring-1 focus:ring-primary",
+                )}
+                aria-label="Filter options"
+              />
+            </div>
+          )}
+
+          <ul
+            id={`${triggerId}-listbox`}
+            ref={listRef}
+            role="listbox"
+            aria-multiselectable={multiple}
+            className="overflow-y-auto py-1 flex-1 min-h-0 custom-scrollbar"
+          >
+            {filteredOptions.length === 0 ? (
+              <li className="px-3 py-4 text-sm text-gray-500 text-center">
+                No options found
+              </li>
+            ) : (
+              filteredOptions.map((option, index) => {
+                const selected = isSelected(option);
+                const highlighted = index === highlightedIndex;
+                return (
+                  <li
+                    key={getKey(option.value)}
+                    data-index={index}
+                    role="option"
+                    aria-selected={selected}
+                    onClick={() => handleSelect(option)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                    className={cn(
+                      "flex items-center justify-between gap-2 px-3 py-2.5 cursor-pointer",
+                      "text-sm md:text-base transition-colors",
+                      highlighted && "bg-primary/10",
+                      selected && "bg-primary/5 text-primary font-medium",
+                      !highlighted && !selected && "hover:bg-gray-50",
+                    )}
+                  >
+                    <span className="flex items-center gap-2 min-w-0 flex-1">
+                      {option.prefix && (
+                        <span className="shrink-0">{option.prefix}</span>
+                      )}
+                      <span className="flex flex-col min-w-0 flex-1 text-left leading-snug">
+                        <span
+                          className={cn(
+                            "min-w-0 flex-1",
+                            isInline
+                              ? "whitespace-normal wrap-break-word"
+                              : "truncate",
+                          )}
+                        >
+                          {option.label}
+                        </span>
+                        {option.description && (
+                          <span className="text-[10px] sm:text-xs text-secondary-text mt-0.5 whitespace-normal leading-tight">
+                            {option.description}
+                          </span>
+                        )}
+                      </span>
+                    </span>
+                    {option.suffix && (
+                      <span className="shrink-0 ml-2">{option.suffix}</span>
+                    )}
+                    {selected && (
+                      <Check size={18} className="shrink-0 text-primary" />
+                    )}
+                  </li>
+                );
+              })
+            )}
+          </ul>
+
+          {createAction && (
+            <div className="border-t border-gray-100 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  createAction.onClick();
+                  setIsOpen(false);
+                  setSearchQuery("");
+                }}
+                className={cn(
+                  "w-full flex items-center gap-2 px-3 py-2.5 text-left",
+                  "text-sm md:text-base font-medium text-foreground",
+                  "hover:bg-gray-50 focus:outline-none focus:bg-gray-50",
+                )}
+              >
+                <span className="shrink-0 flex items-center">
+                  {createAction.icon ?? <Plus size={16} />}
+                </span>
+                <span className="truncate">{createAction.label}</span>
+              </button>
+            </div>
+          )}
+        </div>,
+        document.body
+      )}
+
+      {showErrorMessage && (error || loadError) && (
+        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <p className="text-sm text-red-500" role="alert">
+            {error ?? loadError}
+          </p>
+          {loadError && onRetry && (
             <button
               type="button"
-              onClick={onReloadOptions}
-              className="inline-flex shrink-0 items-center gap-1 font-semibold text-destructive underline-offset-2 hover:underline"
+              onClick={onRetry}
+              className="text-sm font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 rounded"
             >
-              <Refresh size={12} color={iconPaint.destructive} aria-hidden />
-              {reloadLabel}
+              Retry
             </button>
-          ) : null}
-        </p>
+          )}
+        </div>
       )}
     </div>
   );
 }
+
+function Select<T>(props: SelectProps<T>): ReactElement {
+  return <SelectInner {...props} />;
+}
+
+export default Select;

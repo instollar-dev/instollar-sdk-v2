@@ -16,7 +16,7 @@ import {
 import { cn } from '../utils/cn';
 import { formFieldErrorClass, formFieldLabelClass } from './formVariants';
 import { Input } from './Input';
-import { Select, type SelectOption } from './Select';
+import Select, { type SelectOption } from './Select';
 
 function FlagEmoji({ code, className }: { code: string; className?: string }) {
   const flag = countryCodeToFlagEmoji(code);
@@ -130,7 +130,7 @@ export function PhoneInput({
             options={options}
             value={country.countryCode}
             prefix={<FlagEmoji code={country.countryCode} />}
-            onValueChange={(next) => {
+            onChange={(next: any) => {
               const code = Array.isArray(next) ? next[0] : next;
               if (!code) return;
               const nextCountry = resolvePhoneCountry(
