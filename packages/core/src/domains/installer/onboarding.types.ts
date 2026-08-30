@@ -58,6 +58,12 @@ export interface InstallerOnboardingUpdatePayload {
   latitude?: number | null;
   longitude?: number | null;
   currency?: string;
+  /**
+   * Device push token (FCM / APNs / Expo push token string).
+   * Apps should POST this after permission + token registration so the
+   * backend can deliver remote notifications.
+   */
+  fcmToken?: string | null;
   /** New-installer work experience (optional until backend always returns them). */
   occupation?: string;
   otherOccupation?: string;

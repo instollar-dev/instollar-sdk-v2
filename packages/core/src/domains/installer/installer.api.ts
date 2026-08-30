@@ -43,8 +43,9 @@ export const installerApi = {
   /** Alias for {@link installerProfileApi.updateInstallerProfile}. */
   updateInstallerOnboarding: (
     payload: InstallerOnboardingUpdatePayload,
+    options?: { silent?: boolean },
   ): Promise<ApiResponse<InstallerProfileRecordModel>> =>
-    installerProfileApi.updateInstallerProfile(payload),
+    installerProfileApi.updateInstallerProfile(payload, options),
 
   toggleInstallerAvailability: (): Promise<ApiResponse<ToggleInstallerAvailabilityModel>> =>
     unwrap(
