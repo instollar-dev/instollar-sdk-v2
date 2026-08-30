@@ -288,3 +288,7 @@ export type { DashboardHeaderProps } from './components/DashboardHeader';
 
 export { SidebarShell } from './components/SidebarShell';
 export type { SidebarShellProps } from './components/SidebarShell';
+
+export { selectOptionsPropsFromQuery } from './components/selectUtils';
+export { default as InfoTooltip } from './components/infoTooltip';
+
