@@ -6,7 +6,7 @@ export const iconPaint = {
   current: 'currentColor',
   brand: 'var(--color-brand, #012b15)',
   primary: 'var(--color-primary, #012b15)',
-  secondary: 'var(--color-secondary, #effe3e)',
+  secondary: 'var(--color-secondary, #a8d9bc)',
   muted: 'var(--color-muted, #6b8074)',
   inverse: '#ffffff',
   destructive: 'var(--color-destructive, #f49e0c)',

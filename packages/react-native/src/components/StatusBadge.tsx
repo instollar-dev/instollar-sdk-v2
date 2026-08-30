@@ -45,7 +45,7 @@ const variantStyles: Record<StatusVariant, { bg: string; text: string; border?: 
   info: { bg: '#EFF6FF', text: '#1D4ED8', border: '#BFDBFE' },
   progress: { bg: '#F0F5FF', text: '#1E40AF', border: '#DBEAFE' },
   warning: { bg: '#FFF7ED', text: '#C2410C', border: '#FED7AA' },
-  warningAmber: { bg: '#FFFBEB', text: '#B45309', border: '#FDE68A' },
+  warningAmber: { bg: '#FFFAEB', text: '#F49E0C', border: '#FFFAEB' },
   danger: { bg: '#FEF2F2', text: '#D92D20' },
   dangerBordered: { bg: '#FEF2F2', text: '#D92D20', border: '#FECACA' },
   dangerStrong: { bg: '#FEF2F2', text: '#B91C1C', border: '#FECACA' },
