@@ -249,6 +249,8 @@ export interface TableProps {
   className?: string;
   /** Callback when a row is deleted */
   onRowDelete?: (rowIndex: number) => void;
+  /** Minimum width for the table container */
+  minWidth?: string;
   /** Custom footer content */
   footer?: ReactNode;
   /** Callback when data is requested via ref */
@@ -329,6 +331,7 @@ const Table = forwardRef<TableHandle, TableProps>(
       emptyMessage,
       className = "",
       onRowDelete,
+      minWidth,
       footer,
       onDataRequest,
       extendedCellZIndex = 50,
@@ -825,7 +828,7 @@ const Table = forwardRef<TableHandle, TableProps>(
             <table
               className="w-full border-separate border-spacing-y-px border-spacing-x-px"
               style={{
-                minWidth: isMobile && mobileResponsive ? "unset" : "600px",
+                minWidth: minWidth ? minWidth : (isMobile && mobileResponsive ? "unset" : "600px"),
               }}
             >
               <thead className="sticky top-0 z-10">

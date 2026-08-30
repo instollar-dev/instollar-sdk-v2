@@ -24,6 +24,7 @@ export interface SelectOption<T> {
   prefix?: ReactNode;
   suffix?: ReactNode;
   description?: string;
+  disabled?: boolean;
 }
 
 /**

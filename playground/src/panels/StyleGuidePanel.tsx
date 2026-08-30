@@ -38,6 +38,9 @@ import {
   Table,
   Tabs,
   Text,
+  OverviewCard,
+  ProductCard,
+  ProductDetailsLayout,
   TextalignLeft,
   Textarea,
   TimeInput,
@@ -954,7 +957,7 @@ export function StyleGuidePanel() {
               <Select
                 label="Language"
                 value="en"
-                onValueChange={() => undefined}
+                onChange={() => undefined}
                 options={[
                   { value: 'en', label: 'English' },
                   { value: 'fr', label: 'Français' },
@@ -1222,7 +1225,7 @@ export function StyleGuidePanel() {
             label="Single"
             placeholder="Select a role"
             value={role}
-            onValueChange={(v) => setRole(v as string)}
+            onChange={(v) => setRole(v as string)}
             options={[
               { value: 'admin', label: 'Admin' },
               { value: 'installer', label: 'Installer' },
@@ -1233,7 +1236,7 @@ export function StyleGuidePanel() {
             label="Searchable"
             searchable
             value={role}
-            onValueChange={(v) => setRole(v as string)}
+            onChange={(v) => setRole(v as string)}
             options={[
               { value: 'admin', label: 'Admin' },
               { value: 'installer', label: 'Installer' },
@@ -1246,7 +1249,7 @@ export function StyleGuidePanel() {
             searchable
             creatable
             value={skills}
-            onValueChange={(v) => setSkills(v as string[])}
+            onChange={(v) => setSkills(v as string[])}
             options={[
               { value: 'wiring', label: 'Wiring' },
               { value: 'roofing', label: 'Roofing' },
@@ -1257,9 +1260,8 @@ export function StyleGuidePanel() {
             label="Add new action"
             searchable
             value={role}
-            onValueChange={(v) => setRole(v as string)}
-            onAddNew={() => setAddNewHint(true)}
-            addNewLabel="Add new role…"
+            onChange={(v) => setRole(v as string)}
+            createAction={{ label: 'Add new role…', onClick: () => setAddNewHint(true) }}
             options={[
               { value: 'admin', label: 'Admin' },
               { value: 'installer', label: 'Installer' },
@@ -1275,23 +1277,25 @@ export function StyleGuidePanel() {
           <Select
             label="Options loading"
             options={[]}
-            optionsLoading
-            optionsLoadingLabel="Loading roles…"
+            value=""
+            onChange={() => undefined}
+            loading
             placeholder="…"
           />
           <Select
             label="Options error"
             options={[]}
-            optionsError="Couldn't load options"
-            onReloadOptions={() => undefined}
-            reloadLabel="Retry"
+            value=""
+            onChange={() => undefined}
+            loadError="Couldn't load options"
+            onRetry={() => undefined}
             placeholder="…"
           />
           <Select
             label="Field error"
             error="Required"
             value=""
-            onValueChange={() => undefined}
+            onChange={() => undefined}
             options={[{ value: 'a', label: 'A' }]}
             placeholder="Choose…"
           />
@@ -1299,14 +1303,14 @@ export function StyleGuidePanel() {
             label="Disabled"
             disabled
             value="installer"
-            onValueChange={() => undefined}
+            onChange={() => undefined}
             options={[{ value: 'installer', label: 'Installer' }]}
           />
           <Select
             label="With prefix"
             prefix={<Icon icon={Lock} size="sm" color="muted" />}
             value={role}
-            onValueChange={(v) => setRole(v as string)}
+            onChange={(v) => setRole(v as string)}
             options={[
               { value: 'admin', label: 'Admin' },
               { value: 'installer', label: 'Installer' },
@@ -1615,6 +1619,72 @@ export function StyleGuidePanel() {
           >
             <Text variant="open-regular-p">Boundary children — success / stale content.</Text>
           </LoadBoundary>
+        </DemoFrame>
+      </Section>
+
+      {/* ——— Storefront Components ——— */}
+      <TocGroupDivider title="Storefront" description="Layout shells and product components" />
+      
+      <Section
+        id="sg-overview-card"
+        title="OverviewCard"
+        description="Statistical summary card with trend indicators"
+        code=""
+      >
+        <DemoFrame>
+          <div className="w-80">
+            <OverviewCard
+              title="Total Revenue"
+              amount={125000}
+              isCurrency={true}
+              trendValue="12.5%"
+              trendLabel="vs last month"
+              trendDirection="up"
+              icon={<NotificationBing />}
+            />
+          </div>
+        </DemoFrame>
+      </Section>
+
+      <Section
+        id="sg-product-card"
+        title="ProductCard"
+        description="Product listing card with image and specs"
+        code=""
+      >
+        <DemoFrame>
+          <div className="w-80">
+            <ProductCard
+              product={{
+                id: 1,
+                image: "https://via.placeholder.com/400x300",
+                title: "Premium Solar Panel",
+                amount: "₦ 150,000",
+                description: "High efficiency monocrystalline solar panel for residential use.",
+                status: "IN_STOCK"
+              }}
+            />
+          </div>
+        </DemoFrame>
+      </Section>
+
+      <Section
+        id="sg-product-details"
+        title="ProductDetailsLayout"
+        description="Full product details layout with tabs and actions"
+        code=""
+      >
+        <DemoFrame>
+          <ProductDetailsLayout
+            product={{
+              id: 1,
+              image: "https://via.placeholder.com/400x300",
+              title: "Premium Solar Panel",
+              amount: "₦ 150,000",
+              description: "High efficiency monocrystalline solar panel for residential use.",
+              status: "IN_STOCK"
+            }}
+          />
         </DemoFrame>
       </Section>
         </div>
