@@ -23,6 +23,7 @@ import type {
   InstallerProfileRecordModel,
   ToggleInstallerAvailabilityModel,
 } from './types';
+import type { CreateInstallerSosPayload } from './sos.types';
 
 const silent = { showSuccessToast: false, showErrorToast: false } as const;
 
@@ -96,6 +97,17 @@ export const installerApi = {
         payload,
         {},
         { showSuccessToast: true },
+      ),
+    ),
+
+  /** Create an installer SOS alert (`POST /sos/create`). */
+  createInstallerSos: (payload: CreateInstallerSosPayload): Promise<ApiResponse<unknown>> =>
+    unwrap(
+      api.post<ApiResponse<unknown>>(
+        apiUrl('installer', installerPaths.sosCreate),
+        payload,
+        {},
+        silent,
       ),
     ),
 

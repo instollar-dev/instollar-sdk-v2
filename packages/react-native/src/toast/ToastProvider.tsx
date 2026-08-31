@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Modal, Platform, StyleSheet, View } from 'react-native';
 import {
   clearToastHandler,
   setToastHandler,
@@ -42,24 +42,42 @@ export function ToastProvider({ children, topInset }: ToastProviderProps) {
     return () => clearToastHandler();
   }, [enqueueToast]);
 
+  const androidModalProps =
+    Platform.OS === 'android'
+      ? ({ navigationBarTranslucent: true } as { navigationBarTranslucent?: boolean })
+      : undefined;
+
   return (
     <View style={styles.root}>
       {children}
       {/*
-        Absolute overlay (not Modal) so empty space stays pressable.
-        pointerEvents="box-none" lets taps pass through to the app; only the
-        banner itself captures touches. Sheets that use RN Modal may still
-        cover toasts while open — prefer dismissing the sheet first.
+        Host toasts in a transparent Modal so they stack above other RN Modals
+        (bottom sheets, selects, confirms). An absolute View cannot sit above a
+        Modal window regardless of zIndex. pointerEvents="box-none" keeps empty
+        space from eating presses meant for the toast banner only within this
+        window — underlying sheets stay non-interactive until the toast dismisses.
       */}
-      {activeToast ? (
-        <View style={styles.toastLayer} pointerEvents="box-none">
-          <ToastBanner
-            toast={activeToast}
-            topInset={resolvedTopInset}
-            onDismiss={handleDismiss}
-          />
+      <Modal
+        visible={Boolean(activeToast)}
+        transparent
+        animationType="none"
+        statusBarTranslucent
+        presentationStyle="overFullScreen"
+        onRequestClose={() => {
+          if (activeToast) handleDismiss(activeToast.id);
+        }}
+        {...androidModalProps}
+      >
+        <View style={styles.toastLayer} pointerEvents="box-none" collapsable={false}>
+          {activeToast ? (
+            <ToastBanner
+              toast={activeToast}
+              topInset={resolvedTopInset}
+              onDismiss={handleDismiss}
+            />
+          ) : null}
         </View>
-      ) : null}
+      </Modal>
     </View>
   );
 }
@@ -67,11 +85,7 @@ export function ToastProvider({ children, topInset }: ToastProviderProps) {
 const styles = StyleSheet.create({
   root: { flex: 1 },
   toastLayer: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
+    flex: 1,
     zIndex: 9999,
     elevation: 9999,
   },

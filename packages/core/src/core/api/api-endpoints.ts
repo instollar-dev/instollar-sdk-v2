@@ -356,4 +356,5 @@ export const installerPaths = {
   guarantorForm: '/installer/guarantor-form',
   esgInstallerDashboard: '/esg/installer-esg-dashboard',
   esgProject: (jobRequestId: string) => `/esg/project/${jobRequestId}`,
+  sosCreate: '/sos/create',
 } as const;

@@ -59,3 +59,5 @@ export type * from './storefront.types';
 export type * from './workflow.types';
 export type * from './onboarding.types';
 export type * from './experience';
+export type * from './sos.types';
+export { INSTALLER_SOS_ISSUE_TYPES } from './sos.types';

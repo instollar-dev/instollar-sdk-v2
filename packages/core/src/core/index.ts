@@ -99,6 +99,7 @@ export {
   buildWorkExperienceStepPayload,
   buildAssessmentStepPayload,
   buildGuarantorFormStepPayload,
+  INSTALLER_SOS_ISSUE_TYPES,
 } from '../domains';
 
 export type {
@@ -161,3 +162,4 @@ export type * from '../domains/installer/storefront.types';
 export type * from '../domains/installer/workflow.types';
 export type * from '../domains/installer/onboarding.types';
 export type * from '../domains/installer/experience';
+export type * from '../domains/installer/sos.types';
