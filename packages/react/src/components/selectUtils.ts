@@ -145,10 +145,7 @@ export function selectOptionsPropsFromQuery(query: {
   refetch: () => unknown;
 }) {
   return {
-    optionsLoading: query.isPending && query.data == null,
-    optionsError: query.isError ? (query.error?.message ?? "Couldn't load options") : undefined,
-    onReloadOptions: () => {
-      void query.refetch();
-    },
+    loading: query.isPending && query.data == null,
+    error: query.isError ? (query.error?.message ?? "Couldn't load options") : undefined,
   } as const;
 }

@@ -308,10 +308,9 @@ isNetworkDisconnectError(query.error);`}</CodeBlock>
               <Select
                 label="Jobs"
                 value={job}
-                onValueChange={(v) => setJob(v as string)}
+                onChange={(v) => setJob(v as string)}
                 options={jobsQuery.data ?? []}
                 {...selectOptionsPropsFromQuery(jobsQuery)}
-                onReloadOptions={() => setQueryMode('ok')}
               />
             </DemoFrame>
             <CodeBlock>{`<Select
