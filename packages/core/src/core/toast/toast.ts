@@ -10,7 +10,7 @@ const FALLBACK = {
   border: '#d6ddd9',
   brand: '#012b15',
   primary: '#012b15',
-  secondary: '#a8d9bc',
+  secondary: '#f49e0c',
   destructive: '#f49e0c',
   danger: '#dc2626',
   font: '"Spline Sans", ui-sans-serif, system-ui, -apple-system, sans-serif',

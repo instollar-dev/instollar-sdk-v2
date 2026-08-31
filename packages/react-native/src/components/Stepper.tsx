@@ -20,6 +20,10 @@ export type StepperProps = {
 
 const PROGRESS_MS = 320;
 
+/** Matches workflow / toolbox step chips (cream soft fill + amber label). */
+const STEP_BADGE_BG = '#FFFAEB';
+const STEP_BADGE_FG = '#F49E0C';
+
 export function Stepper({ step, totalSteps, style }: StepperProps) {
   const colors = useThemeColors();
   const safeTotal = Math.max(1, totalSteps);
@@ -47,10 +51,8 @@ export function Stepper({ step, totalSteps, style }: StepperProps) {
       accessibilityRole="progressbar"
       accessibilityLabel={`Step ${safeStep} of ${safeTotal}`}
       accessibilityValue={{ min: 1, max: safeTotal, now: safeStep }}>
-      <View style={[styles.badge, { backgroundColor: colors.secondary }]}>
-        <Text
-          variant="open-regular-tiny"
-          style={[styles.badgeText, { color: colors.destructive }]}>
+      <View style={[styles.badge, { backgroundColor: STEP_BADGE_BG }]}>
+        <Text variant="open-regular-tiny" style={[styles.badgeText, { color: STEP_BADGE_FG }]}>
           Step {safeStep} of {safeTotal}
         </Text>
       </View>
@@ -64,7 +66,7 @@ export function Stepper({ step, totalSteps, style }: StepperProps) {
             styles.fill,
             {
               width: fillWidth,
-              backgroundColor: colors.destructive,
+              backgroundColor: STEP_BADGE_FG,
             },
           ]}
         />
@@ -81,10 +83,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: 8,
   },
   badgeText: {
-    fontWeight: '600',
+    fontWeight: '700',
     lineHeight: 16,
   },
   track: {

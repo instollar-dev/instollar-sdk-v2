@@ -7,6 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from './Button';
 import { Stepper } from './Stepper';
 import { useThemeColors } from '../theme/ThemeProvider';
@@ -47,6 +48,7 @@ export function StepperLayout({
   footerStyle,
 }: StepperLayoutProps) {
   const colors = useThemeColors();
+  const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.root, { backgroundColor: colors.bg }, style]}>
@@ -63,8 +65,14 @@ export function StepperLayout({
           <View
             style={[
               styles.footer,
-              { borderTopColor: colors.border, backgroundColor: colors.bg },
+              {
+                borderTopColor: colors.border,
+                backgroundColor: colors.bg,
+                paddingBottom: insets.bottom + 12,
+              },
               footerStyle,
+              // Keep soft-nav clearance even if callers set paddingBottom.
+              { paddingBottom: insets.bottom + 12 },
             ]}>
             <View style={styles.footerInner}>
               {hidePrevious ? (
@@ -111,7 +119,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    paddingBottom: 12,
   },
   footerInner: {
     flexDirection: 'row',

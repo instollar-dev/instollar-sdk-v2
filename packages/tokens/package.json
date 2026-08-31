@@ -1,7 +1,7 @@
 {
   "name": "@instollar-dev/instollar-tokens",
-  "version": "0.6.3",
-  "description": "Instollar design tokens — colors, fonts, typography utilities",
+  "version": "0.6.4",
+  "description": "Instollar design tokens \u2014 colors, fonts, typography utilities",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
