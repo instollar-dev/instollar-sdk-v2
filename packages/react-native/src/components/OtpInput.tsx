@@ -133,8 +133,21 @@ export function OtpInput({
       </View>
 
       {showResend ? (
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          <Text variant="open-regular-label" muted>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 4,
+            paddingHorizontal: 4,
+          }}
+        >
+          <Text
+            variant="open-regular-label"
+            muted
+            style={{ flexShrink: 1, textAlign: 'center', maxWidth: '100%' }}
+          >
             {resendText}
           </Text>
           <Button

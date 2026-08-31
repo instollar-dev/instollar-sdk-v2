@@ -169,7 +169,13 @@ export function AddressAutocomplete({
           controller.signal,
         );
         if (!controller.signal.aborted) {
+          // Parent often writes a slightly different formatted address; skip the
+          // follow-up autocomplete fetch so suggestions don't reopen after pick.
+          skipNextFetchRef.current = true;
           onPlaceSelect(address);
+          setFocused(false);
+          setOpen(false);
+          setSuggestions([]);
         }
       } catch (fetchError: unknown) {
         if (!controller.signal.aborted) {

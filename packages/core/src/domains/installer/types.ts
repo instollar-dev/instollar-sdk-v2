@@ -36,6 +36,11 @@ export interface InstallerProfileRecordModel {
   motivation?: string | null;
   /** Last registered device push token (FCM / APNs / Expo). */
   fcmToken?: string | null;
+  /**
+   * Admin CRM “Mark as insured” flag. Display-only for installers
+   * (avatar shield). Missing/null → treat as false.
+   */
+  insured?: boolean | null;
   [key: string]: unknown;
 }
 
