@@ -13,8 +13,7 @@
 
   --color-brand: #012b15;
   --color-primary: #012b15;
-  /* Soft mint — amber washes out on white; brand label stays high-contrast. */
-  --color-secondary: #a8d9bc;
+  --color-secondary: #f49e0c;
 
   --color-bg: #ffffff;
   --color-fg: var(--color-brand);
@@ -37,7 +36,6 @@
 .dark {
   /* Brand stays deep forest for solid fills — surfaces sit clearly above it. */
   --color-brand: #012b15;
-  /* Soft mint accents: readable on the dark canvas, distinct from brand fills. */
   --color-primary: #8fc9a5;
   --color-secondary: #f49e0c;
 

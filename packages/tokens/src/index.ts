@@ -1,7 +1,7 @@
 /** Instollar brand anchors from the style guide (stable across themes). */
 export const brand = {
   primary: '#012b15',
-  /** Amber brand accent — used for caution/destructive, not light secondary fills. */
+  /** Amber brand accent — secondary fills, caution, and progress accents. */
   secondary: '#f49e0c',
 } as const;
 
@@ -18,18 +18,11 @@ export const nativeFonts = {
   openSans: 'OpenSans',
 } as const;
 
-/**
- * Soft mint secondary fill for light mode.
- * Amber (`brand.secondary`) washes out on white; this keeps secondary buttons
- * and soft accents readable while brand-green labels stay high-contrast.
- */
-export const LIGHT_SECONDARY = '#A8D9BC';
-
 /** Light theme semantic colors (matches `:root` in tokens.css). */
 export const colors = {
   brand: brand.primary,
   primary: brand.primary,
-  secondary: LIGHT_SECONDARY,
+  secondary: brand.secondary,
   bg: '#ffffff',
   fg: brand.primary,
   muted: '#6b8074',

@@ -373,7 +373,7 @@ export function StyleGuidePanel() {
         <SubSection title="Dark (data-theme=&quot;dark&quot;)">
           <p className="mb-3 max-w-xl text-open-regular-tiny text-muted">
             Brand stays forest green for solid fills. Primary lifts to mint for readable accents;
-            secondary stays amber on dark (soft mint in light). Canvas, text, borders, destructive,
+            secondary is amber in light and dark. Canvas, text, borders, destructive,
             and danger shift with the theme. Toggle from the sidebar.
           </p>
           <div className="dark grid gap-3 rounded-2xl border border-border bg-background p-4 sm:grid-cols-2 lg:grid-cols-3">

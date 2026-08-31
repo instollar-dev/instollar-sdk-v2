@@ -20,16 +20,21 @@ export const installerProfileApi = {
   /**
    * Update installer profile / complete an onboarding step.
    * Pass `stepDone` with the slug just completed during onboarding.
+   * Use `silent: true` for background writes (e.g. FCM token, GPS pings).
    */
   updateInstallerProfile: (
     payload: InstallerOnboardingUpdatePayload,
+    options?: { silent?: boolean },
   ): Promise<ApiResponse<InstallerProfileRecordModel>> =>
     unwrap(
       api.post<ApiResponse<InstallerProfileRecordModel>>(
         apiUrl('installer', installerPaths.update),
         payload,
         {},
-        { showSuccessToast: true, showErrorToast: false },
+        {
+          showSuccessToast: !options?.silent,
+          showErrorToast: false,
+        },
       ),
     ),
 
