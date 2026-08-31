@@ -34,6 +34,7 @@ import {
   SettingsItem,
   Spinner,
   StatusBadge,
+  Stepper,
   Switch,
   Table,
   Tabs,
@@ -1619,6 +1620,25 @@ export function StyleGuidePanel() {
           >
             <Text variant="open-regular-p">Boundary children — success / stale content.</Text>
           </LoadBoundary>
+        </DemoFrame>
+      </Section>
+
+      {/* ——— Stepper ——— */}
+      <Section
+        id="sg-stepper"
+        title="Stepper"
+        description="Multi-step navigation shell with arrow SVG rendering"
+        code=""
+      >
+        <DemoFrame>
+          <Stepper
+            currentStep={2}
+            steps={[
+              { title: "Account setup" },
+              { title: "Business details" },
+              { title: "Review" },
+            ]}
+          />
         </DemoFrame>
       </Section>
 

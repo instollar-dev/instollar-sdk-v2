@@ -292,3 +292,5 @@ export type { SidebarShellProps } from './components/SidebarShell';
 export { selectOptionsPropsFromQuery } from './components/selectUtils';
 export { default as InfoTooltip } from './components/infoTooltip';
 
+export { Stepper } from './components/Stepper';
+export type { StepperProps, Step } from './components/Stepper';
