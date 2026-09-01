@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-core",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "Instollar SDK core \u2014 HTTP client, storage, domains, utils (no UI)",
   "type": "module",
   "main": "./dist/index.js",
