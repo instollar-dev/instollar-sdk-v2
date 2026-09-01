@@ -1,6 +1,6 @@
 {
   "name": "@instollar-dev/instollar-sdk",
-  "version": "0.9.18",
+  "version": "0.9.19",
   "description": "Instollar SDK \u2014 React web UI, HTTP client, storage, and shared app data",
   "type": "module",
   "main": "./dist/index.js",

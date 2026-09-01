@@ -1,4 +1,4 @@
-export type UserType = 'INSTALLER' | 'COMPANY' | 'SUPER_ADMIN' | 'ADMIN';
+export type UserType = 'INSTALLER' | 'COMPANY' | 'SUPER_ADMIN' | 'ADMIN' | 'CUSTOMER' | 'DSA' | 'AFFILIATE';
 
 /**
  * Shared register body.
