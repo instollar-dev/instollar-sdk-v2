@@ -264,11 +264,11 @@ export const FileUpload: FC<FileUploadProps> = ({
         setLocalError(null);
 
         if (!isOnline) {
-          if (allowOfflineSave) {
+          if ((allowOfflineSave || Boolean(offlineSaveFn)) && offlineSaveFn) {
             await runOfflineSave();
             return;
           }
-          throw new Error('Network offline');
+          return;
         }
 
         const formData = new FormData();
@@ -283,10 +283,16 @@ export const FileUpload: FC<FileUploadProps> = ({
         const assets = await activeUploadFn(formData, { applyWatermark });
         applyOfflineAssets(files, assets, startIndex);
       } catch (err) {
-        if (allowOfflineSave && offlineSaveFn && isNetworkDisconnectError(err)) {
-          await runOfflineSave();
-          return;
+        const disconnected = !isOnline || isNetworkDisconnectError(err);
+        if (disconnected && (allowOfflineSave || Boolean(offlineSaveFn)) && offlineSaveFn) {
+          try {
+            await runOfflineSave();
+            return;
+          } catch {
+            return;
+          }
         }
+        if (disconnected) return;
         setLocalError(strings.uploadFailed);
         onUploadError?.(err);
       } finally {

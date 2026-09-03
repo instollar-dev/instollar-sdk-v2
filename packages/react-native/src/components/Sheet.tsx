@@ -17,6 +17,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import { DismissKeyboardPressable } from './DismissKeyboardPressable';
+import { ToastHost } from '../toast/ToastProvider';
 import { useThemeColors } from '../theme/ThemeProvider';
 
 const SLIDE_OFFSET = Dimensions.get('window').height;
@@ -176,6 +177,7 @@ export function Sheet({
         >
           {children}
         </SheetPanel>
+        <ToastHost />
       </SafeAreaProvider>
     </RNModal>
   );

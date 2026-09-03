@@ -36,7 +36,7 @@ export type { ModalProps } from './components/Modal';
 export { Sheet } from './components/Sheet';
 export type { SheetProps } from './components/Sheet';
 
-export { ToastProvider } from './toast/ToastProvider';
+export { ToastProvider, ToastHost } from './toast/ToastProvider';
 export type { ToastProviderProps } from './toast/ToastProvider';
 
 export { FieldControl } from './components/FieldControl';

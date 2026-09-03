@@ -1,5 +1,14 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import { Modal, Platform, StyleSheet, View } from 'react-native';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import { StyleSheet, View } from 'react-native';
 import {
   clearToastHandler,
   setToastHandler,
@@ -14,9 +23,50 @@ export type ToastProviderProps = {
   topInset?: number;
 };
 
+type ToastContextValue = {
+  activeToast: ToastBannerItem | null;
+  topInset: number;
+  onDismiss: (id: number) => void;
+  /** RN Modal windows block the root overlay — hosts register while a modal is open. */
+  registerModalHost: () => () => void;
+  modalHostCount: number;
+};
+
+const ToastContext = createContext<ToastContextValue | null>(null);
+
+function useToastContext(): ToastContextValue | null {
+  return useContext(ToastContext);
+}
+
+/**
+ * Renders the active toast. Mount inside RN `Modal` / sheet windows so toasts
+ * stay visible above them. Pass-through empty space stays interactive.
+ */
+export function ToastHost({ topInset }: { topInset?: number } = {}) {
+  const ctx = useToastContext();
+
+  useEffect(() => {
+    if (!ctx) return;
+    return ctx.registerModalHost();
+  }, [ctx]);
+
+  if (!ctx?.activeToast) return null;
+
+  return (
+    <View style={styles.toastLayer} pointerEvents="box-none" collapsable={false}>
+      <ToastBanner
+        toast={ctx.activeToast}
+        topInset={topInset ?? ctx.topInset}
+        onDismiss={ctx.onDismiss}
+      />
+    </View>
+  );
+}
+
 export function ToastProvider({ children, topInset }: ToastProviderProps) {
   const resolvedTopInset = topInset ?? getDefaultToastTopInset();
   const [activeToast, setActiveToast] = useState<ToastBannerItem | null>(null);
+  const [modalHostCount, setModalHostCount] = useState(0);
   const idRef = useRef(0);
 
   const enqueueToast = useCallback((options: ToastOptions) => {
@@ -37,55 +87,53 @@ export function ToastProvider({ children, topInset }: ToastProviderProps) {
     setActiveToast((current) => (current?.id === id ? null : current));
   }, []);
 
+  const registerModalHost = useCallback(() => {
+    setModalHostCount((count) => count + 1);
+    return () => setModalHostCount((count) => Math.max(0, count - 1));
+  }, []);
+
   useEffect(() => {
     setToastHandler(enqueueToast);
     return () => clearToastHandler();
   }, [enqueueToast]);
 
-  const androidModalProps =
-    Platform.OS === 'android'
-      ? ({ navigationBarTranslucent: true } as { navigationBarTranslucent?: boolean })
-      : undefined;
+  const contextValue = useMemo<ToastContextValue>(
+    () => ({
+      activeToast,
+      topInset: resolvedTopInset,
+      onDismiss: handleDismiss,
+      registerModalHost,
+      modalHostCount,
+    }),
+    [activeToast, resolvedTopInset, handleDismiss, registerModalHost, modalHostCount],
+  );
+
+  // Absolute overlay (not RN Modal) so empty space does not block touches.
+  // When a modal host is mounted, that window owns the toast instead.
+  const showRootToast = Boolean(activeToast) && modalHostCount === 0;
 
   return (
-    <View style={styles.root}>
-      {children}
-      {/*
-        Host toasts in a transparent Modal so they stack above other RN Modals
-        (bottom sheets, selects, confirms). An absolute View cannot sit above a
-        Modal window regardless of zIndex. pointerEvents="box-none" keeps empty
-        space from eating presses meant for the toast banner only within this
-        window — underlying sheets stay non-interactive until the toast dismisses.
-      */}
-      <Modal
-        visible={Boolean(activeToast)}
-        transparent
-        animationType="none"
-        statusBarTranslucent
-        presentationStyle="overFullScreen"
-        onRequestClose={() => {
-          if (activeToast) handleDismiss(activeToast.id);
-        }}
-        {...androidModalProps}
-      >
-        <View style={styles.toastLayer} pointerEvents="box-none" collapsable={false}>
-          {activeToast ? (
+    <ToastContext.Provider value={contextValue}>
+      <View style={styles.root}>
+        {children}
+        {showRootToast ? (
+          <View style={styles.toastLayer} pointerEvents="box-none" collapsable={false}>
             <ToastBanner
-              toast={activeToast}
+              toast={activeToast!}
               topInset={resolvedTopInset}
               onDismiss={handleDismiss}
             />
-          ) : null}
-        </View>
-      </Modal>
-    </View>
+          </View>
+        ) : null}
+      </View>
+    </ToastContext.Provider>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
   toastLayer: {
-    flex: 1,
+    ...StyleSheet.absoluteFill,
     zIndex: 9999,
     elevation: 9999,
   },

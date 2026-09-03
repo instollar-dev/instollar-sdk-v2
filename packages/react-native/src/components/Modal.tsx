@@ -8,6 +8,7 @@ import {
   type ModalProps as RNModalProps,
 } from 'react-native';
 import { DismissKeyboardPressable } from './DismissKeyboardPressable';
+import { ToastHost } from '../toast/ToastProvider';
 import { useThemeColors } from '../theme/ThemeProvider';
 
 const PANEL_OFFSET = 32;
@@ -90,7 +91,7 @@ export function Modal({
       onRequestClose={onClose}
       {...props}
     >
-      <View style={styles.root}>
+      <View style={styles.root} pointerEvents="box-none">
         <DismissKeyboardPressable
           accessibilityRole="button"
           accessibilityLabel="Close dialog"
@@ -110,6 +111,7 @@ export function Modal({
         >
           {children}
         </Animated.View>
+        <ToastHost />
       </View>
     </RNModal>
   );

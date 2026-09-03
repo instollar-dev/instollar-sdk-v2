@@ -197,12 +197,14 @@ export function FileUpload({
         setIsUploading(true);
         setLocalError(null);
 
+        const canSaveOffline = allowOfflineSave || Boolean(offlineSaveFn);
+
         if (!isOnline) {
-          if (allowOfflineSave) {
+          if (canSaveOffline && offlineSaveFn) {
             await runOfflineSave();
             return;
           }
-          throw new Error('Network offline');
+          return;
         }
 
         if (!uploadFn) return;
@@ -214,10 +216,17 @@ export function FileUpload({
         const assets = await uploadFn(formData, { applyWatermark });
         applyOfflineAssets(files, assets, startIndex);
       } catch (err) {
-        if (allowOfflineSave && offlineSaveFn && isNetworkDisconnectError(err)) {
-          await runOfflineSave();
-          return;
+        const disconnected = !isOnline || isNetworkDisconnectError(err);
+        if (disconnected && (allowOfflineSave || Boolean(offlineSaveFn)) && offlineSaveFn) {
+          try {
+            await runOfflineSave();
+            return;
+          } catch {
+            // Still offline — keep the local file, skip the retry error.
+            return;
+          }
         }
+        if (disconnected) return;
         setLocalError(strings.uploadFailed);
         onUploadError?.(err);
       } finally {
