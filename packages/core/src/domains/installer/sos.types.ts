@@ -15,4 +15,7 @@ export type InstallerSosIssueType = (typeof INSTALLER_SOS_ISSUE_TYPES)[number];
 export type CreateInstallerSosPayload = {
   issueType: string;
   issue: string;
+  /** Device GPS at the time of the alert (optional if permission / fix unavailable). */
+  latitude?: number | null;
+  longitude?: number | null;
 };
