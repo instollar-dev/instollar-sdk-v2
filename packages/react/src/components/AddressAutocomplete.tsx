@@ -60,7 +60,7 @@ export function AddressAutocomplete({
   const [suggestions, setSuggestions] = useState<PlaceAutocompleteSuggestion[]>([]);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState<string | undefined>();
+  const [suggestionsUnavailable, setSuggestionsUnavailable] = useState(false);
 
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -68,7 +68,8 @@ export function AddressAutocomplete({
   const selectingRef = useRef(false);
 
   const resolvedKey = resolveGooglePlacesApiKey(apiKey);
-  const displayError = error ?? apiError;
+  const availabilityHint =
+    "The address dropdown is currently unavailable. You can still continue by entering your address manually, or contact support if you need help.";
 
   const clearSuggestions = useCallback(() => {
     setSuggestions([]);
@@ -92,7 +93,7 @@ export function AddressAutocomplete({
       const controller = new AbortController();
       abortRef.current = controller;
       setLoading(true);
-      setApiError(undefined);
+      setSuggestionsUnavailable(false);
 
       fetchPlaceAutocompleteSuggestions(trimmed, resolvedKey, controller.signal)
         .then((next) => {
@@ -100,13 +101,12 @@ export function AddressAutocomplete({
           setSuggestions(next);
           setHighlightIndex(next.length ? 0 : -1);
           setOpen(next.length > 0);
+          setSuggestionsUnavailable(false);
         })
-        .catch((fetchError: unknown) => {
+        .catch(() => {
           if (controller.signal.aborted) return;
           clearSuggestions();
-          const message =
-            fetchError instanceof Error ? fetchError.message : 'Could not load suggestions';
-          setApiError(message);
+          setSuggestionsUnavailable(true);
         })
         .finally(() => {
           if (!controller.signal.aborted) setLoading(false);
@@ -135,7 +135,7 @@ export function AddressAutocomplete({
       setOpen(false);
       clearSuggestions();
       setLoading(true);
-      setApiError(undefined);
+      setSuggestionsUnavailable(false);
 
       const display =
         suggestion.fullText ||
@@ -156,11 +156,9 @@ export function AddressAutocomplete({
         if (!controller.signal.aborted) {
           onPlaceSelect(address);
         }
-      } catch (fetchError: unknown) {
+      } catch {
         if (!controller.signal.aborted) {
-          const message =
-            fetchError instanceof Error ? fetchError.message : 'Could not load place details';
-          setApiError(message);
+          setSuggestionsUnavailable(true);
         }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
@@ -230,7 +228,7 @@ export function AddressAutocomplete({
       ) : null}
 
       <FieldControl
-        error={!!displayError}
+        error={!!error}
         disabled={disabled}
         className="focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20"
         suffix={loading ? <Spinner size={16} className="text-muted" /> : undefined}
@@ -256,13 +254,15 @@ export function AddressAutocomplete({
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
           className="w-full border-0 bg-transparent px-3 py-2 text-open-regular-p outline-none placeholder:text-muted"
-          aria-invalid={displayError ? true : undefined}
+          aria-invalid={error ? true : undefined}
           aria-describedby={
-            displayError
+            error
               ? `${inputId}-error`
-              : helperText
-                ? `${inputId}-helper`
-                : undefined
+              : suggestionsUnavailable
+                ? `${inputId}-hint`
+                : helperText
+                  ? `${inputId}-helper`
+                  : undefined
           }
         />
       </FieldControl>
@@ -302,9 +302,13 @@ export function AddressAutocomplete({
         </ul>
       ) : null}
 
-      {displayError ? (
+      {error ? (
         <p id={`${inputId}-error`} role="alert" className={formFieldErrorClass}>
-          {displayError}
+          {error}
+        </p>
+      ) : suggestionsUnavailable ? (
+        <p id={`${inputId}-hint`} className={formFieldDescriptionClass}>
+          {availabilityHint}
         </p>
       ) : helperText ? (
         <p id={`${inputId}-helper`} className={formFieldDescriptionClass}>

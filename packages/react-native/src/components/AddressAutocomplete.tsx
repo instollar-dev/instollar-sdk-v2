@@ -56,7 +56,7 @@ export function AddressAutocomplete({
   const [open, setOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<PlaceAutocompleteSuggestion[]>([]);
   const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState<string | undefined>();
+  const [suggestionsUnavailable, setSuggestionsUnavailable] = useState(false);
   const [focused, setFocused] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
@@ -65,7 +65,8 @@ export function AddressAutocomplete({
   /** Skip one autocomplete pass after a place is chosen (avoids refetching the filled address). */
   const skipNextFetchRef = useRef(false);
 
-  const displayError = error ?? apiError;
+  const availabilityHint =
+    "The address dropdown is currently unavailable. You can still continue by entering your address manually, or contact support if you need help.";
   const showDropdown = open && focused && suggestions.length > 0 && !disabled;
 
   const clearSuggestions = useCallback(() => {
@@ -97,20 +98,19 @@ export function AddressAutocomplete({
       const controller = new AbortController();
       abortRef.current = controller;
       setLoading(true);
-      setApiError(undefined);
+      setSuggestionsUnavailable(false);
 
       fetchPlaceAutocompleteSuggestions(trimmed, resolvedKey, controller.signal)
         .then((next) => {
           if (controller.signal.aborted) return;
           setSuggestions(next);
           setOpen(next.length > 0);
+          setSuggestionsUnavailable(false);
         })
-        .catch((fetchError: unknown) => {
+        .catch(() => {
           if (controller.signal.aborted) return;
           clearSuggestions();
-          const message =
-            fetchError instanceof Error ? fetchError.message : 'Could not load suggestions';
-          setApiError(message);
+          setSuggestionsUnavailable(true);
         })
         .finally(() => {
           if (!controller.signal.aborted) setLoading(false);
@@ -149,7 +149,7 @@ export function AddressAutocomplete({
       setOpen(false);
       clearSuggestions();
       setLoading(true);
-      setApiError(undefined);
+      setSuggestionsUnavailable(false);
       triggerHapticFeedback('selection');
 
       const display =
@@ -177,11 +177,9 @@ export function AddressAutocomplete({
           setOpen(false);
           setSuggestions([]);
         }
-      } catch (fetchError: unknown) {
+      } catch {
         if (!controller.signal.aborted) {
-          const message =
-            fetchError instanceof Error ? fetchError.message : 'Could not load place details';
-          setApiError(message);
+          setSuggestionsUnavailable(true);
         }
       } finally {
         if (!controller.signal.aborted) setLoading(false);
@@ -216,17 +214,19 @@ export function AddressAutocomplete({
             setOpen(false);
           }, 180);
         }}
-        error={displayError}
+        error={error}
         suffix={loading ? <Spinner size={16} /> : undefined}
       />
 
-      {!resolvedKey && !displayError ? (
+      {error ? null : suggestionsUnavailable ? (
+        <Text variant="open-regular-tiny" muted>
+          {availabilityHint}
+        </Text>
+      ) : !resolvedKey ? (
         <Text variant="open-regular-tiny" muted>
           Google Places API key is not configured.
         </Text>
-      ) : null}
-
-      {helperText && !displayError ? (
+      ) : helperText ? (
         <Text variant="open-regular-tiny" muted>
           {helperText}
         </Text>
