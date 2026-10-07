@@ -1491,4 +1491,5 @@ const RowsPerPageDropdown: FC<RowsPerPageDropdownProps> = ({
   return createPortal(dropdownContent, document.body);
 };
 
+export { Table };
 export default Table;

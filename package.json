@@ -7,13 +7,16 @@
     "dev": "turbo run dev",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
+    "check:react-clean": "node scripts/check-react-clean.js",
+    "vendor:sync": "node scripts/vendor-sync.js",
+    "prepush": "pnpm build && pnpm check:react-clean && pnpm test",
     "clean": "turbo run clean && rm -rf node_modules",
     "playground": "pnpm --filter playground dev"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",
     "tailwindcss": "^4.1.0",
-    "turbo": "^2.5.0",
+    "turbo": "^2.11.7",
     "typescript": "^5.8.3"
   },
   "packageManager": "pnpm@10.11.0",
@@ -21,6 +24,9 @@
     "node": ">=20"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "@parcel/watcher"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@parcel/watcher"
+    ]
   }
 }
